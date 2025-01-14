@@ -6,9 +6,13 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Link style={styles.link} href="/home">Home</Link>
+      <Link style={styles.link} href="/game-select">Game Select</Link>
       <Link style={styles.link} href="/game">Game</Link>
+      <Link style={styles.link} href="/game-finished">Game Finished</Link>
       <Link style={styles.link} href="/archive">Archive</Link>
       <Link style={styles.link} href="/contribute">Contribute</Link>
+      <Link style={styles.link} href="/contribute-photo">Take Photo</Link>
+      <Link style={styles.link} href="/contribute-finalize">Contribute Finalize</Link>
       <Link style={styles.link} href="/stats">Stats</Link>
       {/* <StatusBar style="auto" /> */}
     </View>
@@ -24,7 +28,7 @@ const styles = StyleSheet.create({
     borderWidth: 4
   }, link: {
     borderWidth: 1,
-    width: 96,
+    width: 160,
     textAlign: 'center',
     padding: 6,
     margin: 4
