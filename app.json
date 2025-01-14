@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "ncsuguessr",
     "name": "ncsuguessr",
     "slug": "ncsuguessr",
     "version": "1.0.0",
@@ -22,7 +23,11 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
