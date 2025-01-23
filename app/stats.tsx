@@ -1,6 +1,6 @@
-import Text from '../components/global/Text';
-import ScreenView from '../components/global/ScreenView';
-import BackLink from '../components/global/BackLink';
+import Text from '../components/global/Text'
+import ScreenView from '../components/global/ScreenView'
+import BackLink from '../components/global/BackLink'
 
 export default function Stats() {
   return (
@@ -8,5 +8,5 @@ export default function Stats() {
       <Text>Stats Page</Text>
       <BackLink to="/" />
     </ScreenView>
-  );
+  )
 }
