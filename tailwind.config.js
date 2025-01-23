@@ -12,7 +12,9 @@ module.exports = {
       'ncsugreen': "#6F7D1C",
       'ncsublue': "#427E93",
       'ncsuaqua': "#008473",
-      'ncsuindigo': "#4156A1"
+      'ncsuindigo': "#4156A1",
+      'ncsuwhite': "#FFFFFF",
+      'ncsublack': "#000000"
     },
     extend: {},
   },

@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import Text from '../components/global/Text';
 import ScreenView from '../components/global/ScreenView';
 import { Link } from 'expo-router';
 
@@ -7,7 +6,6 @@ export default function App() {
   return (
     <ScreenView className="items-center justify-center">
       <Text className="font-bold text-5xl m-4 mb-8">NCSUGuessr</Text>
-      {/* <Text className="mb-6">NCSU App Development Club</Text> */}
       <ScreenLink link="/home">Home</ScreenLink>
       <ScreenLink link="/game-select">Game Select</ScreenLink>
       <ScreenLink link="/game">Game</ScreenLink>

@@ -6,7 +6,7 @@ import "../global.css";
 
 export default function Layout() {
     return (
-        <SafeAreaView>
+        <SafeAreaView className="bg-ncsuwhite">
             <Slot/>
         </SafeAreaView>
     )
