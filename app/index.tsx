@@ -1,7 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import ScreenView from '../components/global/ScreenView';
-import { Link } from 'expo-router';
+import { StatusBar } from 'expo-status-bar'
+import { StyleSheet, Text, View } from 'react-native'
+import ScreenView from '../components/global/ScreenView'
+import { Link } from 'expo-router'
 
 export default function App() {
   return (
@@ -18,11 +18,22 @@ export default function App() {
       <ScreenLink link="/contribute-finalize">Contribute Finalize</ScreenLink>
       <ScreenLink link="/stats">Stats</ScreenLink>
     </ScreenView>
-  );
+  )
 }
 
-function ScreenLink({ link, children }: { link: string, children: React.ReactNode}) {
+function ScreenLink({
+  link,
+  children,
+}: {
+  link: string
+  children: React.ReactNode
+}) {
   return (
-    <Link className="rounded bg-ncsured w-52 p-1.5 m-1.5 text-center text-white font-bold" href={link}>{children}</Link>
+    <Link
+      className="rounded bg-ncsured w-52 p-1.5 m-1.5 text-center text-white font-bold"
+      href={link}
+    >
+      {children}
+    </Link>
   )
 }

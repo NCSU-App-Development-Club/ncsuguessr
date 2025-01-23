@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "check": "npx prettier . --check",
+    "format": "npx prettier . --write",
+    "typecheck": "npx tsc"
   },
   "dependencies": {
     "expo": "~52.0.25",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
+    "prettier": "^3.4.2",
     "typescript": "^5.3.3"
   },
   "private": true
