@@ -1,6 +1,6 @@
-import { Text } from 'react-native';
-import ScreenView from '../components/global/ScreenView';
-import BackLink from '../components/global/BackLink';
+import { Text } from 'react-native'
+import ScreenView from '../components/global/ScreenView'
+import BackLink from '../components/global/BackLink'
 
 export default function Home() {
   return (
@@ -8,5 +8,5 @@ export default function Home() {
       <Text>Home Page</Text>
       <BackLink to="/" />
     </ScreenView>
-  );
+  )
 }

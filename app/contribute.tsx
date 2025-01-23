@@ -1,6 +1,6 @@
-import { Text } from 'react-native';
-import ScreenView from '../components/global/ScreenView';
-import BackLink from '../components/global/BackLink';
+import { Text } from 'react-native'
+import ScreenView from '../components/global/ScreenView'
+import BackLink from '../components/global/BackLink'
 
 export default function Contribute() {
   return (
@@ -8,5 +8,5 @@ export default function Contribute() {
       <Text>Contribute Page</Text>
       <BackLink to="/" />
     </ScreenView>
-  );
+  )
 }
