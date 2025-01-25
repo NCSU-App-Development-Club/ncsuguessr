@@ -60,15 +60,12 @@ You and your small group will be assigned [issues](https://github.com/NCSU-App-D
    git checkout development
    git checkout -b <feature-branch-name>
    ```
-2. Commit your changes:
+2. Push your new branch:
    ```bash
-   git commit -m 'Create new branch'
+   git push --set-upstream origin <feature-branch-name>
    ```
-3. Push to the branch:
-   ```bash
-   git push origin <feature-branch-name>
-   ```
-4. Open a Pull Request.
+3. Work on your new branch as usual.
+4. When your branch is ready for review, open a Pull Request.
 
 ---
 
