@@ -21,7 +21,11 @@ Before you begin developing, ensure you have the following installed:
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Node.js](https://nodejs.org/en)
 - [Expo Go](https://expo.dev/go) (on your phone)
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [Tailwind CSS Intellisense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) extensions in VSCode
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) (VSCode Extension)
+- [Tailwind CSS Intellisense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) (VSCode Extension)
+- nvm
+  - [Windows](https://github.com/coreybutler/nvm-windows)
+  - [MacOS](https://github.com/nvm-sh/nvm)
 
 Optional VSCode Extensions:
 
@@ -37,19 +41,27 @@ Optional VSCode Extensions:
    cd ncsuguessr
    ```
 
-2. Install the necessary node modules:
+2. Install and use Node.js version 22.9.0 with nvm:
+
+   ```bash
+   nvm install
+   ```
+
+   If you ever change Node.js versions for a different project, be sure to run `nvm use` from the project root to switch back to this project's Node.js version (22.9.0).
+
+3. Install the necessary node modules:
 
    ```bash
    npm install
    ```
 
-3. Start the application:
+4. Start the application:
 
    ```
    npm run start
    ```
 
-4. Scan the QR code in the terminal with your phone.
+5. Scan the QR code in the terminal with your phone.
 
 ## Contribution - App Development Club Members Only
 
