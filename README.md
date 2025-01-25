@@ -8,9 +8,15 @@ ncsuguessr is a North Carolina State University-themed geography game inspired b
 - Test your knowledge of the campus layout.
 - Contribute photos to be featured in future puzzles.
 
+## Game Rules
+
+- Each day, you'll be shown a random location from the NC State campus.
+- Guess the correct location by placing a marker on the map.
+- Earn points based on accuracy—the closer your guess, the higher your score.
+
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before you begin developing, ensure you have the following installed:
 
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Node.js](https://nodejs.org/en)
@@ -44,12 +50,6 @@ Optional VSCode Extensions:
    ```
 
 4. Scan the QR code in the terminal with your phone.
-
-## Game Rules
-
-- Each day, you'll be shown a random location from the NC State campus.
-- Guess the correct location by placing a marker on the map.
-- Earn points based on accuracy—the closer your guess, the higher your score.
 
 ## Contribution - App Development Club Members Only
 
