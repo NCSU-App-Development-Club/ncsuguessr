@@ -44,8 +44,10 @@ Optional VSCode Extensions:
 2. Install and use Node.js version 22.9.0 with nvm:
 
    ```bash
-   nvm install 22.9.0
+   nvm install
    ```
+
+   If you ever change Node.js versions for a different project, be sure to run `nvm use` from the project root to switch back to the project's Node.js version (22.9.0).
 
 3. Install the necessary node modules:
 
