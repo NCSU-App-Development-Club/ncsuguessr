@@ -2,6 +2,15 @@
 
 ![User Journey Image](user-journey.png)
 
+## Overview
+
+In small groups, you will design a screen for NCSUGuessr in Figma. Each group should only have one submission.
+
+## Guidelines
+
+- Try to stick to [NCSU colors](https://brand.ncsu.edu/assets/nc-state-color.pdf).
+- Interactible elements should be in Wolfpack Red (#CC0000).
+
 ## Group Assignments
 
 - Team 1: [Home Screen](https://github.com/NCSU-App-Development-Club/ncsuguessr/issues/1)
@@ -12,7 +21,7 @@
 > [!NOTE]
 > All designs should be in light mode. If you complete light mode early, feel free to make and submit a dark mode version (make sure the dark mode design image ends in `-dark.png`).
 
-## Groups To-do List:
+## To-do List:
 
 1. Clone the ncsuguessr repo:
    ```bash
