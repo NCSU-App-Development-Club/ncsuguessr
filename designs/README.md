@@ -50,4 +50,4 @@ git commit -m "team design"
 git push
 ```
 
-6. Open a Pull Request on GitHub: go to the `Pull requests` tab, click `New pull request`, ensure that the `base` branch is `main` and the `compare` branch is the branch you created (e.g. `take-photo`), and click `Create pull request`. Finally, click `Create pull request` again on this page.
+6. Open a Pull Request on GitHub: go to the `Pull requests` tab, click `New pull request`, ensure that the `base` branch is `development` and the `compare` branch is the branch you created (e.g. `take-photo`), and click `Create pull request`. Finally, click `Create pull request` again on this page.
