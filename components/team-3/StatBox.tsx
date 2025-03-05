@@ -1,6 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
-import AntDesign from '@expo/vector-icons/AntDesign'
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import { View, Text } from 'react-native';
 
 interface Icon {
     icon: JSX.Element; // Accepts an entire icon component
@@ -10,36 +8,12 @@ interface Icon {
 
 export default function StatBox({ icon, title, text }: Icon) {
     return (
-        <View style={styles.container}>
-        {icon}
-        <View style={styles.textContainer}>
-          <Text style={styles.titleText}>{title}</Text>
-          <Text style={styles.baseText}>{text}</Text>
+        <View className="border border-gray-400 p-3 rounded-lg items-center w-30">
+            {icon}
+            <View className="items-center">
+                <Text className="text-lg font-bold">{title}</Text>
+                <Text className="text-gray-600">{text}</Text>
+            </View>
         </View>
-      </View>
-  )
+    );
 }
-
-const styles = StyleSheet.create({
-    container: {
-      alignItems: "center",
-      justifyContent: "flex-start",
-      borderWidth: 2,
-      borderRadius: 15,
-      padding: 10,
-      borderBlockColor: "black"
-    },
-    baseText: {
-      fontFamily: 'Cochin',
-      color: "gray",
-      fontSize: 10
-    },
-    titleText: {
-      fontSize: 15,
-      fontWeight: 'bold',
-    },
-    textContainer: {
-        alignItems: "center",
-        justifyContent: "flex-start",
-    },
-  });
