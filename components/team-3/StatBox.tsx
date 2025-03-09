@@ -8,11 +8,16 @@ interface Icon {
 
 export default function StatBox({ icon, title, text }: Icon) {
     return (
-        <View className="border border-gray-400 p-3 rounded-lg items-center w-30">
-            {icon}
+        <View className="border border-[#CC0000] p-2 rounded-lg items-center w-full bg-[#FFFFFF] shadow-sm h-28 flex justify-center">
+            {/* Icon */}
+            <View className="mb-1">
+                {icon}
+            </View>
+
+            {/* Title and Text */}
             <View className="items-center">
-                <Text className="text-lg font-bold">{title}</Text>
-                <Text className="text-gray-600">{text}</Text>
+                <Text className="text-base font-bold text-[#000000] text-center">{title}</Text>
+                <Text className="text-sm text-[#000000] text-center mt-1">{text}</Text>
             </View>
         </View>
     );
