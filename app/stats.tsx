@@ -1,19 +1,21 @@
-import ScreenView from '../components/global/ScreenView';
-import BackLink from '../components/global/BackLink';
-import StatBox from '../components/team-3/StatBox';
-import LineGraph from '../components/team-3/LineGraph';
-import { View, Text } from 'react-native';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import ScreenView from '../components/global/ScreenView'
+import BackLink from '../components/global/BackLink'
+import StatBox from '../components/team-3/StatBox'
+import LineGraph from '../components/team-3/LineGraph'
+import { View, Text } from 'react-native'
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 
 export default function Stats() {
   // Dummy data for average guess distance over the past week (in feet)
-  const dummyData = [15, 20, 18, 22, 25, 19, 17]; // Average guess distance for each day of the week
+  const dummyData = [15, 20, 18, 22, 25, 19, 17] // Average guess distance for each day of the week
 
   return (
     <ScreenView className="flex-1 items-center justify-start p-6">
       {/* Title */}
-      <View className="mb-8 mt-14">
-        <Text className="text-5xl font-bold text-[#000000]">STATISTICS</Text>
+      <View className="mb-5 mt-14">
+        <Text className="text-5xl font-bold text-[#000000] tracking-widest">
+          STATISTICS
+        </Text>
       </View>
 
       {/* Stat Boxes */}
@@ -27,7 +29,9 @@ export default function Stats() {
         </View>
         <View className="w-1/2 p-2">
           <StatBox
-            icon={<SimpleLineIcons name="location-pin" size={28} color="#CC0000" />}
+            icon={
+              <SimpleLineIcons name="location-pin" size={28} color="#CC0000" />
+            }
             title="Average Distance"
             text="30.23 mi."
           />
@@ -64,12 +68,12 @@ export default function Stats() {
 
       {/* Line Graph */}
       <View className="mt-8 w-full">
-        <Text className="text-2xl font-bold mb-4">Average Daily Distances</Text>
+        <Text className="text-3xl font-bold mb-4">Average Daily Distances</Text>
         <LineGraph data={dummyData} width={350} height={200} />
       </View>
 
       {/* Back Link */}
       <BackLink to="/home" />
     </ScreenView>
-  );
+  )
 }
