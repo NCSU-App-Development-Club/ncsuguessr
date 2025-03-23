@@ -17,7 +17,7 @@ export default function StatBox({ icon, title, text }: Icon) {
         <Text className="underlinetext-base font-bold text-[#000000] text-center">
           {title}
         </Text>
-        <Text className="font-bold text-xs text-[#000000] text-center mt-1">
+        <Text className="text-xs text-[#000000] text-center mt-1">
           {text}
         </Text>
       </View>

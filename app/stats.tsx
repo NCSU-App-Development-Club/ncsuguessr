@@ -23,8 +23,8 @@ export default function Stats() {
         <View className="w-1/2 p-2">
           <StatBox
             icon={<SimpleLineIcons name="map" size={28} color="#CC0000" />}
-            title="Games Played"
-            text="30 Games"
+            title="30 Games"
+            text="Games Played"
           />
         </View>
         <View className="w-1/2 p-2">
@@ -32,43 +32,43 @@ export default function Stats() {
             icon={
               <SimpleLineIcons name="location-pin" size={28} color="#CC0000" />
             }
-            title="Average Distance"
-            text="30.23 mi."
+            title="176 ft."
+            text="Average Distance"
           />
         </View>
         <View className="w-1/2 p-2">
           <StatBox
             icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
-            title="Best Overall Guess"
-            text="NCSU Waterfountain: 2 ft."
+            title="Talley Market: 2 ft."
+            text="Best Overall Guess"
           />
         </View>
         <View className="w-1/2 p-2">
           <StatBox
             icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
-            title="Best Weekly Guess"
-            text="Brickyard: 5 ft."
+            title="Brickyard: 5 ft."
+            text="Best Weekly Guess"
           />
         </View>
         <View className="w-1/2 p-2">
           <StatBox
             icon={<SimpleLineIcons name="fire" size={28} color="#CC0000" />}
-            title="Challenge Streak"
-            text="7 Days"
+            title="7 Days"
+            text="Challenge Streak"
           />
         </View>
         <View className="w-1/2 p-2">
           <StatBox
             icon={<SimpleLineIcons name="clock" size={28} color="#CC0000" />}
-            title="Average Time"
-            text="2:23"
+            title="2:23"
+            text="Average Time"
           />
         </View>
       </View>
 
       {/* Line Graph */}
       <View className="mt-8 w-full">
-        <Text className="text-3xl font-bold mb-4">Average Daily Distances</Text>
+        <Text className="text-3xl font-bold mb-2">Average Daily Distances</Text>
         <LineGraph data={dummyData} width={350} height={200} />
       </View>
 
