@@ -6,7 +6,9 @@ import BackLink from '../components/global/BackLink'
 export default function GameSelect() {
   return (
     <ScreenView>
-      <Text className="text-2xl font-bold self-center">Game Selection</Text>
+      <Text className="text-2xl pt-12 font-bold self-center">
+        Game Selection
+      </Text>
       <BackLink to="/" />
 
       <TouchableOpacity className="bg-[#CC0000] p-3 rounded-[10px] my-[10px] w-4/5 items-center self-center">
@@ -32,7 +34,6 @@ export default function GameSelect() {
         View and play games from previous dates!
       </Text>
 
-      {/* New Section - Previous Challenges */}
       <Text className="text-xl font-bold mt-5 text-[#CC0000] self-center">
         Previous Challenges
       </Text>
