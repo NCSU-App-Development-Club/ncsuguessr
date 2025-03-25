@@ -1,34 +1,34 @@
-import React from 'react';
-import { View } from 'react-native';
-import Svg, { Line, Polyline, G, Text as SvgText } from 'react-native-svg';
+import React from 'react'
+import { View } from 'react-native'
+import Svg, { Line, Polyline, G, Text as SvgText } from 'react-native-svg'
 
 interface LineGraphProps {
-  data: number[];
-  width: number;
-  height: number;
+  data: number[]
+  width: number
+  height: number
 }
 
 const LineGraph: React.FC<LineGraphProps> = ({ data, width, height }) => {
-  const padding = 40; // Increased left padding to make space for y-axis labels
-  const graphWidth = width - 2 * padding;
-  const graphHeight = height - 2 * padding;
+  const padding = 40 // Increased left padding to make space for y-axis labels
+  const graphWidth = width - 2 * padding
+  const graphHeight = height - 2 * padding
 
-  const maxY = Math.max(...data);
-  const minY = Math.min(...data);
+  const maxY = Math.max(...data)
+  const minY = Math.min(...data)
 
-  const scaleX = graphWidth / (data.length - 1);
-  const scaleY = graphHeight / (maxY - minY);
+  const scaleX = graphWidth / (data.length - 1)
+  const scaleY = graphHeight / (maxY - minY)
 
   const points = data
     .map((value, index) => {
-      const x = padding + index * scaleX;
-      const y = padding + graphHeight - (value - minY) * scaleY;
-      return `${x},${y}`;
+      const x = padding + index * scaleX
+      const y = padding + graphHeight - (value - minY) * scaleY
+      return `${x},${y}`
     })
-    .join(' ');
+    .join(' ')
 
   // Days of the week for x-axis labels
-  const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   return (
     <View>
@@ -93,7 +93,7 @@ const LineGraph: React.FC<LineGraphProps> = ({ data, width, height }) => {
         </G>
       </Svg>
     </View>
-  );
-};
+  )
+}
 
-export default LineGraph;
+export default LineGraph
