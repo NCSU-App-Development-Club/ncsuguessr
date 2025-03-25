@@ -1,19 +1,21 @@
-import { ScrollView, View, Text } from 'react-native';
-import ScreenView from '../components/global/ScreenView';
-import BackLink from '../components/global/BackLink';
-import StatBox from '../components/team-3/StatBox';
-import LineGraph from '../components/team-3/LineGraph';
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import { ScrollView, View, Text } from 'react-native'
+import ScreenView from '../components/global/ScreenView'
+import BackLink from '../components/global/BackLink'
+import StatBox from '../components/team-3/StatBox'
+import LineGraph from '../components/team-3/LineGraph'
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 
 export default function Stats() {
-  const dummyData = [15, 20, 18, 22, 25, 19, 17];
+  const dummyData = [15, 20, 18, 22, 25, 19, 17]
 
   return (
     <ScreenView className="flex-1">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {/* Title */}
         <View className="mb-8 mt-14">
-          <Text className="text-5xl font-bold text-[#000000] text-center">STATISTICS</Text>
+          <Text className="text-5xl font-bold text-[#000000] text-center">
+            STATISTICS
+          </Text>
         </View>
 
         {/* Stat Boxes */}
@@ -27,7 +29,13 @@ export default function Stats() {
           </View>
           <View className="w-1/2 p-2">
             <StatBox
-              icon={<SimpleLineIcons name="location-pin" size={28} color="#CC0000" />}
+              icon={
+                <SimpleLineIcons
+                  name="location-pin"
+                  size={28}
+                  color="#CC0000"
+                />
+              }
               title="Average Distance"
               text="30.23 mi."
             />
@@ -64,7 +72,9 @@ export default function Stats() {
 
         {/* Line Graph */}
         <View className="items-center mt-8 w-full">
-          <Text className="text-2xl font-bold mb-4 text-center">Average Daily Distances</Text>
+          <Text className="text-2xl font-bold mb-4 text-center">
+            Average Daily Distances
+          </Text>
           <LineGraph data={dummyData} width={350} height={200} />
         </View>
 
@@ -72,5 +82,5 @@ export default function Stats() {
         <BackLink to="/home" />
       </ScrollView>
     </ScreenView>
-  );
+  )
 }
