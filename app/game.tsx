@@ -186,7 +186,7 @@ export default function Game() {
                   borderRadius: 30,
                 }}
               >
-                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Close Map</Text>
+                <Text className="text-white text-base font-bold">Close Map</Text>
               </TouchableOpacity>
             </View>
           )}
