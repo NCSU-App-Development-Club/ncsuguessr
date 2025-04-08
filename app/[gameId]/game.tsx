@@ -1,6 +1,6 @@
-import Text from '../components/global/Text'
-import ScreenView from '../components/global/ScreenView'
-import BackLink from '../components/global/BackLink'
+import Text from '../../components/global/Text'
+import ScreenView from '../../components/global/ScreenView'
+import BackLink from '../../components/global/BackLink'
 import {
   View,
   Image,
@@ -12,7 +12,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 
 // Conditionally import MapView
 const MapView =
@@ -45,6 +45,7 @@ const submitGameStats = (stats: {
 
 export default function Game() {
   const router = useRouter()
+  const { gameId } = useLocalSearchParams<{ gameId: string }>()
   const [expandedImage, setExpandedImage] = useState<string | null>(null)
   const [guessMarker, setGuessMarker] = useState<{
     latitude: number
@@ -71,6 +72,42 @@ export default function Game() {
 
     return () => clearInterval(timer)
   }, [startTime, gameOver])
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchGameAndImage = async () => {
+      try {
+        // First fetch the game details
+        const gameResponse = await fetch(
+          `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/${gameId}`
+        )
+        if (!gameResponse.ok) {
+          throw new Error('Failed to fetch game')
+        }
+        const gameData = await gameResponse.json()
+
+        // Then fetch the signed URL using the imageId from the game
+        const imageResponse = await fetch(
+          `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/images/${gameData.game.imageId}/url`
+        )
+        if (!imageResponse.ok) {
+          throw new Error('Failed to fetch image URL')
+        }
+        const imageData = await imageResponse.json()
+        setImageUrl(imageData.signedUrl)
+      } catch (err) {
+        setError('Failed to load image')
+        console.error('Error fetching game or image:', err)
+      }
+    }
+
+    if (gameId) {
+      fetchGameAndImage()
+    } else {
+      setError('No game ID provided')
+    }
+  }, [gameId])
 
   // Mock correct location (NC State Bell Tower)
   const correctLocation = {
@@ -271,10 +308,16 @@ export default function Game() {
       <TouchableOpacity onPress={() => setExpandedImage('belltower')}>
         <View className="relative p-2">
           <View className="overflow-hidden rounded-2xl">
-            <Image
-              source={require('../assets/belltower.png')}
-              style={{ width: 300, height: 200 }}
-            />
+            {error ? (
+              <Text className="text-red-500">{error}</Text>
+            ) : imageUrl ? (
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ width: 300, height: 200 }}
+              />
+            ) : (
+              <Text>Loading image...</Text>
+            )}
           </View>
           <View className="absolute top-4 right-4 bg-black/90 rounded-full w-14 h-14 items-center justify-center">
             <Text className="text-black-200/90 text-4xl font-bold">+</Text>
@@ -326,14 +369,20 @@ export default function Game() {
                 activeOpacity={1}
                 onPress={() => setExpandedImage(null)}
               >
-                <Image
-                  source={require('../assets/belltower.png')}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    resizeMode: 'contain',
-                  }}
-                />
+                {error ? (
+                  <Text className="text-red-500">{error}</Text>
+                ) : imageUrl ? (
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      resizeMode: 'contain',
+                    }}
+                  />
+                ) : (
+                  <Text>Loading image...</Text>
+                )}
               </TouchableOpacity>
             )}
           </View>
