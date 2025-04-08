@@ -45,7 +45,7 @@ export default function GameSelect() {
       </Text>
       <BackLink to="/" />
       <TouchableOpacity
-        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5"
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 shadow-lg"
         onPress={() => handleChallengeForOffset(0)}
       >
         <Text className="text-white font-bold text-lg self-center">
@@ -67,7 +67,7 @@ export default function GameSelect() {
         Previous Challenges
       </Text>
       <TouchableOpacity
-        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 my-5"
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 my-5 shadow-lg"
         onPress={() => handleChallengeForOffset(1)}
       >
         <Text className="text-white font-bold text-lg self-center">
@@ -76,7 +76,7 @@ export default function GameSelect() {
       </TouchableOpacity>
       <View>
         <TouchableOpacity
-          className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5"
+          className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 shadow-lg"
           onPress={() => handleChallengeForOffset(2)}
         >
           <Text className="text-white font-bold text-lg self-center">
@@ -84,7 +84,7 @@ export default function GameSelect() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center"
+          className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center shadow-lg"
           onPress={() => handleChallengeForOffset(3)}
         >
           <Text className="text-white font-bold text-lg self-center">
