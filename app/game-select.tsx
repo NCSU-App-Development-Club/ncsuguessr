@@ -60,7 +60,7 @@ export default function GameSelect() {
         source={{
           uri: 'https://sportslogohistory.com/wp-content/uploads/2018/09/north_carolina_state_wolfpack_2006-pres-a.png',
         }}
-        className="w-[100px] h-[100px] my-[10px] self-center"
+        className="w-[100px] h-[100px] my-5 self-center rounded-full border-solid border-2 border-[#CC0000]"
       />
 
       <Text className="text-xl font-bold mt-5 text-[#CC0000] self-center">
@@ -74,24 +74,22 @@ export default function GameSelect() {
           Yesterday
         </Text>
       </TouchableOpacity>
-      <View>
-        <TouchableOpacity
-          className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 shadow-lg"
-          onPress={() => handleChallengeForOffset(2)}
-        >
-          <Text className="text-white font-bold text-lg self-center">
-            Two Days Ago
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center shadow-lg"
-          onPress={() => handleChallengeForOffset(3)}
-        >
-          <Text className="text-white font-bold text-lg self-center">
-            Three Days Ago
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 shadow-lg"
+        onPress={() => handleChallengeForOffset(2)}
+      >
+        <Text className="text-white font-bold text-lg self-center">
+          Two Days Ago
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center shadow-lg"
+        onPress={() => handleChallengeForOffset(3)}
+      >
+        <Text className="text-white font-bold text-lg self-center">
+          Three Days Ago
+        </Text>
+      </TouchableOpacity>
     </ScreenView>
   )
 }
