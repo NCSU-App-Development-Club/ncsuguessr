@@ -54,9 +54,10 @@ export default function ContributePhoto() {
     router.navigate({
       pathname: '/contribute-finalize',
       params: {
-        pictureUri: picture.uri,
+        imageData: picture.uri,
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
+        locationName: 'todo',
       },
     })
   }
@@ -71,10 +72,7 @@ export default function ContributePhoto() {
         ratio="4:3"
       >
         <View className="h-[90vh] w-screen" />
-        <ScreenButton
-          onPress={takePhoto}
-          title="Take Photo"
-        />
+        <ScreenButton onPress={takePhoto} title="Take Photo" />
       </CameraView>
       <BackLink to="/" />
     </ScreenView>
