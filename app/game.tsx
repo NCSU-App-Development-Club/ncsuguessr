@@ -12,6 +12,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native'
+import { useRouter } from 'expo-router'
 
 // Conditionally import MapView
 const MapView =
@@ -19,9 +20,31 @@ const MapView =
 const Marker =
   Platform.OS === 'web' ? null : require('react-native-maps').Marker
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+// Development settings
+const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
+
+// Helper function to format time
+const formatTime = (ms: number) => {
+  const seconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+}
+
+// Mock function for stats submission - to be replaced by actual implementation
+const submitGameStats = (stats: {
+  locationName: string
+  timeSpentMs: number
+  finalDistanceKm: number
+  wasSuccessful: boolean
+}) => {
+  console.log('Submitting game stats:', stats)
+}
 
 export default function Game() {
+  const router = useRouter()
   const [expandedImage, setExpandedImage] = useState<string | null>(null)
   const [guessMarker, setGuessMarker] = useState<{
     latitude: number
@@ -29,15 +52,37 @@ export default function Game() {
   } | null>(null)
   const [guessCount, setGuessCount] = useState(0)
   const [gameOver, setGameOver] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [gameEndMessage, setGameEndMessage] = useState({
+    title: '',
+    message: '',
+  })
+  const [startTime] = useState(Date.now())
+  const [elapsedTime, setElapsedTime] = useState(0)
   const isWeb = Platform.OS === 'web'
+
+  // Update timer every second
+  useEffect(() => {
+    if (gameOver) return
+
+    const timer = setInterval(() => {
+      setElapsedTime(Date.now() - startTime)
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [startTime, gameOver])
 
   // Mock correct location (NC State Bell Tower)
   const correctLocation = {
     latitude: 35.7857,
     longitude: -78.664,
+    name: 'NC State Bell Tower',
   }
 
-  const calculateDistance = (guess: typeof correctLocation) => {
+  const calculateDistance = (guess: {
+    latitude: number
+    longitude: number
+  }) => {
     // Simple distance calculation (you could use a more accurate formula)
     const latDiff = Math.abs(guess.latitude - correctLocation.latitude)
     const lonDiff = Math.abs(guess.longitude - correctLocation.longitude)
@@ -52,6 +97,30 @@ export default function Game() {
     setGuessMarker(coords)
   }
 
+  const submitStats = (finalDistance: number, wasSuccessful: boolean) => {
+    const timeSpent = Date.now() - startTime
+    const stats = {
+      locationName: correctLocation.name,
+      timeSpentMs: timeSpent,
+      finalDistanceKm: finalDistance,
+      wasSuccessful,
+    }
+
+    // Log stats in a more readable format for development
+    if (__DEV__) {
+      console.log('Game Stats:')
+      console.log(`Location: ${stats.locationName}`)
+      console.log(
+        `Time Spent: ${(stats.timeSpentMs / 1000).toFixed(1)} seconds`
+      )
+      console.log(`Final Distance: ${stats.finalDistanceKm.toFixed(2)} km`)
+      console.log(`Found Location: ${stats.wasSuccessful ? 'Yes' : 'No'}`)
+      console.log('-------------------')
+    }
+
+    submitGameStats(stats)
+  }
+
   const handleGuess = () => {
     if (!guessMarker || gameOver) return
 
@@ -59,15 +128,23 @@ export default function Game() {
     const remainingGuesses = 3 - (guessCount + 1)
 
     if (distance < 0.1) {
-      // Within ~100 meters
-      Alert.alert('Congratulations!', 'You found the correct location!')
+      // Within ~100 meters - Success!
       setGameOver(true)
+      setGameEndMessage({
+        title: 'Yay! 🎉',
+        message: 'Congratulations! You found the correct location!',
+      })
+      setShowSuccessModal(true)
+      submitStats(distance, true)
     } else if (guessCount >= 2) {
-      Alert.alert(
-        'Game Over',
-        `You're out of guesses! The location was ${correctLocation.latitude.toFixed(4)}, ${correctLocation.longitude.toFixed(4)}`
-      )
+      // Out of guesses - Game Over
       setGameOver(true)
+      setGameEndMessage({
+        title: 'Game Over 😔',
+        message: `You're out of guesses! The location was ${correctLocation.latitude.toFixed(4)}, ${correctLocation.longitude.toFixed(4)}`,
+      })
+      setShowSuccessModal(true)
+      submitStats(distance, false)
     } else {
       Alert.alert(
         'Try Again',
@@ -117,10 +194,68 @@ export default function Game() {
 
   return (
     <View className="flex-1 items-center justify-center p-4">
+      {/* Game End Modal */}
+      <Modal visible={showSuccessModal} transparent={true} animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <View
+              style={{
+                backgroundColor: 'white',
+                padding: 24,
+                borderRadius: 16,
+                width: '80%',
+                maxWidth: 320,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+            >
+              <Text className="text-2xl font-bold mb-4">
+                {gameEndMessage.title}
+              </Text>
+              <Text className="text-lg text-center mb-2">
+                {gameEndMessage.message}
+              </Text>
+              <Text className="text-base text-center mb-6 text-gray-600">
+                Time: {formatTime(elapsedTime)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowSuccessModal(false)
+                  router.push('/game-finished')
+                }}
+                style={{ width: '100%' }}
+              >
+                <View
+                  style={{
+                    backgroundColor: '#CC0000',
+                    borderRadius: 9999,
+                    paddingVertical: 12,
+                    paddingHorizontal: 24,
+                  }}
+                >
+                  <Text className="text-white text-center font-bold text-lg">
+                    Continue
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <Text>Find the NC State Bell Tower!</Text>
-      <Text className="mb-2 text-gray-500">
-        Guesses remaining: {3 - guessCount}
-      </Text>
+      <View className="flex-row items-center justify-between w-full px-4 mb-2">
+        <Text className="text-gray-500">
+          Guesses remaining: {3 - guessCount}
+        </Text>
+        <Text className="text-gray-500">Time: {formatTime(elapsedTime)}</Text>
+      </View>
 
       <TouchableOpacity onPress={() => setExpandedImage('map')}>
         <View className="relative p-2">
@@ -158,16 +293,36 @@ export default function Game() {
                     flex: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    backgroundColor: 'white',
+                    margin: 20,
+                    borderRadius: 16,
+                    padding: 20,
                   }}
                 >
                   {renderGoogleMap('90%', '90%')}
                 </View>
               ) : (
-                renderNativeMap(false)
+                <View
+                  style={{
+                    flex: 1,
+                    margin: 20,
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    backgroundColor: 'white',
+                  }}
+                >
+                  {renderNativeMap(false)}
+                </View>
               )
             ) : (
               <TouchableOpacity
-                style={{ flex: 1, width: '100%' }}
+                style={{
+                  flex: 1,
+                  margin: 20,
+                  backgroundColor: 'white',
+                  borderRadius: 16,
+                  padding: 20,
+                }}
                 activeOpacity={1}
                 onPress={() => setExpandedImage(null)}
               >
@@ -240,6 +395,26 @@ export default function Game() {
         >
           <View className="rounded bg-blue-500 w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center">
             <Text className="text-white font-bold text-center">Play Again</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+
+      {/* Dev button for instant game completion */}
+      {__DEV__ && SHOW_DEV_CONTROLS && (
+        <TouchableOpacity
+          onPress={() => {
+            setGameOver(true)
+            setGameEndMessage({
+              title: 'Yay! 🎉',
+              message: 'Congratulations! You found the correct location!',
+            })
+            setShowSuccessModal(true)
+            submitStats(0.001, true) // Submit near-perfect score for dev button (1 meter)
+          }}
+          style={{ position: 'absolute', bottom: 10, right: 10 }}
+        >
+          <View className="bg-gray-200 px-3 py-1 rounded-full border border-gray-400">
+            <Text className="text-xs text-gray-600">DEV: Win</Text>
           </View>
         </TouchableOpacity>
       )}
