@@ -12,7 +12,7 @@ export default function ScreenButton({
   return (
     <Pressable
       onPress={onPress}
-      className={`rounded p-1.5 m-1.5 bg-transparent ${className}`}
+      className={`rounded bg-ncsured w-52 p-1.5 m-1.5 ${className}`}
     >
       <Text className="text-center text-white font-bold">{title}</Text>
     </Pressable>

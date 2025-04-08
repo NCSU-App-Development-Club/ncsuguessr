@@ -62,7 +62,7 @@ export default function ContributePhoto() {
   }
 
   return (
-    <ScreenView className="">
+    <ScreenView>
       <CameraView
         facing="back"
         ref={cameraViewRef}
@@ -70,10 +70,10 @@ export default function ContributePhoto() {
         zoom={0}
         ratio="4:3"
       >
+        <View className="h-[90vh] w-screen" />
         <ScreenButton
           onPress={takePhoto}
           title="Take Photo"
-          className="h-[75vh] w-screen"
         />
       </CameraView>
       <BackLink to="/" />
