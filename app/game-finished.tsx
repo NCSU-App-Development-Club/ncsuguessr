@@ -29,12 +29,12 @@ export default function GameFinished() {
   return (
     <ScreenView className="items-center justify-center border-4">
       <Text className="text-2xl font-bold mb-4">Game Finished!</Text>
-      
+
       {error ? (
         <Text className="text-red-500">{error}</Text>
       ) : imageUrl ? (
         <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300">
-          <Image 
+          <Image
             source={{ uri: imageUrl }}
             style={styles.image}
             resizeMode="cover"
@@ -43,7 +43,7 @@ export default function GameFinished() {
       ) : (
         <Text>Loading image...</Text>
       )}
-      
+
       <BackLink to="/" />
     </ScreenView>
   )
@@ -53,5 +53,5 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-  }
+  },
 })
