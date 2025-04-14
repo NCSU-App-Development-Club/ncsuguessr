@@ -1,9 +1,9 @@
-import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'
 import BackLink from '../components/global/BackLink'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Image, View } from 'react-native'
 import ScreenButton from '../components/global/ScreenButton'
+import React from 'react'
 
 export default function ContributeFinalize() {
   const { imageData, latitude, longitude, locationName } =
@@ -23,14 +23,11 @@ export default function ContributeFinalize() {
     formData.append('longitude', longitude.toString())
     formData.append('takenAt', new Date().toISOString().split('T')[0])
     formData.append('locationName', locationName.toString())
-    formData.append('image', {
-      uri: imageData,
-      type: 'image/jpeg',
-      name: 'photo.jpg',
-    })
-    console.log(formData)
 
-    await fetch('/api/v1/images', {
+    const blob = await (await fetch(imageData.toString())).blob()
+    formData.append('image', blob)
+
+    const response = await fetch('/api/v1/images', {
       method: 'POST',
       headers: { 'Content-Type': 'multipart/form-data' },
       body: formData,
