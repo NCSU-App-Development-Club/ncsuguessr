@@ -10,6 +10,7 @@ export type StatsData = {
   bestOverallGuess: { distance: number; location: string } | null
   bestWeeklyGuess: { distance: number; location: string; weekOf: string } | null
   playStreak: { current: number; lastPlayed: string } | null
+  dailyGames: { [date: string]: number } // New field for tracking daily game counts
 }
 
 // Get stats from AsyncStorage
@@ -38,7 +39,7 @@ export const getGamesPlayed = async (): Promise<number> => {
   return stats?.gamesPlayed ?? 0
 }
 
-// Set games played
+// Set games played and ensure dailyGames persists
 export const setGamesPlayed = async (gamesPlayed: number): Promise<void> => {
   const stats = await getStats()
   const newStats: StatsData = {
@@ -49,19 +50,35 @@ export const setGamesPlayed = async (gamesPlayed: number): Promise<void> => {
     bestWeeklyGuess: stats?.bestWeeklyGuess ?? null,
     playStreak: stats?.playStreak ?? { current: 0, lastPlayed: '' },
     averageGuessTime: stats?.averageGuessTime ?? 0,
+    dailyGames: stats?.dailyGames ?? {}, // Preserve daily games data if present
   }
   await setStats(newStats)
 }
 
-// Increment games played
+// Increment games played and update daily games count
 export const incrementGamesPlayed = async (): Promise<void> => {
-  const current = await getGamesPlayed()
-  await setGamesPlayed(current + 1)
+  const stats = await getStats()
+  const current = stats?.gamesPlayed || 0
+  const today = new Date().toISOString().split('T')[0]
+  const newDailyGames = { ...(stats?.dailyGames ?? {}) }
+  newDailyGames[today] = (newDailyGames[today] || 0) + 1
+
+  const newStats: StatsData = {
+    gamesPlayed: current + 1,
+    totalGuessDistance: stats?.totalGuessDistance ?? 0,
+    averageGuessDistance: stats?.averageGuessDistance ?? 0,
+    bestOverallGuess: stats?.bestOverallGuess ?? null,
+    bestWeeklyGuess: stats?.bestWeeklyGuess ?? null,
+    playStreak: stats?.playStreak ?? { current: 0, lastPlayed: '' },
+    averageGuessTime: stats?.averageGuessTime ?? 0,
+    dailyGames: newDailyGames,
+  }
+  await setStats(newStats)
 }
 
 const kmToMiles = (km: number): number => km * 0.621371
 
-// Record a guess and update all relevant stats
+// Record a guess and update all relevant stats including daily games count
 export const recordGuess = async (
   distanceKm: number,
   location: string,
@@ -78,6 +95,7 @@ export const recordGuess = async (
     bestOverallGuess: null,
     bestWeeklyGuess: null,
     playStreak: null,
+    dailyGames: {},
   }
 
   const newGamesPlayed = current.gamesPlayed + 1
@@ -96,7 +114,6 @@ export const recordGuess = async (
   // Weekly best guess
   const date = new Date(dateString)
   const weekOf = `${date.getUTCFullYear()}-W${getISOWeek(date)}`
-
   let newBestWeekly = current.bestWeeklyGuess
   if (
     !newBestWeekly ||
@@ -110,11 +127,9 @@ export const recordGuess = async (
   let newPlayStreak = current.playStreak ?? { current: 0, lastPlayed: '' }
   const lastDate = newPlayStreak.lastPlayed
   const today = dateString
-
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)
   const yesterdayString = yesterday.toISOString().split('T')[0]
-
   if (lastDate === today) {
     // Already played today — no change
   } else if (lastDate === yesterdayString) {
@@ -125,6 +140,11 @@ export const recordGuess = async (
     newPlayStreak = { current: 1, lastPlayed: today }
   }
 
+  // Update daily games count
+  const gameDate = dateString
+  const newDailyGames = { ...(current.dailyGames ?? {}) }
+  newDailyGames[gameDate] = (newDailyGames[gameDate] || 0) + 1
+
   const updatedStats: StatsData = {
     ...current,
     gamesPlayed: newGamesPlayed,
@@ -134,6 +154,7 @@ export const recordGuess = async (
     bestOverallGuess: newBestOverall,
     bestWeeklyGuess: newBestWeekly,
     playStreak: newPlayStreak,
+    dailyGames: newDailyGames,
   }
 
   await setStats(updatedStats)

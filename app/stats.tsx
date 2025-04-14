@@ -13,14 +13,12 @@ import LineGraph from '../components/team-3/LineGraph'
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 import { useEffect, useState } from 'react'
 import { getStats } from '../storage/statsStorage'
-import { incrementGamesPlayed } from '../storage/statsStorage' // adjust path as needed
-import { recordGuess } from '../storage/statsStorage' // adjust path as needed
+import { incrementGamesPlayed } from '../storage/statsStorage'
+import { recordGuess } from '../storage/statsStorage'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Stats() {
-  const dummyData = [15, 20, 18, 22, 25, 19, 17]
-
-  const [gamesPlayed, setGamesPlayed] = useState<number | null>(null)
+  const [gamesPlayed, setGamesPlayedState] = useState<number | null>(null)
   const [averageGuessDistance, setAverageGuessDistance] = useState<
     number | null
   >(null)
@@ -33,26 +31,51 @@ export default function Stats() {
     location: string
     weekOf: string
   } | null>(null)
-
   const [playStreak, setPlayStreak] = useState<{
     current: number
     lastPlayed: string
   } | null>(null)
   const [averageGuessTime, setAverageGuessTime] = useState<number | null>(null)
+  const [graphData, setGraphData] = useState<number[]>([])
+  const [graphLabels, setGraphLabels] = useState<string[]>([])
 
   useEffect(() => {
     const fetchStats = async () => {
       const stats = await getStats()
       if (stats) {
-        setGamesPlayed(stats.gamesPlayed)
+        setGamesPlayedState(stats.gamesPlayed)
         setAverageGuessDistance(stats.averageGuessDistance)
         setBestOverallGuess(stats.bestOverallGuess)
         setBestWeeklyGuess(stats.bestWeeklyGuess)
         setPlayStreak(stats.playStreak)
         setAverageGuessTime(stats.averageGuessTime)
+
+        // Build daily graph data based on the daily games count
+        const today = new Date()
+        const dailyData: number[] = []
+        const labels: string[] = []
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today)
+          d.setDate(today.getDate() - i)
+          const dateKey = d.toISOString().split('T')[0]
+          dailyData.push(stats.dailyGames ? stats.dailyGames[dateKey] || 0 : 0)
+          labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }))
+        }
+        setGraphData(dailyData)
+        setGraphLabels(labels)
+      } else {
+        // Initialize with zeros if no stats exist
+        setGraphData(Array(7).fill(0))
+        const today = new Date()
+        const labels: string[] = []
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today)
+          d.setDate(today.getDate() - i)
+          labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }))
+        }
+        setGraphLabels(labels)
       }
     }
-
     fetchStats()
   }, [])
 
@@ -60,14 +83,14 @@ export default function Stats() {
     await incrementGamesPlayed()
     const stats = await getStats()
     if (stats) {
-      setGamesPlayed(stats.gamesPlayed)
-      setPlayStreak(stats.playStreak) // ✅ include this for full refresh
+      setGamesPlayedState(stats.gamesPlayed)
+      setPlayStreak(stats.playStreak)
     }
   }
 
   const handleResetStats = async () => {
     await AsyncStorage.removeItem('@myapp:stats')
-    setGamesPlayed(null)
+    setGamesPlayedState(null)
     setAverageGuessDistance(null)
     setBestOverallGuess(null)
     setBestWeeklyGuess(null)
@@ -77,11 +100,10 @@ export default function Stats() {
   }
 
   const handleTestRecordGuess = async () => {
-    const today = new Date().toISOString().split('T')[0]
     await recordGuess(0.12, 'Talley', '2025-04-08', 52)
     const stats = await getStats()
     if (stats) {
-      setGamesPlayed(stats.gamesPlayed)
+      setGamesPlayedState(stats.gamesPlayed)
       setAverageGuessDistance(stats.averageGuessDistance)
       setBestOverallGuess(stats.bestOverallGuess)
       setBestWeeklyGuess(stats.bestWeeklyGuess)
@@ -196,28 +218,34 @@ export default function Stats() {
           </View>
         </View>
 
-        {/* Line Graph */}
+        {/* Line Graph for Daily Games Played */}
         <View className="items-center mt-8 w-full">
           <Text className="text-2xl font-bold mb-4 text-center">
-            Average Daily Distances
+            Daily Games Played
           </Text>
-          <LineGraph data={dummyData} width={350} height={200} />
+          <LineGraph
+            data={graphData}
+            width={350}
+            height={200}
+            unit="games"
+            labels={graphLabels}
+          />
         </View>
 
         {/* 🔧 TEST BUTTON */}
         {/* <View className="mt-4 items-center">
-          <Button
-            title="Test Increment Games Played"
-            onPress={handleTestIncrement}
-          />
-        </View>
-        <View className="mt-4 items-center">
-          <Button
-            title="Test Record Guess"
-            onPress={handleTestRecordGuess}
-            color="#007aff"
-          />
-        </View> */}
+            <Button
+              title="Test Increment Games Played"
+              onPress={handleTestIncrement}
+            />
+          </View>
+          <View className="mt-4 items-center">
+            <Button
+              title="Test Record Guess"
+              onPress={handleTestRecordGuess}
+              color="#007aff"
+            />
+          </View> */}
 
         {/* Styled Reset Stats Button */}
         <View className="mt-8 items-center">
