@@ -1,6 +1,7 @@
 import Text from '../../components/global/Text'
 import ScreenView from '../../components/global/ScreenView'
 import BackLink from '../../components/global/BackLink'
+
 import {
   View,
   Image,
@@ -14,6 +15,8 @@ import {
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
+import { recordGuess } from '../../storage/statsStorage'
+
 // Conditionally import MapView
 const MapView =
   Platform.OS === 'web' ? null : require('react-native-maps').default
@@ -21,6 +24,7 @@ const Marker =
   Platform.OS === 'web' ? null : require('react-native-maps').Marker
 
 import { useState, useEffect } from 'react'
+import { incrementGamesPlayed } from '../../storage/statsStorage'
 
 // Development settings
 const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
@@ -134,8 +138,13 @@ export default function Game() {
     setGuessMarker(coords)
   }
 
-  const submitStats = (finalDistance: number, wasSuccessful: boolean) => {
+  // In game.tsx, update the submitStats function to use recordGuess:
+
+  const submitStats = async (finalDistance: number, wasSuccessful: boolean) => {
     const timeSpent = Date.now() - startTime
+    const timeSpentSeconds = Math.round(timeSpent / 1000)
+    const today = new Date().toISOString().split('T')[0]
+
     const stats = {
       locationName: correctLocation.name,
       timeSpentMs: timeSpent,
@@ -155,7 +164,19 @@ export default function Game() {
       console.log('-------------------')
     }
 
-    submitGameStats(stats)
+    // Record the guess in stats
+    try {
+      await recordGuess(
+        finalDistance,
+        correctLocation.name,
+        today,
+        timeSpentSeconds
+      )
+    } catch (error) {
+      console.error('Failed to record stats:', error)
+    }
+
+    submitGameStats(stats) // Keep your existing submission if needed
   }
 
   const handleGuess = () => {
