@@ -39,19 +39,20 @@ export default function GameSelect() {
   }
 
   return (
-    <ScreenView>
-      <Text className="text-2xl pt-12 font-bold self-center">
+    <ScreenView className="justify-center">
+      <Text className="text-5xl text-[#CC0000] font-bold self-center mb-5">
         Game Selection
       </Text>
       <BackLink to="/" />
-
       <TouchableOpacity
-        className="bg-[#CC0000] p-3 rounded-[10px] my-[10px] w-4/5 items-center self-center"
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 shadow-lg"
         onPress={() => handleChallengeForOffset(0)}
       >
-        <Text className="text-white font-bold text-base">Daily Challenge</Text>
+        <Text className="text-white font-bold text-lg self-center">
+          Daily Challenge
+        </Text>
       </TouchableOpacity>
-      <Text className="text-center mb-[10px]">
+      <Text className="text-center mb-[10px] font-bold mx-10">
         Play today's daily game and explore new locations at NCSU!
       </Text>
 
@@ -59,14 +60,14 @@ export default function GameSelect() {
         source={{
           uri: 'https://sportslogohistory.com/wp-content/uploads/2018/09/north_carolina_state_wolfpack_2006-pres-a.png',
         }}
-        className="w-[100px] h-[100px] my-[10px] self-center"
+        className="w-[100px] h-[100px] my-5 self-center rounded-full border-solid border-2 border-[#CC0000]"
       />
 
       <Text className="text-xl font-bold mt-5 text-[#CC0000] self-center">
         Previous Challenges
       </Text>
       <TouchableOpacity
-        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center"
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 my-5 shadow-lg"
         onPress={() => handleChallengeForOffset(1)}
       >
         <Text className="text-white font-bold text-lg self-center">
@@ -74,7 +75,7 @@ export default function GameSelect() {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center"
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 shadow-lg"
         onPress={() => handleChallengeForOffset(2)}
       >
         <Text className="text-white font-bold text-lg self-center">
@@ -82,8 +83,8 @@ export default function GameSelect() {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center"
-        onPress={() => handleChallengeForOffset(7)}
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center shadow-lg"
+        onPress={() => handleChallengeForOffset(3)}
       >
         <Text className="text-white font-bold text-lg self-center">
           Three Days Ago
