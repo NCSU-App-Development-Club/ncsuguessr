@@ -4,19 +4,20 @@ module.exports = {
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
-    backgroundColor: {
-      ncsured: '#CC0000',
-      ncsured2: '#990000',
-      ncsuorange: '#D14905',
-      ncsuyellow: '#FAC800',
-      ncsugreen: '#6F7D1C',
-      ncsublue: '#427E93',
-      ncsuaqua: '#008473',
-      ncsuindigo: '#4156A1',
-      ncsuwhite: '#FFFFFF',
-      ncsublack: '#000000',
+    extend: {
+      backgroundColor: {
+        ncsured: '#CC0000',
+        ncsured2: '#990000',
+        ncsuorange: '#D14905',
+        ncsuyellow: '#FAC800',
+        ncsugreen: '#6F7D1C',
+        ncsublue: '#427E93',
+        ncsuaqua: '#008473',
+        ncsuindigo: '#4156A1',
+        ncsuwhite: '#FFFFFF',
+        ncsublack: '#000000',
+      },
     },
-    extend: {},
   },
   plugins: [],
 }
