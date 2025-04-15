@@ -11,7 +11,9 @@ export default function GameFinished() {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch('/api/v1/images/5/url')
+        const response = await fetch(
+          'http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/'
+        )
         if (!response.ok) {
           throw new Error('Failed to fetch image')
         }

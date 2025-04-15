@@ -307,7 +307,7 @@ export default function Game() {
         </View>
       </Modal>
 
-      <Text>Find the NC State Bell Tower!</Text>
+      <Text className="text-3xl mb-4">Where is this?</Text>
       <View className="flex-row items-center justify-between w-full px-4 mb-2">
         <Text className="text-gray-500">
           Guesses remaining: {3 - guessCount}
