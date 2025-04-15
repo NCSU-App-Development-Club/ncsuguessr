@@ -47,6 +47,78 @@ const submitGameStats = (stats: {
   console.log('Submitting game stats:', stats)
 }
 
+const GameEventModal = ({
+  open,
+  setOpen,
+  onClose,
+  title,
+  message,
+  subMessage,
+}: {
+  open: boolean
+  setOpen: (s: boolean) => void
+  onClose?: () => void
+  title: string
+  message: string
+  subMessage?: string
+}) => {
+  return (
+    <Modal visible={open} transparent={true} animationType="fade">
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <View
+            style={{
+              backgroundColor: 'white',
+              padding: 24,
+              borderRadius: 16,
+              width: '80%',
+              maxWidth: 320,
+              alignItems: 'center',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+              display: 'flex',
+              gap: 10,
+            }}
+          >
+            <Text className="text-2xl font-bold">{title}</Text>
+            <Text className="text-lg text-center">{message}</Text>
+            {subMessage ? (
+              <Text className="text-base text-center text-gray-600">
+                {subMessage}
+              </Text>
+            ) : null}
+            <TouchableOpacity
+              onPress={() => {
+                setOpen(false)
+                onClose?.()
+              }}
+              style={{ width: '100%' }}
+            >
+              <View
+                style={{
+                  backgroundColor: '#CC0000',
+                  borderRadius: 9999,
+                  paddingVertical: 12,
+                  paddingHorizontal: 24,
+                }}
+              >
+                <Text className="text-white text-center font-bold text-lg">
+                  Continue
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
 export default function Game() {
   const router = useRouter()
   const { gameId } = useLocalSearchParams<{ gameId: string }>()
@@ -57,10 +129,15 @@ export default function Game() {
   } | null>(null)
   const [guessCount, setGuessCount] = useState(0)
   const [gameOver, setGameOver] = useState(false)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [gameEndMessage, setGameEndMessage] = useState({
+  const [showGameEventModal, setShowGameEventModal] = useState(false)
+  const [gameEventModalContent, setGameEventModalContent] = useState<{
+    title: string
+    message: string
+    subMessage?: string
+  }>({
     title: '',
     message: '',
+    subMessage: '',
   })
   const [startTime] = useState(Date.now())
   const [elapsedTime, setElapsedTime] = useState(0)
@@ -189,26 +266,29 @@ export default function Game() {
     if (distance < 0.1) {
       // Within ~100 meters - Success!
       setGameOver(true)
-      setGameEndMessage({
+      setGameEventModalContent({
         title: 'Yay! 🎉',
         message: 'Congratulations! You found the correct location!',
+        subMessage: `Time: ${formatTime(elapsedTime)}`,
       })
-      setShowSuccessModal(true)
+      setShowGameEventModal(true)
       submitStats(distance, true)
     } else if (guessCount >= 2) {
       // Out of guesses - Game Over
       setGameOver(true)
-      setGameEndMessage({
+      setGameEventModalContent({
         title: 'Game Over 😔',
         message: `You're out of guesses! The location was ${correctLocation.latitude.toFixed(4)}, ${correctLocation.longitude.toFixed(4)}`,
+        subMessage: `Time: ${formatTime(elapsedTime)}`,
       })
-      setShowSuccessModal(true)
+      setShowGameEventModal(true)
       submitStats(distance, false)
     } else {
-      Alert.alert(
-        'Try Again',
-        `You're about ${distance.toFixed(2)}km away. ${remainingGuesses} ${remainingGuesses === 1 ? 'guess' : 'guesses'} remaining.`
-      )
+      setGameEventModalContent({
+        title: 'Try Again',
+        message: `You're about ${distance.toFixed(2)}km away. ${remainingGuesses} ${remainingGuesses === 1 ? 'guess' : 'guesses'} remaining.`,
+      })
+      setShowGameEventModal(true)
       setGuessCount((prev) => prev + 1)
     }
   }
@@ -254,59 +334,20 @@ export default function Game() {
   return (
     <View className="flex-1 items-center justify-center p-4">
       {/* Game End Modal */}
-      <Modal visible={showSuccessModal} transparent={true} animationType="fade">
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
-            <View
-              style={{
-                backgroundColor: 'white',
-                padding: 24,
-                borderRadius: 16,
-                width: '80%',
-                maxWidth: 320,
-                alignItems: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5,
-              }}
-            >
-              <Text className="text-2xl font-bold mb-4">
-                {gameEndMessage.title}
-              </Text>
-              <Text className="text-lg text-center mb-2">
-                {gameEndMessage.message}
-              </Text>
-              <Text className="text-base text-center mb-6 text-gray-600">
-                Time: {formatTime(elapsedTime)}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowSuccessModal(false)
-                  router.push('/game-finished')
-                }}
-                style={{ width: '100%' }}
-              >
-                <View
-                  style={{
-                    backgroundColor: '#CC0000',
-                    borderRadius: 9999,
-                    paddingVertical: 12,
-                    paddingHorizontal: 24,
-                  }}
-                >
-                  <Text className="text-white text-center font-bold text-lg">
-                    Continue
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <GameEventModal
+        open={showGameEventModal}
+        setOpen={setShowGameEventModal}
+        onClose={
+          gameOver
+            ? () => {
+                router.push('/game-finished')
+              }
+            : undefined
+        }
+        title={gameEventModalContent.title}
+        message={gameEventModalContent.message}
+        subMessage={gameEventModalContent.subMessage}
+      />
 
       <Text className="text-3xl mb-4">Where is this?</Text>
       <View className="flex-row items-center justify-between w-full px-4 mb-2">
@@ -475,11 +516,12 @@ export default function Game() {
         <TouchableOpacity
           onPress={() => {
             setGameOver(true)
-            setGameEndMessage({
-              title: 'Yay! 🎉',
-              message: 'Congratulations! You found the correct location!',
+            setGameEventModalContent({
+              title: 'Game Over 😔',
+              message: `You're out of guesses! The location was ${correctLocation.latitude.toFixed(4)}, ${correctLocation.longitude.toFixed(4)}`,
+              subMessage: `Time: ${formatTime(elapsedTime)}`,
             })
-            setShowSuccessModal(true)
+            setShowGameEventModal(true)
             submitStats(0.001, true) // Submit near-perfect score for dev button (1 meter)
           }}
           style={{ position: 'absolute', bottom: 10, right: 10 }}
