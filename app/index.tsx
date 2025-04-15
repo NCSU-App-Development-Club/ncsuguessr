@@ -8,7 +8,7 @@ export default function App() {
       <Text className="font-bold text-5xl m-4 mb-8">NCSUGuessr</Text>
       <ScreenLink link="/home">Home</ScreenLink>
       <ScreenLink link="/game-select">Game Select</ScreenLink>
-      <ScreenLink link="/game">Game</ScreenLink>
+      <ScreenLink link="/games/3">Game 3</ScreenLink>
       <ScreenLink link="/game-finished">Game Finished</ScreenLink>
       <ScreenLink link="/archive">Archive</ScreenLink>
       <ScreenLink link="/contribute">Contribute</ScreenLink>
