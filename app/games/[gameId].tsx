@@ -84,7 +84,8 @@ export default function Game() {
       try {
         // First fetch the game details
         const gameResponse = await fetch(
-          `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/${gameId}`
+          // `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/${gameId}`
+          `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/9`
         )
         if (!gameResponse.ok) {
           throw new Error('Failed to fetch game')
@@ -92,14 +93,14 @@ export default function Game() {
         const gameData = await gameResponse.json()
 
         // Then fetch the signed URL using the imageId from the game
-        const imageResponse = await fetch(
-          `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/images/${gameData.game.imageId}/url`
-        )
-        if (!imageResponse.ok) {
-          throw new Error('Failed to fetch image URL')
-        }
-        const imageData = await imageResponse.json()
-        setImageUrl(imageData.signedUrl)
+        // const imageResponse = await fetch(
+        //   `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/images/${gameData.game.imageId}/url`
+        // )
+        // if (!imageResponse.ok) {
+        //   throw new Error('Failed to fetch image URL')
+        // }
+        // const imageData = await imageResponse.json()
+        setImageUrl(gameData.imageUrl)
       } catch (err) {
         setError('Failed to load image')
         console.error('Error fetching game or image:', err)
