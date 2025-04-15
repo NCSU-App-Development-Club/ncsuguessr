@@ -12,13 +12,13 @@ export default function GameFinished() {
     const fetchImage = async () => {
       try {
         const response = await fetch(
-          'http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/'
+          'http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/9'
         )
         if (!response.ok) {
           throw new Error('Failed to fetch image')
         }
         const data = await response.json()
-        setImageUrl(data.url)
+        setImageUrl(data.imageUrl)
       } catch (err) {
         setError('Failed to load image')
         console.error('Error fetching image:', err)
