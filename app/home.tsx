@@ -41,10 +41,10 @@ export default function Home() {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => router.push('/contribute')}
+        onPress={() => router.push('/stats')}
         className="bg-ncsured w-60 py-4 rounded-full shadow-xl items-center"
       >
-        <Text className="text-white text-xl font-bold">Contribute</Text>
+        <Text className="text-white text-xl font-bold">Stats</Text>
       </TouchableOpacity>
 
       {/* <TouchableOpacity 

@@ -18,7 +18,8 @@ export default function GameSelect() {
 
     try {
       const response = await fetch(
-        `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games?date=${dateString}`
+        `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games?date=04-01-2025`
+        // `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games?date=${dateString}`
       )
       if (!response.ok) {
         throw new Error('API call failed')
@@ -26,7 +27,7 @@ export default function GameSelect() {
       const data = await response.json()
       console.log(`Data for offset ${offsetDays}:`, data)
       const gameId = data.games[0].id // ID returned by the API call
-      router.navigate(`/api/v1/games/${gameId}`) // change the page
+      router.navigate(`/games/${gameId}`) // change the page
       // Navigate or process data accordingly
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -67,7 +68,7 @@ export default function GameSelect() {
         Previous Challenges
       </Text>
       <TouchableOpacity
-        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center mb-5 my-5 shadow-lg"
+        className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center self-center mb-5 my-5 shadow-lg"
         onPress={() => handleChallengeForOffset(1)}
       >
         <Text className="text-white font-bold text-lg self-center">
