@@ -1,0 +1,17 @@
+{
+  "name": "ncsuguessr",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm run build --workspace=mobile",
+    "devm": "npm run start --workspace=mobile",
+    "devb": "npm run dev --workspace=api"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "NC State geolocation guessing game",
+  "workspaces": [
+    "*"
+  ],
+  "private": true
+}
