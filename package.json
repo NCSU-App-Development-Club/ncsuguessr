@@ -13,7 +13,10 @@
   "license": "ISC",
   "description": "NC State geolocation guessing game",
   "workspaces": [
-    "*"
+    "admin",
+    "api",
+    "types",
+    "mobile"
   ],
   "private": true,
   "devDependencies": {
