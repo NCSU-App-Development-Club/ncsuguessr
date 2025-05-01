@@ -21,6 +21,12 @@
   //     "bucket_name": "my-bucket"
   //   }
   // ],
+  "r2_buckets": [
+    {
+      "bucket_name": "ncsuguessr-staging",
+      "binding": "ncsuguessr_staging"
+    }
+  ],
   // "d1_databases": [
   //   {
   //     "binding": "MY_DB",
@@ -28,6 +34,13 @@
   //     "database_id": ""
   //   }
   // ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ncsuguessr-staging",
+      "database_id": "808a07bf-2e04-4114-ad6c-2ab84db57bc1"
+    }
+  ]
   // "ai": {
   //   "binding": "AI"
   // },
