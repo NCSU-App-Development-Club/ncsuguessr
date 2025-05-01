@@ -5,7 +5,8 @@
     "typecheck": "npx tsc --build --noEmit",
     "build": "npm run build --workspace=mobile",
     "devm": "npm run start --workspace=mobile",
-    "devb": "npm run dev --workspace=api"
+    "devb": "npm run dev --workspace=api",
+    "deploy-backend": "npm run deploy --workspace=api"
   },
   "keywords": [],
   "author": "",
