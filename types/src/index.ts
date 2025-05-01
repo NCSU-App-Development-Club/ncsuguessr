@@ -1,5 +1,5 @@
 import { z } from "zod";
 
-export const Hello = z.object({ hello: z.string() });
+export const HelloSchema = z.object({ hello: z.string() });
 
-export type HelloType = z.infer<typeof Hello>;
+export type Hello = z.infer<typeof HelloSchema>;

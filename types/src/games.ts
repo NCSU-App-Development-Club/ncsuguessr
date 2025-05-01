@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // NOTE: this must be kept in sync with game table definition
-export const GameRow = z.object({
+export const GameRowSchema = z.object({
   id: z.number(),
   imageId: z.number(),
   date: z.date(),
@@ -9,15 +9,15 @@ export const GameRow = z.object({
   totalDist: z.number(),
 });
 
-export type GameRowType = z.infer<typeof GameRow>;
+export type GameRow = z.infer<typeof GameRowSchema>;
 
-export const NewGame = GameRow.omit({ id: true }).extend({
+export const NewGameSchema = GameRowSchema.omit({ id: true }).extend({
   plays: z.literal(0),
   totalDist: z.literal(0),
 });
 
-export type NewGameType = z.infer<typeof NewGame>;
+export type NewGame = z.infer<typeof NewGameSchema>;
 
-export const GameRows = z.array(GameRow);
+export const GameRowsSchema = z.array(GameRowSchema);
 
-export type GameRowsType = z.infer<typeof GameRows>;
+export type GameRows = z.infer<typeof GameRowsSchema>;

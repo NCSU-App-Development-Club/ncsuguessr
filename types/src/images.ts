@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // NOTE: this must be kept in sync with image table definition
-export const ImageRow = z.object({
+export const ImageRowSchema = z.object({
   id: z.number(),
   fileLocation: z.string().max(50),
   latitude: z.number(),
@@ -12,12 +12,12 @@ export const ImageRow = z.object({
   description: z.string(),
 });
 
-export type ImageRowType = z.infer<typeof ImageRow>;
+export type ImageRow = z.infer<typeof ImageRowSchema>;
 
-export const NewImage = ImageRow.omit({ id: true });
+export const NewImageSchema = ImageRowSchema.omit({ id: true });
 
-export type NewImageType = z.infer<typeof NewImage>;
+export type NewImage = z.infer<typeof NewImageSchema>;
 
-export const ImageRows = z.array(ImageRow);
+export const ImageRowsSchema = z.array(ImageRowSchema);
 
-export type ImageRowsType = z.infer<typeof ImageRows>;
+export type ImageRows = z.infer<typeof ImageRowsSchema>;
