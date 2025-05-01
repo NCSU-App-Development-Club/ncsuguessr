@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { ErrorJSONResponseSchema, generateSuccessJSONResponseSchema } from ".";
+import { z } from 'zod'
+import { ErrorJSONResponseSchema, generateSuccessJSONResponseSchema } from '.'
 
 // NOTE: this must be kept in sync with image table definition
 export const ImageRowSchema = z.object({
@@ -14,17 +14,17 @@ export const ImageRowSchema = z.object({
   used: z.number().transform((val) => !!val),
   location_name: z.string().max(100),
   description: z.string(),
-});
+})
 
-export type ImageRow = z.infer<typeof ImageRowSchema>;
+export type ImageRow = z.infer<typeof ImageRowSchema>
 
-export const NewImageSchema = ImageRowSchema.omit({ id: true });
+export const NewImageSchema = ImageRowSchema.omit({ id: true })
 
-export type NewImage = z.infer<typeof NewImageSchema>;
+export type NewImage = z.infer<typeof NewImageSchema>
 
-export const ImageRowsSchema = z.array(ImageRowSchema);
+export const ImageRowsSchema = z.array(ImageRowSchema)
 
-export type ImageRows = z.infer<typeof ImageRowsSchema>;
+export type ImageRows = z.infer<typeof ImageRowsSchema>
 
 export const ImageSubmissionForm = z.object({
   latitude: z
@@ -41,35 +41,35 @@ export const ImageSubmissionForm = z.object({
     .transform((val) => new Date(val))
     .refine((val) => (val ? !isNaN(val.getTime()) : true)),
   location_name: z.string(),
-});
+})
 
 export const CreateImageSuccessResponseSchema =
-  generateSuccessJSONResponseSchema({});
+  generateSuccessJSONResponseSchema({})
 
 export type CreateGameSuccessResponse = z.infer<
   typeof CreateImageSuccessResponseSchema
->;
+>
 
-export const CreateGameResponseSchema = z.discriminatedUnion("success", [
+export const CreateGameResponseSchema = z.discriminatedUnion('success', [
   ErrorJSONResponseSchema,
   CreateImageSuccessResponseSchema,
-]);
+])
 
 export type CreateGameResponse = z.infer<
   typeof CreateImageSuccessResponseSchema
->;
+>
 
 export const GetImagesSuccessResponseSchema = generateSuccessJSONResponseSchema(
   { images: ImageRowsSchema }
-);
+)
 
 export type GetImagesSuccessResponse = z.infer<
   typeof GetImagesSuccessResponseSchema
->;
+>
 
-export const GetImagesResponseSchema = z.discriminatedUnion("success", [
+export const GetImagesResponseSchema = z.discriminatedUnion('success', [
   ErrorJSONResponseSchema,
   GetImagesSuccessResponseSchema,
-]);
+])
 
-export type GetImagesResponse = z.infer<typeof GetImagesResponseSchema>;
+export type GetImagesResponse = z.infer<typeof GetImagesResponseSchema>

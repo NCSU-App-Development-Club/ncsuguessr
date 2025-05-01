@@ -1,9 +1,9 @@
-import { D1Database } from "@cloudflare/workers-types";
+import { D1Database } from '@cloudflare/workers-types'
 import {
   ImageRowSchema,
   ImageRowsSchema,
   NewImage,
-} from "@ncsuguessr/types/images";
+} from '@ncsuguessr/types/images'
 
 export const insertImage = async (d1: D1Database, image: NewImage) => {
   return await d1
@@ -20,17 +20,17 @@ export const insertImage = async (d1: D1Database, image: NewImage) => {
       image.location_name,
       image.description
     )
-    .run();
-};
+    .run()
+}
 
 export const getImage = async (d1: D1Database, imageId: number) => {
   const result = await d1
-    .prepare("SELECT * FROM images WHERE id = ?")
+    .prepare('SELECT * FROM images WHERE id = ?')
     .bind(imageId)
-    .first();
+    .first()
 
-  return result ? ImageRowSchema.parse(result) : null;
-};
+  return result ? ImageRowSchema.parse(result) : null
+}
 
 export const markImageUsed = async (
   d1: D1Database,
@@ -38,22 +38,22 @@ export const markImageUsed = async (
   used: boolean = true
 ) => {
   return await d1
-    .prepare("UPDATE images SET used = ? WHERE id = ?")
+    .prepare('UPDATE images SET used = ? WHERE id = ?')
     .bind(used, imageId)
-    .run();
-};
+    .run()
+}
 
 export const getImagesByUsed = async (d1: D1Database, used: boolean) => {
   const results = await d1
-    .prepare("SELECT * FROM images WHERE used = ?")
+    .prepare('SELECT * FROM images WHERE used = ?')
     .bind(used)
-    .all();
+    .all()
 
   if (!results.success) {
     throw new Error(
-      results.error ? results.error : "failed to fetch images from database"
-    );
+      results.error ? results.error : 'failed to fetch images from database'
+    )
   }
 
-  return ImageRowsSchema.parse(results.results);
-};
+  return ImageRowsSchema.parse(results.results)
+}

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "typecheck": "npx tsc --build --noEmit",
-    "build:web": "npm run build-web --workspace=mobile",
-    "devm": "npm run start --workspace=mobile",
-    "devb": "npm run dev --workspace=api",
-    "deploy-backend": "npm run deploy --workspace=api"
+    "build:mobile:web": "npm run build-web --workspace=mobile",
+    "dev:mobile": "npm run start --workspace=mobile",
+    "check": "npx prettier . --check",
+    "format": "npx prettier . --write"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +15,8 @@
   "workspaces": [
     "*"
   ],
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
 }

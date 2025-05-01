@@ -8,8 +8,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build-web": "expo export --platform web",
-    "check": "npx prettier . --check",
-    "format": "npx prettier . --write",
     "typecheck": "npx tsc"
   },
   "dependencies": {
@@ -33,7 +31,6 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
-    "prettier": "^3.4.2",
     "typescript": "^5.3.3"
   },
   "private": true

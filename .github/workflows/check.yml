@@ -30,6 +30,5 @@ jobs:
       - name: Build with TypeScript
         run: npm run typecheck
 
-      # TODO: global formatting
-      # - name: Run Prettier to check formatting
-      #   run: npm run check
+      - name: Run Prettier to check formatting
+        run: npm run check

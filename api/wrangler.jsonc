@@ -8,24 +8,24 @@
       "name": "ncsuguessr-api-staging",
       "vars": {
         "ENVIRONMENT": "staging",
-        "R2_BUCKET_NAME": "ncsuguessr-staging"
+        "R2_BUCKET_NAME": "ncsuguessr-staging",
       },
       "r2_buckets": [
         {
           "bucket_name": "ncsuguessr-staging",
-          "binding": "R2"
-        }
+          "binding": "R2",
+        },
       ],
       "d1_databases": [
         {
           "binding": "D1",
           "database_name": "ncsuguessr-staging",
-          "database_id": "a5da4b6d-7204-47af-a5be-72d78c5d6dd1"
-        }
+          "database_id": "a5da4b6d-7204-47af-a5be-72d78c5d6dd1",
+        },
       ],
       "observability": {
         "enabled": true,
-        "head_sampling_rate": 1
+        "head_sampling_rate": 1,
       },
     },
     "production": {
@@ -33,13 +33,13 @@
       "vars": {
         "ENVIRONMENT": "production",
         // TODO
-        "R2_BUCKET_NAME": ""
+        "R2_BUCKET_NAME": "",
       },
       // TODO: bindings for prod r2 and d1
       "observability": {
         "enabled": true,
-        "head_sampling_rate": 1
+        "head_sampling_rate": 1,
       },
-    }
-  }
+    },
+  },
 }

@@ -1,10 +1,10 @@
-import { D1Database } from "@cloudflare/workers-types";
+import { D1Database } from '@cloudflare/workers-types'
 import {
   GameDatesSchema,
   GameRowSchema,
   GameRowsSchema,
   NewGame,
-} from "@ncsuguessr/types/games";
+} from '@ncsuguessr/types/games'
 
 export const insertGame = async (d1: D1Database, game: NewGame) => {
   return await d1
@@ -13,41 +13,41 @@ export const insertGame = async (d1: D1Database, game: NewGame) => {
       VALUES (?, ?, ?, ?)`
     )
     .bind(game.image_id, game.date, 0, 0)
-    .run();
-};
+    .run()
+}
 
 // TODO: paginate
 export const listGames = async (d1: D1Database) => {
-  const results = await d1.prepare("SELECT * FROM games").all();
+  const results = await d1.prepare('SELECT * FROM games').all()
 
   if (!results.success) {
     throw new Error(
-      results.error ? results.error : "failed to fetch games from database"
-    );
+      results.error ? results.error : 'failed to fetch games from database'
+    )
   }
 
-  return GameRowsSchema.parse(results.results);
-};
+  return GameRowsSchema.parse(results.results)
+}
 
 // TODO: paginate and allow for selection of date range
 export const listGamesDateOnly = async (d1: D1Database) => {
-  const results = await d1.prepare("SELECT date FROM games").all();
+  const results = await d1.prepare('SELECT date FROM games').all()
 
   if (!results.success) {
     throw new Error(
-      results.error ? results.error : "failed to fetch game dates from database"
-    );
+      results.error ? results.error : 'failed to fetch game dates from database'
+    )
   }
 
-  return GameDatesSchema.parse(results.results);
-};
+  return GameDatesSchema.parse(results.results)
+}
 
 // TODO: date validation?
 export const getGame = async (d1: D1Database, date: string) => {
   const result = await d1
-    .prepare("SELECT * FROM games WHERE date = ?")
+    .prepare('SELECT * FROM games WHERE date = ?')
     .bind(date)
-    .first();
+    .first()
 
-  return result ? GameRowSchema.parse(result) : null;
-};
+  return result ? GameRowSchema.parse(result) : null
+}
