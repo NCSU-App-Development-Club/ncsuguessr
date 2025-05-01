@@ -1,0 +1,6 @@
+{
+  "name": "types",
+  "scripts": {
+    "typecheck": "npx tsc"
+  }
+}

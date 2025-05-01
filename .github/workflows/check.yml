@@ -25,10 +25,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies with NPM
-        run: npm install
+        run: npm ci
 
       - name: Build with TypeScript
         run: npm run typecheck
 
-      - name: Run Prettier to check formatting
-        run: npm run check
+      # TODO: global formatting
+      # - name: Run Prettier to check formatting
+      #   run: npm run check

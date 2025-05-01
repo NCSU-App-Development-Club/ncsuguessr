@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "mobile" },
+    { "path": "api" },
+    { "path": "types" }
+  ]
+}

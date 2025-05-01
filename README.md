@@ -83,3 +83,9 @@ You and your small group will be assigned [issues](https://github.com/NCSU-App-D
 ---
 
 Wolfpack up and test your campus knowledge with **ncsuguessr**! Go Pack!
+
+## Misc
+
+```
+npm install @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu && npm install && npm run build-web && mv dist/assets/node_modules/* dist/assets/ && find dist/_expo/static/js/web/ -type f -print0 | xargs -0 sed -i 's/assets\/node_modules/assets/g'
+```
