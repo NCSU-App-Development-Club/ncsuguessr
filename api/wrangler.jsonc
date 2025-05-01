@@ -1,38 +1,45 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  "name": "ncsuguessr-api-preview",
+  "name": "ncsuguessr-api",
   "main": "src/index.ts",
   "compatibility_date": "2025-05-01",
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  "r2_buckets": [
-    {
-      "bucket_name": "ncsuguessr-staging",
-      "binding": "STAGING_R2"
+  "env": {
+    "staging": {
+      "name": "ncsuguessr-api-staging",
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "R2_BUCKET_NAME": "ncsuguessr-staging"
+      },
+      "r2_buckets": [
+        {
+          "bucket_name": "ncsuguessr-staging",
+          "binding": "R2"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "D1",
+          "database_name": "ncsuguessr-staging",
+          "database_id": "a5da4b6d-7204-47af-a5be-72d78c5d6dd1"
+        }
+      ],
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1
+      },
+    },
+    "production": {
+      "name": "ncsuguessr-api-production",
+      "vars": {
+        "ENVIRONMENT": "production",
+        // TODO
+        "R2_BUCKET_NAME": ""
+      },
+      // TODO: bindings for prod r2 and d1
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1
+      },
     }
-  ],
-  "d1_databases": [
-    {
-      "binding": "STAGING_D1",
-      "database_name": "ncsuguessr-staging",
-      "database_id": "808a07bf-2e04-4114-ad6c-2ab84db57bc1"
-    }
-  ],
-  // "ai": {
-  //   "binding": "AI"
-  // },
-  "observability": {
-    "enabled": true,
-    "head_sampling_rate": 1
   }
 }
