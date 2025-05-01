@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "typecheck": "npx tsc --build --noEmit",
-    "build": "npm run build --workspace=mobile",
+    "build:web": "npm run build-web --workspace=mobile",
     "devm": "npm run start --workspace=mobile",
     "devb": "npm run dev --workspace=api",
     "deploy-backend": "npm run deploy --workspace=api"

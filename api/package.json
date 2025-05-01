@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@ncsuguessr/api",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
@@ -9,6 +9,7 @@
     "hono": "^4.7.8"
   },
   "devDependencies": {
-    "wrangler": "^4.4.0"
+    "wrangler": "^4.4.0",
+    "@ncsuguessr/types": "*"
   }
 }

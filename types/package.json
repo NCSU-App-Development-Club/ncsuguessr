@@ -1,5 +1,6 @@
 {
-  "name": "types",
+  "name": "@ncsuguessr/types",
+  "main": "./src/index.ts",
   "scripts": {
     "typecheck": "npx tsc"
   },
