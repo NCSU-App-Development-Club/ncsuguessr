@@ -21,3 +21,20 @@ export type NewImage = z.infer<typeof NewImageSchema>;
 export const ImageRowsSchema = z.array(ImageRowSchema);
 
 export type ImageRows = z.infer<typeof ImageRowsSchema>;
+
+export const ImageSubmissionForm = z.object({
+  latitude: z
+    .string()
+    .transform(Number)
+    .refine((v) => !isNaN(v)),
+  longitude: z
+    .string()
+    .transform(Number)
+    .refine((v) => !isNaN(v)),
+  description: z.string(),
+  takenAt: z
+    .string()
+    .transform((val) => new Date(val))
+    .refine((val) => (val ? !isNaN(val.getTime()) : true)),
+  locationName: z.string(),
+});

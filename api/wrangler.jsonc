@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
-  "name": "api",
+  "name": "ncsuguessr-api-preview",
   "main": "src/index.ts",
   "compatibility_date": "2025-05-01",
   // "compatibility_flags": [
@@ -15,37 +15,24 @@
   //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   //   }
   // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
   "r2_buckets": [
     {
       "bucket_name": "ncsuguessr-staging",
-      "binding": "ncsuguessr_staging"
+      "binding": "STAGING_R2"
     }
   ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
   "d1_databases": [
     {
-      "binding": "DB",
+      "binding": "STAGING_D1",
       "database_name": "ncsuguessr-staging",
       "database_id": "808a07bf-2e04-4114-ad6c-2ab84db57bc1"
     }
-  ]
+  ],
   // "ai": {
   //   "binding": "AI"
   // },
-  // "observability": {
-  //   "enabled": true,
-  //   "head_sampling_rate": 1
-  // }
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
 }
