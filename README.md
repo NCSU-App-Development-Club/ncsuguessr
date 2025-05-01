@@ -39,6 +39,7 @@ Optional VSCode Extensions:
    ```bash
    git clone https://github.com/NCSU-App-Development-Club/ncsuguessr.git
    cd ncsuguessr
+   cd mobile # enter the directory with the mobile app
    ```
 
 2. Install and use Node.js version 22.9.0 with nvm:
