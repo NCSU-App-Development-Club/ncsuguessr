@@ -17,7 +17,7 @@ import {
 } from '@ncsuguessr/types/games'
 import { generateHttpExceptionMessage } from '../util'
 import { ImageRow } from '@ncsuguessr/types/images'
-import { getImage } from '../repository/images'
+import { getImage, markImageUsed } from '../repository/images'
 import { getReadPresignedUrl } from '../util/r2'
 import { zValidator } from '@hono/zod-validator'
 
@@ -131,6 +131,24 @@ gamesRouter.post('/', zValidator('json', NewGameSchema), async (ctx) => {
     console.error('failed to insert game', e)
     throw new HTTPException(500, {
       message: generateHttpExceptionMessage('failed to insert game'),
+    })
+  }
+
+  try {
+    const result = await markImageUsed(ctx.env.D1, image.id)
+    if (!result.success) {
+      throw new Error(
+        result.error
+          ? result.error
+          : 'failed to mark image as used--WARNING: this must be fixed via the console'
+      )
+    }
+  } catch (e) {
+    console.error(e)
+    throw new HTTPException(500, {
+      message: generateHttpExceptionMessage(
+        'failed to mark image as used--WARNING: this must be fixed via the console'
+      ),
     })
   }
 

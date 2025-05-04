@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createGame } from '../util'
+import { createGame, isValidGameDate } from '../util'
 import { ImageDto } from '@ncsuguessr/types/images'
 
 const UnverifiedImage = ({
@@ -12,16 +12,30 @@ const UnverifiedImage = ({
   token: string | null
 }) => {
   const [gameCreated, setGameCreated] = useState(false)
+  const [gameCreatedLoading, setGameCreatedLoading] = useState(false)
   const [gameCreatedError, setGameCreatedError] = useState<string | null>(null)
+  const [gameDateInput, setGameDateInput] = useState('')
 
   const handleCreateGame = async () => {
     try {
+      setGameCreatedError(null)
+      setGameCreatedLoading(true)
       if (!token) {
         throw new Error('missing auth token')
       }
 
+      if (!isValidGameDate(gameDateInput)) {
+        throw new Error('date is not valid')
+      }
+
       console.log(image.id)
-      const game = await createGame(image.id, token)
+      const game = await createGame(
+        {
+          date: gameDateInput,
+          image_id: image.id,
+        },
+        token
+      )
 
       if (!game.success) {
         throw new Error(game.error)
@@ -31,6 +45,8 @@ const UnverifiedImage = ({
     } catch (e) {
       console.error(e)
       setGameCreatedError(`${e}`)
+    } finally {
+      setGameCreatedLoading(false)
     }
   }
 
@@ -57,18 +73,29 @@ const UnverifiedImage = ({
         )}
       </div>
       <div className="text-center">{image.description}</div>
-      {gameCreatedError ? <div>Error: {gameCreatedError}</div> : null}
+      {gameCreatedError ? (
+        <div className="text-center text-red-500">{gameCreatedError}</div>
+      ) : null}
 
       <div className={gameCreated ? '' : `flex justify-center`}>
         {gameCreated ? (
-          <p>Game successfully created!</p>
+          <p className="text-center">Game successfully created!</p>
         ) : (
-          <button
-            className="border-[1px] bg-gray-50 w-fit p-2 rounded-lg"
-            onClick={handleCreateGame}
-          >
-            Create game with this image
-          </button>
+          <div className="flex justify-center gap-2">
+            <input
+              className="rounded-lg px-2 py-1 border-[1px] border-black/50"
+              placeholder="Date (YYYY-MM-DD)"
+              value={gameDateInput}
+              onChange={(e) => setGameDateInput(e.target.value)}
+            />
+            <button
+              className="border-[1px] bg-gray-50 w-fit px-2 py-1 rounded-lg hover:cursor-pointer"
+              onClick={handleCreateGame}
+              disabled={gameCreatedLoading}
+            >
+              Create game
+            </button>
+          </div>
         )}
       </div>
     </div>

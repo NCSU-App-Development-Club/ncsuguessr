@@ -2,6 +2,7 @@ import {
   CreateGameResponseSchema,
   GetGameDatesResponseSchema,
   GetGamesResponseSchema,
+  NewGame,
 } from '@ncsuguessr/types/games'
 import {
   GetImagesResponseSchema,
@@ -9,6 +10,16 @@ import {
 } from '@ncsuguessr/types/images'
 
 const API_URL = import.meta.env.VITE_API_URL
+
+export const isValidGameDate = (dateStr: string): boolean => {
+  const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
+  if (!regex.test(dateStr)) {
+    return false
+  }
+
+  const date = new Date(dateStr)
+  return !isNaN(date.getTime())
+}
 
 export const getGameDates = async (token: string) => {
   const res = await fetch(`${API_URL}/games?select=date`, {
@@ -49,14 +60,14 @@ export const getImageUrl = async (imageId: number, token: string) => {
   return GetImageUrlResponseSchema.parse(data)
 }
 
-export const createGame = async (imageId: number, token: string) => {
+export const createGame = async (newGame: NewGame, token: string) => {
   const res = await fetch(`${API_URL}/games`, {
     method: 'POST',
     headers: {
       authorization: `Bearer ${token}`,
       'content-type': 'application/json',
     },
-    body: JSON.stringify({ imageId }),
+    body: JSON.stringify(newGame satisfies NewGame),
   })
 
   const data = await res.json()
