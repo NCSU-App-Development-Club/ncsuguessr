@@ -4,7 +4,6 @@ import { Bindings } from '../config'
 import {
   GetImagesSuccessResponse,
   ImagesDto,
-  ImagesDtoSchema,
   ImageSubmissionForm,
   NewImage,
 } from '@ncsuguessr/types/images'
@@ -12,6 +11,7 @@ import { generateHttpExceptionMessage, getImageExtension } from '../util'
 import { getImage, getImagesByUsed, insertImage } from '../repository/images'
 import { getReadPresignedUrl } from '../util/r2'
 import { validator } from 'hono/validator'
+import { adminTokenAuth } from '../middleware/auth'
 
 export const imagesRouter = new Hono<{ Bindings: Bindings }>()
 
@@ -145,7 +145,7 @@ imagesRouter.get('/:imageId/url', async (ctx) => {
   return ctx.json({ success: true, imageUrl: signedUrl })
 })
 
-imagesRouter.get('/', async (ctx) => {
+imagesRouter.get('/', adminTokenAuth(), async (ctx) => {
   const usedParamStr = ctx.req.query('used')
   if (usedParamStr !== 'true' && usedParamStr !== 'false') {
     throw new HTTPException(400, {

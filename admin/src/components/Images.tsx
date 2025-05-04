@@ -71,7 +71,7 @@ const Images = () => {
       <div className="flex flex-col gap-5 w-[100%]">
         <h1 className="text-4xl font-bold text-center">Unverified Images</h1>
         {imagesError ? (
-          <div>Error loading images: {imagesError}</div>
+          <div className="text-center">Error loading images: {imagesError}</div>
         ) : images === undefined ? (
           <div className="text-center">loading...</div>
         ) : images.length === 0 ? (

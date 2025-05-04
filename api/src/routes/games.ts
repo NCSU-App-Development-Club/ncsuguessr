@@ -20,6 +20,7 @@ import { ImageRow } from '@ncsuguessr/types/images'
 import { getImage, markImageUsed } from '../repository/images'
 import { getReadPresignedUrl } from '../util/r2'
 import { zValidator } from '@hono/zod-validator'
+import { adminTokenAuth } from '../middleware/auth'
 
 export const gamesRouter = new Hono<{ Bindings: Bindings }>()
 
@@ -81,79 +82,84 @@ gamesRouter.get('/:gameDate', async (ctx) => {
   } satisfies GetGameSuccessResponse)
 })
 
-gamesRouter.post('/', zValidator('json', NewGameSchema), async (ctx) => {
-  const newGameBody = ctx.req.valid('json')
+gamesRouter.post(
+  '/',
+  adminTokenAuth(),
+  zValidator('json', NewGameSchema),
+  async (ctx) => {
+    const newGameBody = ctx.req.valid('json')
 
-  let image: ImageRow | null
-  try {
-    image = await getImage(ctx.env.D1, newGameBody.image_id)
-  } catch (e) {
-    console.error('failed to fetch image data', e)
-    throw new HTTPException(500, {
-      message: generateHttpExceptionMessage('failed to fetch image data'),
-    })
-  }
-
-  if (!image) {
-    throw new HTTPException(400, {
-      message: generateHttpExceptionMessage(
-        `image ${newGameBody.image_id} does not exist`
-      ),
-    })
-  }
-
-  let possibleExistingGame: GameRow | null
-  try {
-    possibleExistingGame = await getGame(ctx.env.D1, newGameBody.date)
-  } catch (e) {
-    console.error('failed to fetch possible existing game', e)
-    throw new HTTPException(500, {
-      message: generateHttpExceptionMessage(
-        'failed to fetch possible existing game'
-      ),
-    })
-  }
-
-  if (possibleExistingGame) {
-    throw new HTTPException(409, {
-      message: generateHttpExceptionMessage(
-        `game on ${newGameBody.date} already exists`
-      ),
-    })
-  }
-
-  try {
-    const result = await insertGame(ctx.env.D1, newGameBody)
-    if (!result.success) {
-      throw new Error(result.error ? result.error : 'failed to insert game')
+    let image: ImageRow | null
+    try {
+      image = await getImage(ctx.env.D1, newGameBody.image_id)
+    } catch (e) {
+      console.error('failed to fetch image data', e)
+      throw new HTTPException(500, {
+        message: generateHttpExceptionMessage('failed to fetch image data'),
+      })
     }
-  } catch (e) {
-    console.error('failed to insert game', e)
-    throw new HTTPException(500, {
-      message: generateHttpExceptionMessage('failed to insert game'),
-    })
-  }
 
-  try {
-    const result = await markImageUsed(ctx.env.D1, image.id)
-    if (!result.success) {
-      throw new Error(
-        result.error
-          ? result.error
-          : 'failed to mark image as used--WARNING: this must be fixed via the console'
-      )
+    if (!image) {
+      throw new HTTPException(400, {
+        message: generateHttpExceptionMessage(
+          `image ${newGameBody.image_id} does not exist`
+        ),
+      })
     }
-  } catch (e) {
-    console.error(e)
-    throw new HTTPException(500, {
-      message: generateHttpExceptionMessage(
-        'failed to mark image as used--WARNING: this must be fixed via the console'
-      ),
-    })
-  }
 
-  return ctx.json({ success: true })
-})
+    let possibleExistingGame: GameRow | null
+    try {
+      possibleExistingGame = await getGame(ctx.env.D1, newGameBody.date)
+    } catch (e) {
+      console.error('failed to fetch possible existing game', e)
+      throw new HTTPException(500, {
+        message: generateHttpExceptionMessage(
+          'failed to fetch possible existing game'
+        ),
+      })
+    }
+
+    if (possibleExistingGame) {
+      throw new HTTPException(409, {
+        message: generateHttpExceptionMessage(
+          `game on ${newGameBody.date} already exists`
+        ),
+      })
+    }
+
+    try {
+      const result = await insertGame(ctx.env.D1, newGameBody)
+      if (!result.success) {
+        throw new Error(result.error ? result.error : 'failed to insert game')
+      }
+    } catch (e) {
+      console.error('failed to insert game', e)
+      throw new HTTPException(500, {
+        message: generateHttpExceptionMessage('failed to insert game'),
+      })
+    }
+
+    try {
+      const result = await markImageUsed(ctx.env.D1, image.id)
+      if (!result.success) {
+        throw new Error(
+          result.error
+            ? result.error
+            : 'failed to mark image as used--WARNING: this must be fixed via the console'
+        )
+      }
+    } catch (e) {
+      console.error(e)
+      throw new HTTPException(500, {
+        message: generateHttpExceptionMessage(
+          'failed to mark image as used--WARNING: this must be fixed via the console'
+        ),
+      })
+    }
+
+    return ctx.json({ success: true })
+  }
+)
 
 gamesRouter.get('/', async (ctx) => {
   const toSelect = ctx.req.queries('select')

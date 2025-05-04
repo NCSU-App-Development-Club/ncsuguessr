@@ -11,4 +11,5 @@ export type Bindings = {
   NCSUGUESSR_STAGING_R2_ACCESS_KEY_ID: string
   NCSUGUESSR_STAGING_R2_SECRET_ACCESS_KEY: string
   ACCOUNT_ID: string
+  ADMIN_TOKEN: string
 }

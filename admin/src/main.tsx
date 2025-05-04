@@ -8,6 +8,7 @@ import Login from './components/Login.tsx'
 import Home from './components/Home.tsx'
 import Images from './components/Images.tsx'
 import Games from './components/Games.tsx'
+import Logout from './components/Logout.tsx'
 
 const router = createBrowserRouter([
   { path: '/', errorElement: <ErrorPage />, element: <Login /> },
@@ -21,6 +22,11 @@ const router = createBrowserRouter([
     path: '/games',
     errorElement: <ErrorPage />,
     element: <Games />,
+  },
+  {
+    path: '/logout',
+    errorElement: <ErrorPage />,
+    element: <Logout />,
   },
 ])
 

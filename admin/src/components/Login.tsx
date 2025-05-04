@@ -46,7 +46,7 @@ const Login = () => {
             <button
               disabled={tokenInput.length === 0}
               type="submit"
-              className="bg-gray-200 rounded-md p-1 border-black border-2 active:bg-white active:border-gray-200 active:scale-90 transition duration-[30ms]"
+              className="bg-gray-200 rounded-md p-1 border-black border-2 active:bg-white active:border-gray-200 active:scale-90 transition duration-[30ms] hover:cursor-pointer"
             >
               Log in
             </button>
