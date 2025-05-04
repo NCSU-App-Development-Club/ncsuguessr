@@ -51,3 +51,16 @@ export const getGame = async (d1: D1Database, date: string) => {
 
   return result ? GameRowSchema.parse(result) : null
 }
+
+// TODO: paginate and allow for selection of date range
+export const getGames = async (d1: D1Database) => {
+  const results = await d1.prepare('SELECT * FROM games').all()
+
+  if (!results.success) {
+    throw new Error(
+      results.error ? results.error : 'failed to fetch games from database'
+    )
+  }
+
+  return GameRowsSchema.parse(results.results)
+}

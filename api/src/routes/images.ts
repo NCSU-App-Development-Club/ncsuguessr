@@ -3,7 +3,8 @@ import { HTTPException } from 'hono/http-exception'
 import { Bindings } from '../config'
 import {
   GetImagesSuccessResponse,
-  ImageRows,
+  ImagesDto,
+  ImagesDtoSchema,
   ImageSubmissionForm,
   NewImage,
 } from '@ncsuguessr/types/images'
@@ -156,9 +157,12 @@ imagesRouter.get('/', async (ctx) => {
 
   const usedParam = usedParamStr === 'true'
 
-  let images: ImageRows
+  let images: ImagesDto
   try {
-    images = await getImagesByUsed(ctx.env.D1, usedParam)
+    images = (await getImagesByUsed(ctx.env.D1, usedParam)).map((image) => ({
+      ...image,
+      taken_at: image.taken_at.getTime(),
+    }))
   } catch (e) {
     console.error('failed to fetch images', e)
     throw new HTTPException(500, {

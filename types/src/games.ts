@@ -48,11 +48,9 @@ export type GetGameDatesResponse = z.infer<
 >
 
 export const GetGameSuccessResponseSchema = generateSuccessJSONResponseSchema({
-  game: z.nullable(
-    GameRowSchema.omit({ image_id: true }).extend({
-      image: ImageRowSchema.extend({ url: z.string() }),
-    })
-  ),
+  game: GameRowSchema.omit({ image_id: true }).extend({
+    image: ImageRowSchema.extend({ url: z.string() }),
+  }),
 })
 
 export type GetGameSuccessResponse = z.infer<
@@ -78,4 +76,17 @@ export const CreateGameResponseSchema = z.discriminatedUnion('success', [
   CreateGameSuccessResponseSchema,
 ])
 
-export type CreateGameResponse = z.infer<typeof CreateGameSuccessResponseSchema>
+export const GetGamesSuccessResponseSchema = generateSuccessJSONResponseSchema({
+  games: GameRowsSchema,
+})
+
+export type GetGamesSuccessResponse = z.infer<
+  typeof GetGamesSuccessResponseSchema
+>
+
+export const GetGamesResponseSchema = z.discriminatedUnion('success', [
+  ErrorJSONResponseSchema,
+  GetGamesSuccessResponseSchema,
+])
+
+export type GetGamesResponse = z.infer<typeof GetGamesResponseSchema>

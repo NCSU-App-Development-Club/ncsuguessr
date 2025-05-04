@@ -1,10 +1,17 @@
 import { Hono } from 'hono'
 import { Bindings } from '../config'
 import { HTTPException } from 'hono/http-exception'
-import { getGame, insertGame, listGamesDateOnly } from '../repository/games'
+import {
+  getGame,
+  insertGame,
+  listGames,
+  listGamesDateOnly,
+} from '../repository/games'
 import {
   GameRow,
+  GameRows,
   GetGameDatesSuccessResponse,
+  GetGamesSuccessResponse,
   GetGameSuccessResponse,
   NewGameSchema,
 } from '@ncsuguessr/types/games'
@@ -156,10 +163,18 @@ gamesRouter.get('/', async (ctx) => {
     }
   }
 
-  // TODO: implement?
-  throw new HTTPException(400, {
-    message: generateHttpExceptionMessage(
-      'getting all fields of all games is not supported yet'
-    ),
-  })
+  let games: GameRows
+  try {
+    games = await listGames(ctx.env.D1)
+  } catch (e) {
+    console.error('failed to get games', e)
+    throw new HTTPException(500, {
+      message: generateHttpExceptionMessage('failed to get games'),
+    })
+  }
+
+  return ctx.json({
+    success: true,
+    games,
+  } satisfies GetGamesSuccessResponse)
 })

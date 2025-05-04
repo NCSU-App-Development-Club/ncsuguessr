@@ -26,6 +26,20 @@ export const ImageRowsSchema = z.array(ImageRowSchema)
 
 export type ImageRows = z.infer<typeof ImageRowsSchema>
 
+export const ImageDtoSchema = ImageRowSchema.omit({
+  taken_at: true,
+  used: true,
+}).extend({
+  taken_at: z.number(),
+  used: z.boolean(),
+})
+
+export type ImageDto = z.infer<typeof ImageDtoSchema>
+
+export const ImagesDtoSchema = z.array(ImageDtoSchema)
+
+export type ImagesDto = z.infer<typeof ImagesDtoSchema>
+
 export const ImageSubmissionForm = z.object({
   latitude: z
     .string()
@@ -46,21 +60,8 @@ export const ImageSubmissionForm = z.object({
 export const CreateImageSuccessResponseSchema =
   generateSuccessJSONResponseSchema({})
 
-export type CreateGameSuccessResponse = z.infer<
-  typeof CreateImageSuccessResponseSchema
->
-
-export const CreateGameResponseSchema = z.discriminatedUnion('success', [
-  ErrorJSONResponseSchema,
-  CreateImageSuccessResponseSchema,
-])
-
-export type CreateGameResponse = z.infer<
-  typeof CreateImageSuccessResponseSchema
->
-
 export const GetImagesSuccessResponseSchema = generateSuccessJSONResponseSchema(
-  { images: ImageRowsSchema }
+  { images: ImagesDtoSchema }
 )
 
 export type GetImagesSuccessResponse = z.infer<
@@ -73,3 +74,15 @@ export const GetImagesResponseSchema = z.discriminatedUnion('success', [
 ])
 
 export type GetImagesResponse = z.infer<typeof GetImagesResponseSchema>
+
+export const GetImageUrlSuccessResponseSchema =
+  generateSuccessJSONResponseSchema({ imageUrl: z.string() })
+
+export type GetImageUrlSuccessResponse = z.infer<
+  typeof GetImageUrlSuccessResponseSchema
+>
+
+export const GetImageUrlResponseSchema = z.discriminatedUnion('success', [
+  ErrorJSONResponseSchema,
+  GetImageUrlSuccessResponseSchema,
+])
