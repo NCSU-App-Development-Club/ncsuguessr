@@ -30,6 +30,7 @@ const Marker =
 
 import { useState, useEffect, useRef } from 'react'
 import { incrementGamesPlayed } from '../../storage/statsStorage'
+import { fetchGame } from '../../util'
 
 import { formatTime } from '../../util/time'
 

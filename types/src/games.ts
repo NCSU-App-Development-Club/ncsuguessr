@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { ErrorJSONResponseSchema, generateSuccessJSONResponseSchema } from '.'
-import { ImageRowSchema } from './images'
+import { ImageDtoSchema, ImageRowSchema } from './images'
 
 // NOTE: this must be kept in sync with game table definition
 export const GameRowSchema = z.object({
@@ -49,7 +49,7 @@ export type GetGameDatesResponse = z.infer<
 
 export const GetGameSuccessResponseSchema = generateSuccessJSONResponseSchema({
   game: GameRowSchema.omit({ image_id: true }).extend({
-    image: ImageRowSchema.extend({ url: z.string() }),
+    image: ImageDtoSchema.extend({ url: z.string() }),
   }),
 })
 
