@@ -25,6 +25,7 @@ const Marker =
 
 import { useState, useEffect } from 'react'
 import { incrementGamesPlayed } from '../../storage/statsStorage'
+import { fetchGame } from '../../util'
 
 // Development settings
 const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
@@ -121,7 +122,8 @@ const GameEventModal = ({
 
 export default function Game() {
   const router = useRouter()
-  const { gameId } = useLocalSearchParams<{ gameId: string }>()
+  // from file-based routing
+  const { gameDate } = useLocalSearchParams<{ gameDate: string }>()
   const [expandedImage, setExpandedImage] = useState<string | null>(null)
   const [guessMarker, setGuessMarker] = useState<{
     latitude: number
@@ -159,37 +161,23 @@ export default function Game() {
   useEffect(() => {
     const fetchGameAndImage = async () => {
       try {
-        // First fetch the game details
-        const gameResponse = await fetch(
-          // `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/${gameId}`
-          `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/games/9`
-        )
-        if (!gameResponse.ok) {
-          throw new Error('Failed to fetch game')
-        }
-        const gameData = await gameResponse.json()
+        const gameResponse = await fetchGame(gameDate)
 
-        // Then fetch the signed URL using the imageId from the game
-        // const imageResponse = await fetch(
-        //   `http://ncsuguessr-backendelb-staging-576889603.us-east-1.elb.amazonaws.com/api/v1/images/${gameData.game.imageId}/url`
-        // )
-        // if (!imageResponse.ok) {
-        //   throw new Error('Failed to fetch image URL')
-        // }
-        // const imageData = await imageResponse.json()
-        setImageUrl(gameData.imageUrl)
+        if (!gameResponse.success) {
+          throw new Error(
+            gameResponse.error ? gameResponse.error : 'error fetching games'
+          )
+        }
+
+        setImageUrl(gameResponse.game.image.url)
       } catch (err) {
         setError('Failed to load image')
         console.error('Error fetching game or image:', err)
       }
     }
 
-    if (gameId) {
-      fetchGameAndImage()
-    } else {
-      setError('No game ID provided')
-    }
-  }, [gameId])
+    fetchGameAndImage()
+  }, [gameDate])
 
   // Mock correct location (NC State Bell Tower)
   const correctLocation = {
