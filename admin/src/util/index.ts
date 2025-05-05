@@ -1,6 +1,5 @@
 import {
   CreateGameResponseSchema,
-  GetGameDatesResponseSchema,
   GetGamesResponseSchema,
   NewGame,
 } from '@ncsuguessr/types/games'
@@ -19,19 +18,6 @@ export const isValidGameDate = (dateStr: string): boolean => {
 
   const date = new Date(dateStr)
   return !isNaN(date.getTime())
-}
-
-export const getGameDates = async (token: string) => {
-  const res = await fetch(`${API_URL}/games?select=date`, {
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
-    },
-  })
-
-  const data = await res.json()
-
-  return GetGameDatesResponseSchema.parse(data)
 }
 
 export const getUnverifiedImages = async (token: string) => {
