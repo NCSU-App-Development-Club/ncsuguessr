@@ -1,4 +1,16 @@
 {
   "files": [],
-  "references": [{ "path": "mobile" }, { "path": "api" }, { "path": "types" }]
+  "references": [
+    {
+      "path": "mobile"
+    },
+    {
+      "path": "api"
+    },
+    {
+      "path": "types"
+    }
+  ],
+  "compilerOptions": {},
+  "extends": "expo/tsconfig.base"
 }

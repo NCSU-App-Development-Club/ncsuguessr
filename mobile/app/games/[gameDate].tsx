@@ -15,10 +15,10 @@ import {
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
-// import {
-//   GetGameSuccessResponse,
-//   GetGameSuccessResponseSchema,
-// } from '@ncsuguessr/types/games'
+import {
+  GetGameSuccessResponse,
+  GetGameSuccessResponseSchema,
+} from '@ncsuguessr/types/src/games'
 
 import { recordGuess } from '../../storage/statsStorage'
 
@@ -170,9 +170,9 @@ export default function Game() {
         if (!gameResponse.ok) {
           throw new Error('Failed to fetch game')
         }
-        const gameData = await gameResponse.json()
-        // const gameData: GetGameSuccessResponse =
-        //   GetGameSuccessResponseSchema.parse(gameJson)
+        const gameJson = await gameResponse.json()
+        const gameData: GetGameSuccessResponse =
+          GetGameSuccessResponseSchema.parse(gameJson)
         setImageUrl(gameData.game.image.url)
         correctLocation.current = {
           name: gameData.game.image.location_name,
