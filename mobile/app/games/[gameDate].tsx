@@ -34,6 +34,8 @@ import { fetchGame } from '../../util'
 
 import { formatTime } from '../../util/time'
 
+import { calculateDistance } from '../../util/map'
+
 // Development settings
 const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
 
@@ -150,6 +152,15 @@ export default function Game() {
     longitude: 0,
   })
 
+  const closestGuess = useRef<{
+    latitude: number
+    longitude: number
+  }>({
+    latitude: 0,
+    longitude: 0,
+  })
+  const closestDistance = useRef<number>(Infinity)
+
   // Update timer every second
   useEffect(() => {
     if (gameOver) return
@@ -192,18 +203,6 @@ export default function Game() {
       setError('No game ID provided')
     }
   }, [gameDate])
-
-  const calculateDistance = (guess: {
-    latitude: number
-    longitude: number
-  }) => {
-    // Simple distance calculation (you could use a more accurate formula)
-    const latDiff = Math.abs(guess.latitude - correctLocation.current.latitude)
-    const lonDiff = Math.abs(
-      guess.longitude - correctLocation.current.longitude
-    )
-    return Math.sqrt(latDiff * latDiff + lonDiff * lonDiff) * 111 // Rough conversion to kilometers
-  }
 
   const handleMapPress = (event: any) => {
     if (gameOver) return
@@ -257,8 +256,13 @@ export default function Game() {
   const handleGuess = () => {
     if (!guessMarker || gameOver) return
 
-    const distance = calculateDistance(guessMarker)
+    const distance = calculateDistance(guessMarker, correctLocation.current)
     const remainingGuesses = 3 - (guessCount + 1)
+
+    if (distance < closestDistance.current) {
+      closestDistance.current = distance
+      closestGuess.current = { ...guessMarker }
+    }
 
     if (distance < 0.1) {
       // Within ~100 meters - Success!
@@ -337,7 +341,13 @@ export default function Game() {
         onClose={
           gameOver
             ? () => {
-                router.push('/game-finished')
+                router.replace({
+                  pathname: '/game-finished',
+                  params: {
+                    gameDate,
+                    userGuess: JSON.stringify(closestGuess.current),
+                  },
+                })
               }
             : undefined
         }

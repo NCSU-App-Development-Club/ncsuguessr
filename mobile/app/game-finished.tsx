@@ -9,60 +9,94 @@ import {
   Share,
 } from 'react-native'
 import { Link, useLocalSearchParams, router } from 'expo-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
+import React from 'react'
+import { fetchGame } from '../util'
+import { GetGameSuccessResponse } from '@ncsuguessr/types/src/games'
+import { ImageDto, ImageRow } from '@ncsuguessr/types/src/images'
+import MapView from 'react-native-maps'
+
+import { calculateDistance } from '../util/map'
 
 // Conditionally import MapView
-const MapView =
+const MapViewComponent =
   Platform.OS === 'web' ? null : require('react-native-maps').default
 const Marker =
   Platform.OS === 'web' ? null : require('react-native-maps').Marker
 const Polyline =
   Platform.OS === 'web' ? null : require('react-native-maps').Polyline
 
+type GameFinishedParams = {
+  gameDate: string
+  userGuess: string
+}
+
 export default function GameFinished() {
-  // Get parameters from the previous screen if available
-  const params = useLocalSearchParams()
+  const params = useLocalSearchParams<GameFinishedParams>()
 
-  // Use the actual Bell Tower coordinates rather than generics
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const [gameData, setGameData] = useState<ImageDto | null>(null)
+
+  const mapRef = useRef<MapView>(null)
+  const [mapReady, setMapReady] = useState(false)
+
+  useEffect(() => {
+    const fetchGameData = async () => {
+      try {
+        setLoading(true)
+        const gameDataResponse = await fetchGame(params.gameDate)
+
+        if (!gameDataResponse.success) {
+          throw new Error(gameDataResponse.error)
+        }
+
+        setGameData(gameDataResponse.game.image)
+      } catch (e) {
+        console.error(e)
+        setError(`${e}`)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchGameData()
+  }, [])
+
   const actualLocation = {
-    latitude: 35.7862,
-    longitude: -78.6635,
+    latitude: gameData?.latitude || 0,
+    longitude: gameData?.longitude || 0,
   }
 
-  // Get passed guess coordinates or use a default guess
-  const userGuess = {
-    latitude: 35.7859,
-    longitude: -78.664,
+  const userGuess = JSON.parse(params.userGuess) || {
+    latitude: 0,
+    longitude: 0,
   }
 
-  // Calculate distance in feet
-  const distance = params.distance ? Number(params.distance) : 90.89
-  const locationName = params.location || 'Belltower'
+  useEffect(() => {
+    if (mapRef.current && gameData) {
+      mapRef.current.fitToCoordinates([actualLocation, userGuess], {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      })
+    }
+  }, [gameData, mapReady])
+
+  const distance = calculateDistance(userGuess, actualLocation).toFixed(2)
+  const locationName = gameData?.location_name || ''
   const isWeb = Platform.OS === 'web'
-
-  // Function to render Google Maps for web
-  const renderGoogleMap = () => {
-    return (
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6473.990173028917!2d-78.69079912749329!3d35.78470000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89acf583f5be2c4f%3A0x57cf469722e0c518!2sNC%20State%20Bell%20Tower!5e0!3m2!1sen!2sus!4v1716427532889!5m2!1sen!2sus"
-        width={'100%'}
-        height={'100%'}
-        style={{ border: 0, borderRadius: 16 }}
-        allowFullScreen={false}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-    )
-  }
 
   // Function to render native map
   const renderNativeMap = () => {
-    if (isWeb || !MapView || !Marker || !Polyline) return null
+    if (isWeb || !MapViewComponent || !Marker || !Polyline) return null
 
     return (
-      <MapView
-        style={styles.map}
+      <MapViewComponent
+        ref={mapRef}
+        style={{ width: '100%', height: '100%' }}
+        onMapReady={() => setMapReady(true)}
         initialRegion={{
           latitude: (userGuess.latitude + actualLocation.latitude) / 2,
           longitude: (userGuess.longitude + actualLocation.longitude) / 2,
@@ -72,14 +106,24 @@ export default function GameFinished() {
       >
         {/* User's guess marker */}
         <Marker coordinate={userGuess} pinColor="blue">
-          <View style={styles.markerContainer}>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <MaterialIcons name="person-pin" size={30} color="#4285F4" />
           </View>
         </Marker>
 
         {/* Actual location marker with flag */}
         <Marker coordinate={actualLocation} pinColor="red">
-          <View style={styles.markerContainer}>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <MaterialIcons name="flag" size={30} color="#EA4335" />
           </View>
         </Marker>
@@ -91,35 +135,15 @@ export default function GameFinished() {
           strokeWidth={2}
           lineDashPattern={[5, 5]}
         />
-      </MapView>
+      </MapViewComponent>
     )
   }
 
-  // Share score function
   const handleShareScore = async () => {
-    // Implementation for sharing score would go here
-    const shareText = `I was ${distance} meters away from finding the ${locationName} on NC State Guessr!`
-
-    const result = await Share.share({
+    const shareText = `NCSUGuessr 2025-05-04:\n📍---- ${distance}m ----🏁`
+    await Share.share({
       message: shareText,
     })
-
-    // if (navigator && navigator.share) {
-    //   navigator
-    //     .share({
-    //       title: 'My NC State Guessr Score',
-    //       text: shareText,
-    //     })
-    //     .catch((err) => {
-    //       console.error('Error sharing:', err)
-    //     })
-    // } else {
-    //   // Fallback for platforms without Web Share API
-    //   if (navigator.clipboard) {
-    //     navigator.clipboard.writeText(shareText)
-    //     alert('Score copied to clipboard!')
-    //   }
-    // }
   }
 
   return (
@@ -152,7 +176,7 @@ export default function GameFinished() {
       </TouchableOpacity>
 
       <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300 mb-6">
-        {isWeb ? renderGoogleMap() : renderNativeMap()}
+        {!isWeb && renderNativeMap()}
       </View>
 
       <View className="w-full flex-row space-x-4 mb-6">
@@ -177,14 +201,3 @@ export default function GameFinished() {
     </ScreenView>
   )
 }
-
-const styles = StyleSheet.create({
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-  markerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
