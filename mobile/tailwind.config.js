@@ -15,6 +15,7 @@ module.exports = {
       ncsuindigo: '#4156A1',
       ncsuwhite: '#FFFFFF',
       ncsublack: '#000000',
+      gray: '#333333',
     },
     extend: {},
   },

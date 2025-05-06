@@ -7,12 +7,24 @@ import { useRouter } from 'expo-router'
 import { formatOffsetDate } from '../util/time'
 import { getGameDates } from '../util'
 
+import {
+  Calendar,
+  CalendarList,
+  Agenda,
+  DateData,
+} from 'react-native-calendars'
+import { MarkedDates } from 'react-native-calendars/src/types'
+import { opacity } from 'react-native-reanimated/lib/typescript/Colors'
+
 export default function GameSelect() {
   const [error, setError] = useState('')
   const router = useRouter()
 
   const [gameDatesLoading, setGameDatesLoading] = useState(false)
   const [gameDates, setGameDates] = useState<string[]>([])
+
+  const [selectedDate, setSelectedDate] = useState('')
+  const [markedDates, setMarkedDates] = useState<MarkedDates>({})
 
   useEffect(() => {
     const fetchGameDates = async () => {
@@ -25,6 +37,11 @@ export default function GameSelect() {
         }
 
         setGameDates(gameDatesResponse.games.map((game) => game.date))
+        const toMark: MarkedDates = {}
+        gameDatesResponse.games.forEach((game) => {
+          toMark[game.date] = { marked: true }
+        })
+        setMarkedDates(toMark)
       } catch (e) {
         console.error(e)
         setError(`${e}`)
@@ -37,6 +54,7 @@ export default function GameSelect() {
   }, [])
 
   const today = useMemo(() => formatOffsetDate(0), [])
+  const yesterday = useMemo(() => formatOffsetDate(1), [])
 
   const todayGameExists = useMemo(
     () => gameDates.includes(today),
@@ -44,14 +62,18 @@ export default function GameSelect() {
   )
 
   return (
-    <ScreenView className="justify-center">
-      <Text className="text-5xl text-[#CC0000] font-bold self-center mb-5">
+    <ScreenView className="flex flex-col p-8">
+      <BackLink to="/" />
+      <Text className="text-5xl text-[#CC0000] font-bold self-center mt-8">
         Game Selection
       </Text>
-      <BackLink to="/" />
+      <Image
+        source={require('../assets/mrwuf.png')}
+        className="w-[100px] h-[100px] mt-6 mb-2 self-center rounded-full border-solid border-2 border-[#CC0000]"
+      />
       {gameDatesLoading ? (
         <View>
-          <Text className="text-center">Loading...</Text>
+          <Text className="text-center">Loading games...</Text>
         </View>
       ) : error ? (
         <View>
@@ -71,23 +93,40 @@ export default function GameSelect() {
             <Text>Today's game hasn't been posted yet, stay tuned!</Text>
           )}
 
-          <Text className="text-center mb-[10px] font-bold mx-10 mt-4">
-            Play today's daily game and explore new locations at NCSU!
-          </Text>
-
-          <Image
-            source={require('../assets/mrwuf.png')}
-            className="w-[100px] h-[100px] my-5 self-center rounded-full border-solid border-2 border-[#CC0000]"
+          <Text className="font-bold">Previous Games:</Text>
+          <Calendar
+            onDayPress={(day: DateData) => {
+              setSelectedDate(day.dateString)
+            }}
+            markedDates={{
+              ...markedDates,
+              [selectedDate]: {
+                ...markedDates[selectedDate],
+                selected: true,
+                disableTouchEvent: true,
+                selectedDotColor: 'orange',
+              },
+              [today]: {
+                ...markedDates[today],
+                disableTouchEvent: true,
+                disabled: true,
+              },
+            }}
+            maxDate={yesterday}
+            minDate="2025-05-01"
           />
+          <GameButton
+            disabled={!gameDates.includes(selectedDate)}
+            onPress={() => {
+              router.navigate(`/games/${selectedDate}`)
+            }}
+          >
+            {gameDates.includes(selectedDate)
+              ? 'Play Selected Game'
+              : 'No game for this date.'}
+          </GameButton>
         </View>
       )}
-
-      {/* <Text className="text-xl font-bold mt-4 mb-4 text-[#CC0000] self-center">
-        Previous Challenges
-      </Text>
-      <GameButton onPress={() => {}}>Yesterday</GameButton>
-      <GameButton onPress={() => {}}>Two Days Ago</GameButton>
-      <GameButton onPress={() => {}}>Three Days Ago</GameButton> */}
     </ScreenView>
   )
 }
@@ -95,14 +134,17 @@ export default function GameSelect() {
 function GameButton({
   children,
   onPress,
+  disabled,
 }: {
   children: ReactNode
   onPress: () => void
+  disabled?: boolean
 }) {
   return (
     <TouchableOpacity
-      className="bg-[#CC0000] p-[15px] rounded-[30px] w-4/5 items-center my-[5px] self-center shadow-lg"
+      className={`${disabled ? 'bg-[#bbb]' : 'bg-[#CC0000]'} p-[15px] rounded-[30px] w-4/5 items-center my-4 self-center shadow-lg`}
       onPress={onPress}
+      disabled={disabled}
     >
       <Text className="text-white font-bold text-lg self-center">
         {children}

@@ -35,14 +35,14 @@ export default function Home() {
       {/* <View className="flex-1 justify-end items-center pb-32"> */}
       <TouchableOpacity
         onPress={() => router.push('/game-select')}
-        className="bg-ncsured w-60 py-4 rounded-full shadow-xl items-center"
+        className="bg-ncsured w-60 py-4 rounded-full items-center"
       >
         <Text className="text-white text-xl font-bold">Start Game</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         onPress={() => router.push('/stats')}
-        className="bg-ncsured w-60 py-4 rounded-full shadow-xl items-center"
+        className="bg-ncsured w-60 py-4 rounded-full items-center"
       >
         <Text className="text-white text-xl font-bold">Stats</Text>
       </TouchableOpacity>
