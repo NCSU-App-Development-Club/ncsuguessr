@@ -63,9 +63,9 @@ export default function GameSelect() {
 
   return (
     <ScreenView className="flex flex-col p-8">
-      <BackLink to="/" />
+      <BackLink to="/" label="Home" />
       <Text className="text-5xl text-[#CC0000] font-bold self-center mt-8">
-        Game Selection
+        Game Select
       </Text>
       <Image
         source={require('../assets/mrwuf.png')}

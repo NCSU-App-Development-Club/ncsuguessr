@@ -151,9 +151,9 @@ export default function GameFinished() {
   return (
     <ScreenView className="items-center justify-between py-10 px-5">
       <View className="w-full items-start">
-        <Link href="/" asChild>
+        <Link href="/home" asChild>
           <TouchableOpacity>
-            <Text className="text-2xl font-bold underline">Home</Text>
+            <Text className="text-2xl font-bold">Home</Text>
           </TouchableOpacity>
         </Link>
       </View>
