@@ -88,6 +88,8 @@ export default function GameFinished() {
   const locationName = gameData?.location_name || ''
   const isWeb = Platform.OS === 'web'
 
+  if (loading) return <Text>Loading...</Text>
+
   // Function to render native map
   const renderNativeMap = () => {
     if (isWeb || !MapViewComponent || !Marker || !Polyline) return null
