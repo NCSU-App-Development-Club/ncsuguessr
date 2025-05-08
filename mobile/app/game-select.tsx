@@ -15,6 +15,7 @@ import {
 } from 'react-native-calendars'
 import { MarkedDates } from 'react-native-calendars/src/types'
 import { opacity } from 'react-native-reanimated/lib/typescript/Colors'
+import { getPlayedGames } from '../storage/gamesStorage'
 
 export default function GameSelect() {
   const [error, setError] = useState('')
@@ -31,6 +32,7 @@ export default function GameSelect() {
       try {
         setGameDatesLoading(true)
         const gameDatesResponse = await getGameDates()
+        const playedGames = await getPlayedGames()
 
         if (!gameDatesResponse.success) {
           throw new Error(gameDatesResponse.error)
@@ -38,9 +40,20 @@ export default function GameSelect() {
 
         setGameDates(gameDatesResponse.games.map((game) => game.date))
         const toMark: MarkedDates = {}
+
         gameDatesResponse.games.forEach((game) => {
           toMark[game.date] = { marked: true }
         })
+
+        playedGames.forEach((date) => {
+          toMark[date] = {
+            marked: true,
+            dotColor: 'green',
+            disabled: true,
+            disableTouchEvent: true,
+          }
+        })
+
         setMarkedDates(toMark)
       } catch (e) {
         console.error(e)
@@ -93,7 +106,7 @@ export default function GameSelect() {
             <Text>Today's game hasn't been posted yet, stay tuned!</Text>
           )}
 
-          <Text className="font-bold">Previous Games:</Text>
+          <Text className="font-bold text-lg">Previous Games:</Text>
           <Calendar
             theme={{
               selectedDayBackgroundColor: '#CC0000',
@@ -109,7 +122,6 @@ export default function GameSelect() {
                 ...markedDates[selectedDate],
                 selected: true,
                 disableTouchEvent: true,
-                selectedDotColor: 'orange',
               },
               [today]: {
                 ...markedDates[today],

@@ -35,6 +35,7 @@ import { fetchGame } from '../../util'
 import { formatTime } from '../../util/time'
 
 import { calculateDistance } from '../../util/map'
+import { addPlayedGame } from '../../storage/gamesStorage'
 
 // Development settings
 const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
@@ -340,7 +341,8 @@ export default function Game() {
         setOpen={setShowGameEventModal}
         onClose={
           gameOver
-            ? () => {
+            ? async () => {
+                await addPlayedGame(gameDate)
                 router.replace({
                   pathname: '/game-finished',
                   params: {
