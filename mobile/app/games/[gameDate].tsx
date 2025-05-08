@@ -1,17 +1,12 @@
 import Text from '../../components/global/Text'
-import ScreenView from '../../components/global/ScreenView'
-import BackLink from '../../components/global/BackLink'
 
 import {
   View,
   Image,
   TouchableOpacity,
-  Pressable,
   Modal,
-  Dimensions,
   Platform,
   StyleSheet,
-  Alert,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 

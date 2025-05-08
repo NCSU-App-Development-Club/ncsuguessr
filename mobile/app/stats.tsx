@@ -1,11 +1,4 @@
-import {
-  ScrollView,
-  View,
-  Text,
-  Button,
-  Alert,
-  TouchableOpacity,
-} from 'react-native'
+import { ScrollView, View, Text, Alert, TouchableOpacity } from 'react-native'
 import ScreenView from '../components/global/ScreenView'
 import BackLink from '../components/global/BackLink'
 import StatBox from '../components/team-3/StatBox'

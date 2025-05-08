@@ -1,4 +1,4 @@
-import { ImageBackground, View, TouchableOpacity, Image } from 'react-native'
+import { View, TouchableOpacity, Image } from 'react-native'
 import { useRouter } from 'expo-router'
 import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'

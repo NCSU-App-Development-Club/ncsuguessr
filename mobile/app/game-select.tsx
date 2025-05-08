@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import ScreenView from '../components/global/ScreenView'
 import BackLink from '../components/global/BackLink'
 import { useRouter } from 'expo-router'
@@ -7,14 +7,8 @@ import { useRouter } from 'expo-router'
 import { formatOffsetDate } from '../util/time'
 import { getGameDates } from '../util'
 
-import {
-  Calendar,
-  CalendarList,
-  Agenda,
-  DateData,
-} from 'react-native-calendars'
+import { Calendar, DateData } from 'react-native-calendars'
 import { MarkedDates } from 'react-native-calendars/src/types'
-import { opacity } from 'react-native-reanimated/lib/typescript/Colors'
 import { getPlayedGames } from '../storage/gamesStorage'
 
 export default function GameSelect() {
