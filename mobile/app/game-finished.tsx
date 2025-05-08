@@ -15,12 +15,11 @@ import React from 'react'
 import { fetchGame } from '../util'
 import { GetGameSuccessResponse } from '@ncsuguessr/types/src/games'
 import { ImageDto, ImageRow } from '@ncsuguessr/types/src/images'
-import MapView from 'react-native-maps'
 
 import { calculateDistance } from '../util/map'
 
 // Conditionally import MapView
-const MapViewComponent =
+const MapView =
   Platform.OS === 'web' ? null : require('react-native-maps').default
 const Marker =
   Platform.OS === 'web' ? null : require('react-native-maps').Marker
@@ -40,7 +39,7 @@ export default function GameFinished() {
 
   const [gameData, setGameData] = useState<ImageDto | null>(null)
 
-  const mapRef = useRef<MapView>(null)
+  const mapRef = useRef<typeof MapView>(null)
   const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
@@ -92,10 +91,10 @@ export default function GameFinished() {
 
   // Function to render native map
   const renderNativeMap = () => {
-    if (isWeb || !MapViewComponent || !Marker || !Polyline) return null
+    if (isWeb || !MapView || !Marker || !Polyline) return null
 
     return (
-      <MapViewComponent
+      <MapView
         ref={mapRef}
         style={{ width: '100%', height: '100%' }}
         onMapReady={() => setMapReady(true)}
@@ -137,7 +136,7 @@ export default function GameFinished() {
           strokeWidth={2}
           lineDashPattern={[5, 5]}
         />
-      </MapViewComponent>
+      </MapView>
     )
   }
 
