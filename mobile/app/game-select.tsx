@@ -50,7 +50,6 @@ export default function GameSelect() {
             marked: true,
             dotColor: 'green',
             disabled: true,
-            disableTouchEvent: true,
           }
         })
 
@@ -108,6 +107,7 @@ export default function GameSelect() {
 
           <Text className="font-bold text-lg">Previous Games:</Text>
           <Calendar
+            disableAllTouchEventsForDisabledDays={true}
             theme={{
               selectedDayBackgroundColor: '#CC0000',
               dotColor: '#CC0000',
@@ -125,7 +125,6 @@ export default function GameSelect() {
               },
               [today]: {
                 ...markedDates[today],
-                disableTouchEvent: true,
                 disabled: true,
               },
             }}
