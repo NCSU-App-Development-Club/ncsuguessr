@@ -95,6 +95,11 @@ export default function GameSelect() {
 
           <Text className="font-bold">Previous Games:</Text>
           <Calendar
+            theme={{
+              selectedDayBackgroundColor: '#CC0000',
+              dotColor: '#CC0000',
+              arrowColor: '#CC0000',
+            }}
             onDayPress={(day: DateData) => {
               setSelectedDate(day.dateString)
             }}
@@ -121,9 +126,11 @@ export default function GameSelect() {
               router.navigate(`/games/${selectedDate}`)
             }}
           >
-            {gameDates.includes(selectedDate)
-              ? 'Play Selected Game'
-              : 'No game for this date.'}
+            {!selectedDate
+              ? 'Select a date'
+              : gameDates.includes(selectedDate)
+                ? 'Play Selected Game'
+                : 'No game for this date'}
           </GameButton>
         </View>
       )}
