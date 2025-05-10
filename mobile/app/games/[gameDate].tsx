@@ -313,23 +313,7 @@ export default function Game() {
         <Text className="text-gray-500">Time: {formatTime(elapsedTime)}</Text>
       </View>
 
-      <TouchableOpacity>
-        <View className="relative p-2">
-          <View className="overflow-hidden rounded-2xl">
-            <GameMap
-              smallMap={true}
-              guessMarker={guessMarker}
-              onPress={handleMapPress}
-              expandedImage={expandedImage}
-            />
-          </View>
-          <View className="absolute top-4 right-4 bg-black/90 rounded-full w-14 h-14 items-center justify-center">
-            <Text className="text-black-200/90 text-4xl font-bold">+</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => setExpandedImage('belltower')}>
+      <TouchableOpacity onPress={() => setExpandedImage('image')}>
         <View className="relative p-2">
           <View className="overflow-hidden rounded-2xl">
             {error ? (
@@ -343,25 +327,37 @@ export default function Game() {
               <Text>Loading image...</Text>
             )}
           </View>
-          <View className="absolute top-4 right-4 bg-black/90 rounded-full w-14 h-14 items-center justify-center">
-            <Text className="text-black-200/90 text-4xl font-bold">+</Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity>
+        <View className="relative p-2">
+          <View className="overflow-hidden rounded-2xl">
+            <GameMap
+              smallMap={true}
+              guessMarker={guessMarker}
+              onPress={handleMapPress}
+              expandedImage={expandedImage}
+            />
           </View>
         </View>
       </TouchableOpacity>
 
-      <Modal visible={expandedImage !== null} transparent={true}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
+      <Modal
+        visible={expandedImage !== null}
+        transparent={true}
+        className="h-fit"
+      >
+        <View
+          className="h-fit"
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+          }}
+        >
           <View style={{ flex: 1 }}>
             {expandedImage === 'map' ? (
-              <View
-                style={{
-                  flex: 1,
-                  margin: 20,
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                  backgroundColor: 'white',
-                }}
-              >
+              <View>
                 <GameMap
                   smallMap={false}
                   guessMarker={guessMarker}
@@ -372,13 +368,7 @@ export default function Game() {
               </View>
             ) : (
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  margin: 20,
-                  backgroundColor: 'white',
-                  borderRadius: 16,
-                  padding: 20,
-                }}
+                className="h-full bg-white border-r-16 m-2 p-2 flex-1"
                 activeOpacity={1}
                 onPress={() => setExpandedImage(null)}
               >
@@ -387,11 +377,8 @@ export default function Game() {
                 ) : imageUrl ? (
                   <Image
                     source={{ uri: imageUrl }}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      resizeMode: 'contain',
-                    }}
+                    className="w-full h-full"
+                    resizeMode="contain"
                   />
                 ) : (
                   <Text>Loading image...</Text>
