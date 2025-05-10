@@ -2,7 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const GAMES_KEY = '@ncsuguessr:games'
 
-export type GamesPlayedData = string[]
+// date is yyyy-mm-dd
+export type PlayedGame = { date: string; latGuess: number; longGuess: number }
+
+export type GamesPlayedData = PlayedGame[]
 
 export const getPlayedGames = async (): Promise<GamesPlayedData> => {
   try {
@@ -22,10 +25,14 @@ export const setPlayedGames = async (games: GamesPlayedData): Promise<void> => {
   }
 }
 
-export const addPlayedGame = async (gameDate: string): Promise<void> => {
+export const addPlayedGame = async (
+  date: string,
+  latGuess: number,
+  longGuess: number
+): Promise<void> => {
   try {
     const gamesPlayed = await getPlayedGames()
-    gamesPlayed.push(gameDate)
+    gamesPlayed.push({ date: date, latGuess, longGuess })
     await setPlayedGames(gamesPlayed)
   } catch (e) {
     console.error('Error saving stats:', e)

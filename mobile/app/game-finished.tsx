@@ -9,6 +9,7 @@ import { fetchGame } from '../util'
 import { ImageDto } from '@ncsuguessr/types/src/images'
 
 import { calculateDistance } from '../util/map'
+import { LatLng } from 'react-native-maps'
 
 // Conditionally import MapView
 const MapView =
@@ -18,14 +19,10 @@ const Marker =
 const Polyline =
   Platform.OS === 'web' ? null : require('react-native-maps').Polyline
 
-type GameFinishedParams = {
-  gameDate: string
-  userGuess: string
-}
+type GameFinishedProps = { gameDate: string; userGuess: LatLng | undefined }
+type GameFinishedParams = { gameDate: string; userGuess: string }
 
-export default function GameFinished() {
-  const params = useLocalSearchParams<GameFinishedParams>()
-
+export function GameFinishedMap(props: GameFinishedProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -38,7 +35,7 @@ export default function GameFinished() {
     const fetchGameData = async () => {
       try {
         setLoading(true)
-        const gameDataResponse = await fetchGame(params.gameDate)
+        const gameDataResponse = await fetchGame(props.gameDate)
 
         if (!gameDataResponse.success) {
           throw new Error(gameDataResponse.error)
@@ -61,10 +58,7 @@ export default function GameFinished() {
     longitude: gameData?.longitude || 0,
   }
 
-  const userGuess = JSON.parse(params.userGuess) || {
-    latitude: 0,
-    longitude: 0,
-  }
+  const userGuess = props.userGuess || { latitude: 0, longitude: 0 }
 
   useEffect(() => {
     if (mapRef.current && gameData) {
@@ -99,24 +93,14 @@ export default function GameFinished() {
       >
         {/* User's guess marker */}
         <Marker coordinate={userGuess} pinColor="blue">
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <MaterialIcons name="person-pin" size={30} color="#4285F4" />
           </View>
         </Marker>
 
         {/* Actual location marker with flag */}
         <Marker coordinate={actualLocation} pinColor="red">
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
             <MaterialIcons name="flag" size={30} color="#EA4335" />
           </View>
         </Marker>
@@ -134,21 +118,11 @@ export default function GameFinished() {
 
   const handleShareScore = async () => {
     const shareText = `NCSUGuessr 2025-05-04:\n📍---- ${distance}m ----🏁`
-    await Share.share({
-      message: shareText,
-    })
+    await Share.share({ message: shareText })
   }
 
   return (
-    <ScreenView className="items-center justify-between py-10 px-5">
-      <View className="w-full items-start">
-        <Link href="/home" asChild>
-          <TouchableOpacity>
-            <Text className="text-2xl font-bold">Home</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
-
+    <View>
       <Text className="text-4xl font-bold mb-10">Results</Text>
 
       <View className="w-full items-center justify-center mb-4">
@@ -191,6 +165,26 @@ export default function GameFinished() {
           </Text>
         </TouchableOpacity>
       </View>
+    </View>
+  )
+}
+
+export default function GameFinished() {
+  const params: any = useLocalSearchParams<GameFinishedParams>()
+  params.userGuess = JSON.stringify(params.userGuess) || {
+    latitude: 0,
+    longitude: 0,
+  }
+  return (
+    <ScreenView className="items-center justify-between py-10 px-5">
+      <View className="w-full items-start">
+        <Link href="/home" asChild>
+          <TouchableOpacity>
+            <Text className="text-2xl font-bold">Home</Text>
+          </TouchableOpacity>
+        </Link>
+      </View>
+      {GameFinishedMap(params as GameFinishedProps)}
     </ScreenView>
   )
 }
