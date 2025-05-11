@@ -2,6 +2,7 @@ import 'dotenv/config'
 
 export default () => ({
   expo: {
+    owner: 'appdevncsu',
     scheme: 'ncsuguessr',
     name: 'ncsuguessr',
     slug: 'ncsuguessr',
