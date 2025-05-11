@@ -25,7 +25,7 @@ export default () => ({
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: './assets/adaptive-icon.png',
+        foregroundImage: './assets/wolf.png',
         backgroundColor: '#ffffff',
       },
       package: 'org.appdevncsu.ncsuguessr',
