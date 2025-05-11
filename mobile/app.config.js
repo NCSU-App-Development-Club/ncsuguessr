@@ -12,7 +12,7 @@ export default () => ({
     userInterfaceStyle: 'light',
     newArchEnabled: true,
     splash: {
-      image: './assets/mrwuf.png',
+      image: './assets/wolf.png',
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },
