@@ -80,7 +80,7 @@ export default function GameSelect() {
 
   return (
     <ScreenView className="flex flex-col p-8">
-      <BackLink to="/" label="Home" />
+      <BackLink to="/home" label="Home" />
       <Text className="text-5xl text-[#000000] font-bold self-center mt-8">
         Game Select
       </Text>
