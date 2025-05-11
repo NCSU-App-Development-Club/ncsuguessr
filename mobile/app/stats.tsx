@@ -132,10 +132,11 @@ export default function Stats() {
   return (
     <ScreenView className="flex-1">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <BackLink to="/home" label="Home" />
         {/* Title */}
         <View className="mb-8 mt-14">
           <Text className="text-5xl font-bold text-[#000000] text-center">
-            STATISTICS
+            Statistics
           </Text>
         </View>
 
@@ -160,8 +161,8 @@ export default function Stats() {
               title="Average Distance"
               text={
                 averageGuessDistance !== null
-                  ? `${averageGuessDistance.toFixed(2)} mi.`
-                  : '0 mi'
+                  ? `${averageGuessDistance.toFixed(2)} m`
+                  : '0 m'
               }
             />
           </View>
@@ -171,7 +172,7 @@ export default function Stats() {
               title="Best Overall Guess"
               text={
                 bestOverallGuess
-                  ? `${bestOverallGuess.location}: ${bestOverallGuess.distance.toFixed(2)} mi.`
+                  ? `${bestOverallGuess.location}: ${bestOverallGuess.distance.toFixed(2)} m`
                   : 'None yet'
               }
             />
@@ -182,7 +183,7 @@ export default function Stats() {
               title="Best Weekly Guess"
               text={
                 bestWeeklyGuess
-                  ? `${bestWeeklyGuess.location}: ${bestWeeklyGuess.distance.toFixed(2)} mi.`
+                  ? `${bestWeeklyGuess.location}: ${bestWeeklyGuess.distance.toFixed(2)} m`
                   : 'None this week'
               }
             />
@@ -254,9 +255,6 @@ export default function Stats() {
             </View>
           </TouchableOpacity>
         </View>
-
-        {/* Back Link */}
-        <BackLink to="/home" />
       </ScrollView>
     </ScreenView>
   )

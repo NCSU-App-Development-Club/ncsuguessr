@@ -9,6 +9,7 @@ import { fetchGame } from '../util'
 import { ImageDto } from '@ncsuguessr/types/src/images'
 
 import { calculateDistance } from '../util/map'
+import BackLink from '../components/global/BackLink'
 
 // Conditionally import MapView
 const MapView =
@@ -141,21 +142,15 @@ export default function GameFinished() {
 
   return (
     <ScreenView className="items-center justify-between py-10 px-5">
-      <View className="w-full items-start">
-        <Link href="/home" asChild>
-          <TouchableOpacity>
-            <Text className="text-2xl font-bold">Home</Text>
-          </TouchableOpacity>
-        </Link>
-      </View>
+      <BackLink to="/home" label="Home" />
 
       <Text className="text-4xl font-bold mb-10">Results</Text>
 
       <View className="w-full items-center justify-center mb-4">
         <Text className="text-2xl text-center mb-2">
-          Your guess was{' '}
-          <Text className="text-red-600 font-bold">{distance} meters</Text> from
-          today's location:{' '}
+          Your closest guess was{' '}
+          <Text className="text-red-600 font-bold">{distance} km</Text> from the
+          location:{' '}
           <Text className="text-red-600 font-bold">{locationName}</Text>
         </Text>
       </View>

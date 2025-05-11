@@ -259,8 +259,8 @@ export default function Game() {
       closestGuess.current = { ...guessMarker }
     }
 
-    if (distance < 0.1) {
-      // Within ~100 meters - Success!
+    if (distance < 0.2) {
+      // Within ~200 meters - Success!
       setGameOver(true)
       setGameEventModalContent({
         title: 'Yay! 🎉',
