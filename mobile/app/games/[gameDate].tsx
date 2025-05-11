@@ -1,6 +1,13 @@
 import Text from '../../components/global/Text'
 
-import { View, Image, TouchableOpacity, Modal, StyleSheet } from 'react-native'
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  Pressable,
+} from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
 import {
@@ -113,7 +120,7 @@ const GameEventModal = ({
 export default function Game() {
   const router = useRouter()
   const { gameDate } = useLocalSearchParams<{ gameDate: string }>()
-  const [expandedImage, setExpandedImage] = useState<string | null>(null)
+  const [expandedImage, setExpandedImage] = useState<boolean>(false)
   const [guessMarker, setGuessMarker] = useState<GuessMarker | null>(null)
   const [guessCount, setGuessCount] = useState(0)
   const [gameOver, setGameOver] = useState(false)
@@ -191,10 +198,6 @@ export default function Game() {
 
   const handleMapPress = (event: any) => {
     if (gameOver) return
-    if (expandedImage !== 'map') {
-      setExpandedImage('map')
-      return
-    }
     const coords = event.nativeEvent.coordinate
     setGuessMarker(coords)
   }
@@ -282,95 +285,72 @@ export default function Game() {
   }
 
   return (
-    <View className="flex-1 items-center justify-center p-4">
-      <GameEventModal
-        open={showGameEventModal}
-        setOpen={setShowGameEventModal}
-        onClose={
-          gameOver
-            ? async () => {
-                await addPlayedGame(gameDate)
-                router.replace({
-                  pathname: '/game-finished',
-                  params: {
-                    gameDate,
-                    userGuess: JSON.stringify(closestGuess.current),
-                  },
-                })
-              }
-            : undefined
-        }
-        title={gameEventModalContent.title}
-        message={gameEventModalContent.message}
-        subMessage={gameEventModalContent.subMessage}
-      />
+    <>
+      <View className="p-4 flex-1 items-center gap-4 mt-8">
+        <GameEventModal
+          open={showGameEventModal}
+          setOpen={setShowGameEventModal}
+          onClose={
+            gameOver
+              ? async () => {
+                  await addPlayedGame(gameDate)
+                  router.replace({
+                    pathname: '/game-finished',
+                    params: {
+                      gameDate,
+                      userGuess: JSON.stringify(closestGuess.current),
+                    },
+                  })
+                }
+              : undefined
+          }
+          title={gameEventModalContent.title}
+          message={gameEventModalContent.message}
+          subMessage={gameEventModalContent.subMessage}
+        />
 
-      <Text className="text-3xl mb-4">Where is this?</Text>
-      <View className="flex-row items-center justify-between w-full px-4 mb-2">
-        <Text className="text-gray-500">
-          Guesses remaining: {3 - guessCount}
-        </Text>
-        <Text className="text-gray-500">Time: {formatTime(elapsedTime)}</Text>
-      </View>
+        <Text className="text-3xl">Where is this?</Text>
+        <View className="flex-row items-center justify-between w-full">
+          <Text className="text-gray-500">
+            Guesses remaining: {3 - guessCount}
+          </Text>
+          <Text className="text-gray-500">Time: {formatTime(elapsedTime)}</Text>
+        </View>
 
-      <TouchableOpacity onPress={() => setExpandedImage('image')}>
-        <View className="relative p-2">
+        <TouchableOpacity
+          className="absolute bottom-4 left-4 h-24 w-24 rounded-2xl"
+          onPress={() => setExpandedImage(true)}
+        >
           <View className="overflow-hidden rounded-2xl">
             {error ? (
               <Text className="text-red-500">{error}</Text>
             ) : imageUrl ? (
-              <Image
-                source={{ uri: imageUrl }}
-                style={{ width: 300, height: 200 }}
-              />
+              <Image source={{ uri: imageUrl }} className="h-24 w-24" />
             ) : (
               <Text>Loading image...</Text>
             )}
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity>
-        <View className="relative p-2">
+        <View className="w-full h-[70%]">
           <View className="overflow-hidden rounded-2xl">
-            <GameMap
-              smallMap={true}
-              guessMarker={guessMarker}
-              onPress={handleMapPress}
-              expandedImage={expandedImage}
-            />
+            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
           </View>
         </View>
-      </TouchableOpacity>
 
-      <Modal
-        visible={expandedImage !== null}
-        transparent={true}
-        className="h-fit"
-      >
-        <View
-          className="h-fit"
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.6)',
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            {expandedImage === 'map' ? (
-              <View>
-                <GameMap
-                  smallMap={false}
-                  guessMarker={guessMarker}
-                  onPress={handleMapPress}
-                  onClose={() => setExpandedImage(null)}
-                  expandedImage={expandedImage}
-                />
-              </View>
-            ) : (
+        <Modal visible={expandedImage} transparent={true} className="h-fit">
+          <View
+            className="h-fit"
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+            }}
+          >
+            <View style={{ flex: 1 }}>
               <TouchableOpacity
                 className="h-full bg-white border-r-16 m-2 p-2 flex-1"
                 activeOpacity={1}
-                onPress={() => setExpandedImage(null)}
+                onPress={() => setExpandedImage(false)}
               >
                 {error ? (
                   <Text className="text-red-500">{error}</Text>
@@ -384,84 +364,66 @@ export default function Game() {
                   <Text>Loading image...</Text>
                 )}
               </TouchableOpacity>
-            )}
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <TouchableOpacity
-        onPress={handleGuess}
-        disabled={!guessMarker || gameOver}
-      >
-        <View
-          className={`rounded w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center ${!guessMarker || gameOver ? 'bg-gray-400' : 'bg-ncsured'}`}
-        >
-          <Text className="text-white font-bold text-center">
-            {gameOver
-              ? 'Game Over'
-              : guessMarker
-                ? 'Submit Guess'
-                : 'Drop a pin first'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      {gameOver && (
         <TouchableOpacity
-          onPress={() => {
-            setGuessCount(0)
-            setGuessMarker(null)
-            setGameOver(false)
-          }}
+          onPress={handleGuess}
+          disabled={!guessMarker || gameOver}
         >
-          <View className="rounded bg-blue-500 w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center">
-            <Text className="text-white font-bold text-center">Play Again</Text>
+          <View
+            className={`rounded w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center ${!guessMarker || gameOver ? 'bg-gray-400' : 'bg-ncsured'}`}
+          >
+            <Text className="text-white font-bold text-center">
+              {gameOver
+                ? 'Game Over'
+                : guessMarker
+                  ? 'Submit Guess'
+                  : 'Drop a pin first'}
+            </Text>
           </View>
         </TouchableOpacity>
-      )}
 
-      {/* Dev button for instant game completion */}
-      {__DEV__ && SHOW_DEV_CONTROLS && (
-        <TouchableOpacity
-          onPress={() => {
-            setGameOver(true)
-            setGameEventModalContent({
-              title: 'Game Over 😔',
-              message: `You're out of guesses! The location was ${correctLocation.current.latitude.toFixed(4)}, ${correctLocation.current.longitude.toFixed(4)}`,
-              subMessage: `Time: ${formatTime(elapsedTime)}`,
-            })
-            setShowGameEventModal(true)
-            submitStats(0.001, true) // Submit near-perfect score for dev button (1 meter)
-          }}
-          style={{ position: 'absolute', bottom: 10, right: 10 }}
-        >
-          <View className="bg-gray-200 px-3 py-1 rounded-full border border-gray-400">
-            <Text className="text-xs text-gray-600">DEV: Win</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-    </View>
+        <Text className="absolute bottom-14">(Click image to expand)</Text>
+
+        {gameOver && (
+          <TouchableOpacity
+            onPress={() => {
+              setGuessCount(0)
+              setGuessMarker(null)
+              setGameOver(false)
+            }}
+          >
+            <View className="rounded bg-blue-500 w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center">
+              <Text className="text-white font-bold text-center">
+                Play Again
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
+    </>
   )
 }
 
 const GameMap = ({
-  smallMap,
   guessMarker,
   onPress,
   onClose,
-  expandedImage,
 }: {
-  smallMap: boolean
   guessMarker: GuessMarker | null
   onPress: (event: any) => void
   onClose?: () => void
-  expandedImage: string | null
 }) => {
   const mapRef = useRef<MapView | null>(null)
 
+  const [mapReady, setMapReady] = useState(false)
+  const [layoutReady, setLayoutReady] = useState(false)
+
   useEffect(() => {
-    moveMapToCenter()
-  }, [expandedImage])
+    if (mapReady && layoutReady) moveMapToCenter()
+  }, [mapReady, layoutReady])
 
   const moveMapToCenter = () => {
     if (!guessMarker?.latitude || !guessMarker.longitude) return
@@ -478,16 +440,15 @@ const GameMap = ({
     <>
       <MapView
         ref={mapRef}
-        style={smallMap ? styles.smallMap : styles.fullMap}
+        style={styles.fullMap}
         initialRegion={{
           latitude: 35.7847,
           longitude: -78.6821,
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         }}
-        onMapReady={() => {
-          moveMapToCenter()
-        }}
+        onMapReady={() => setMapReady(true)}
+        onLayout={() => setLayoutReady(true)}
         onPress={onPress}
       >
         {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
@@ -500,11 +461,10 @@ const GameMap = ({
           right: 0,
           alignItems: 'center',
           zIndex: 1,
-          display: smallMap ? 'none' : undefined,
         }}
       >
         <TouchableOpacity
-          onPress={onClose}
+          onPress={moveMapToCenter}
           style={{
             backgroundColor: 'rgba(0,0,0,0.7)',
             paddingHorizontal: 24,
@@ -512,7 +472,7 @@ const GameMap = ({
             borderRadius: 30,
           }}
         >
-          <Text className="text-white text-base font-bold">Close Map</Text>
+          <Text className="text-white text-base font-bold">Center Pin</Text>
         </TouchableOpacity>
       </View>
     </>
