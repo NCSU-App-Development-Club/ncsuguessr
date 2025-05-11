@@ -7,6 +7,7 @@ import {
   Modal,
   StyleSheet,
   Pressable,
+  Platform,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
@@ -17,7 +18,11 @@ import {
 
 import { recordGuess } from '../../storage/statsStorage'
 
-import MapView, { Marker } from 'react-native-maps'
+import MapView, {
+  Marker,
+  PROVIDER_DEFAULT,
+  PROVIDER_GOOGLE,
+} from 'react-native-maps'
 
 import { useState, useEffect, useRef } from 'react'
 
@@ -450,6 +455,9 @@ const GameMap = ({
         onMapReady={() => setMapReady(true)}
         onLayout={() => setLayoutReady(true)}
         onPress={onPress}
+        provider={
+          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+        }
       >
         {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
       </MapView>

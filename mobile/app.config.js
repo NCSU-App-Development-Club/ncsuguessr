@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 export default () => ({
   expo: {
     scheme: 'ncsuguessr',
@@ -29,7 +31,7 @@ export default () => ({
       permissions: ['INTERNET'],
       config: {
         googleMaps: {
-          apiKey: 'process.env.GOOGLE_MAPS_API_KEY',
+          apiKey: process.env.GOOGLE_MAPS_API_KEY,
         },
       },
     },
