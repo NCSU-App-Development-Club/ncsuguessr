@@ -134,7 +134,7 @@ export default function GameFinished() {
   }
 
   const handleShareScore = async () => {
-    const shareText = `NCSUGuessr 2025-05-04:\n📍---- ${distance}m ----🏁`
+    const shareText = `NCSUGuessr 2025-05-04:\n📍---- ${distance}km ----🏁`
     await Share.share({
       message: shareText,
     })
