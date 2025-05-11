@@ -161,8 +161,8 @@ export default function Stats() {
               title="Average Distance"
               text={
                 averageGuessDistance !== null
-                  ? `${averageGuessDistance.toFixed(2)} m`
-                  : '0 m'
+                  ? `${averageGuessDistance.toFixed(2)} km`
+                  : '0 km'
               }
             />
           </View>
@@ -172,7 +172,7 @@ export default function Stats() {
               title="Best Overall Guess"
               text={
                 bestOverallGuess
-                  ? `${bestOverallGuess.location}: ${bestOverallGuess.distance.toFixed(2)} m`
+                  ? `${bestOverallGuess.location}: ${bestOverallGuess.distance.toFixed(2)} km`
                   : 'None yet'
               }
             />
@@ -183,7 +183,7 @@ export default function Stats() {
               title="Best Weekly Guess"
               text={
                 bestWeeklyGuess
-                  ? `${bestWeeklyGuess.location}: ${bestWeeklyGuess.distance.toFixed(2)} m`
+                  ? `${bestWeeklyGuess.location}: ${bestWeeklyGuess.distance.toFixed(2)} km`
                   : 'None this week'
               }
             />
