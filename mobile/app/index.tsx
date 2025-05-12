@@ -1,8 +1,10 @@
 import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'
-import { Link } from 'expo-router'
+import { Link, Redirect } from 'expo-router'
 
 export default function App() {
+  if (!__DEV__) return <Redirect href="/home" />
+
   return (
     <ScreenView className="items-center justify-center">
       <Text className="font-bold text-5xl m-4 mb-8">NCSUGuessr</Text>

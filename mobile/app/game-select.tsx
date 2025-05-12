@@ -18,8 +18,26 @@ export default function GameSelect() {
   const [gameDatesLoading, setGameDatesLoading] = useState(false)
   const [gameDates, setGameDates] = useState<string[]>([])
 
-  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedDate, setSelectedDate] = useState(formatOffsetDate(0))
+  const [playedAlready, setPlayedAlready] = useState<string[]>([])
   const [markedDates, setMarkedDates] = useState<MarkedDates>({})
+
+  const today = useMemo(() => formatOffsetDate(0), [])
+
+  const todayGameExists = useMemo(
+    () => gameDates.includes(today),
+    [today, gameDates]
+  )
+
+  const buttonText = !selectedDate
+    ? 'Select a date'
+    : playedAlready.includes(selectedDate)
+      ? 'Game Already Played'
+      : selectedDate === today && gameDates.includes(selectedDate)
+        ? "Play Today's Game"
+        : gameDates.includes(selectedDate)
+          ? 'Play Selected Game'
+          : 'No game for this date yet'
 
   useEffect(() => {
     const fetchGameDates = async () => {
@@ -27,6 +45,8 @@ export default function GameSelect() {
         setGameDatesLoading(true)
         const gameDatesResponse = await getGameDates()
         const playedGames = await getPlayedGames()
+
+        setPlayedAlready(playedGames.map((game) => game.date))
 
         if (!gameDatesResponse.success) {
           throw new Error(gameDatesResponse.error)
@@ -43,7 +63,6 @@ export default function GameSelect() {
           toMark[game.date] = {
             marked: true,
             dotColor: 'green',
-            disabled: true,
           }
         })
 
@@ -59,18 +78,10 @@ export default function GameSelect() {
     fetchGameDates()
   }, [])
 
-  const today = useMemo(() => formatOffsetDate(0), [])
-  const yesterday = useMemo(() => formatOffsetDate(1), [])
-
-  const todayGameExists = useMemo(
-    () => gameDates.includes(today),
-    [today, gameDates]
-  )
-
   return (
     <ScreenView className="flex flex-col p-8">
-      <BackLink to="/" label="Home" />
-      <Text className="text-5xl text-[#CC0000] font-bold self-center mt-8">
+      <BackLink to="/home" label="Home" />
+      <Text className="text-5xl text-[#000000] font-bold self-center mt-12">
         Game Select
       </Text>
       <Image
@@ -87,20 +98,9 @@ export default function GameSelect() {
         </View>
       ) : (
         <View>
-          {todayGameExists ? (
-            <GameButton
-              onPress={() => {
-                router.navigate(`/games/${today}`)
-              }}
-            >
-              Today's Game
-            </GameButton>
-          ) : (
-            <Text>Today's game hasn't been posted yet, stay tuned!</Text>
-          )}
-
-          <Text className="font-bold text-lg">Previous Games:</Text>
+          <Text className="font-bold text-lg">Daily Games:</Text>
           <Calendar
+            initialDate={today}
             disableAllTouchEventsForDisabledDays={true}
             theme={{
               selectedDayBackgroundColor: '#CC0000',
@@ -117,26 +117,27 @@ export default function GameSelect() {
                 selected: true,
                 disableTouchEvent: true,
               },
-              [today]: {
-                ...markedDates[today],
-                disabled: true,
-              },
             }}
-            maxDate={yesterday}
+            maxDate={today}
             minDate="2025-05-01"
           />
+
           <GameButton
-            disabled={!gameDates.includes(selectedDate)}
+            disabled={
+              !gameDates.includes(selectedDate) ||
+              playedAlready.includes(selectedDate)
+            }
             onPress={() => {
               router.navigate(`/games/${selectedDate}`)
             }}
           >
-            {!selectedDate
-              ? 'Select a date'
-              : gameDates.includes(selectedDate)
-                ? 'Play Selected Game'
-                : 'No game for this date'}
+            {buttonText}
           </GameButton>
+          {todayGameExists || (
+            <Text className="my-4">
+              *Today's game hasn't been posted yet, stay tuned!
+            </Text>
+          )}
         </View>
       )}
     </ScreenView>

@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native'
+import { View, Platform } from 'react-native'
+import Text from '../global/Text'
 
 interface Icon {
   icon: JSX.Element // Accepts an entire icon component

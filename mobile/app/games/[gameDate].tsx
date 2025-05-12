@@ -5,8 +5,9 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  Platform,
   StyleSheet,
+  Pressable,
+  Platform,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
@@ -17,20 +18,24 @@ import {
 
 import { recordGuess } from '../../storage/statsStorage'
 
-// Conditionally import MapView
-const MapView =
-  Platform.OS === 'web' ? null : require('react-native-maps').default
-const Marker =
-  Platform.OS === 'web' ? null : require('react-native-maps').Marker
+import MapView, {
+  Marker,
+  PROVIDER_DEFAULT,
+  PROVIDER_GOOGLE,
+} from 'react-native-maps'
 
 import { useState, useEffect, useRef } from 'react'
-import { incrementGamesPlayed } from '../../storage/statsStorage'
-import { fetchGame } from '../../util'
 
 import { formatTime } from '../../util/time'
 
 import { calculateDistance } from '../../util/map'
 import { addPlayedGame } from '../../storage/gamesStorage'
+import React from 'react'
+
+type GuessMarker = {
+  latitude: number
+  longitude: number
+}
 
 // Development settings
 const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
@@ -120,11 +125,8 @@ const GameEventModal = ({
 export default function Game() {
   const router = useRouter()
   const { gameDate } = useLocalSearchParams<{ gameDate: string }>()
-  const [expandedImage, setExpandedImage] = useState<string | null>(null)
-  const [guessMarker, setGuessMarker] = useState<{
-    latitude: number
-    longitude: number
-  } | null>(null)
+  const [expandedImage, setExpandedImage] = useState<boolean>(false)
+  const [guessMarker, setGuessMarker] = useState<GuessMarker | null>(null)
   const [guessCount, setGuessCount] = useState(0)
   const [gameOver, setGameOver] = useState(false)
   const [showGameEventModal, setShowGameEventModal] = useState(false)
@@ -139,7 +141,6 @@ export default function Game() {
   })
   const [startTime] = useState(Date.now())
   const [elapsedTime, setElapsedTime] = useState(0)
-  const isWeb = Platform.OS === 'web'
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const correctLocation = useRef({
@@ -202,9 +203,7 @@ export default function Game() {
 
   const handleMapPress = (event: any) => {
     if (gameOver) return
-    const coords = isWeb
-      ? { latitude: event.latLng.lat(), longitude: event.latLng.lng() }
-      : event.nativeEvent.coordinate
+    const coords = event.nativeEvent.coordinate
     setGuessMarker(coords)
   }
 
@@ -260,8 +259,8 @@ export default function Game() {
       closestGuess.current = { ...guessMarker }
     }
 
-    if (distance < 0.1) {
-      // Within ~100 meters - Success!
+    if (distance < 0.2) {
+      // Within ~200 meters - Success!
       setGameOver(true)
       setGameEventModalContent({
         title: 'Yay! 🎉',
@@ -275,7 +274,7 @@ export default function Game() {
       setGameOver(true)
       setGameEventModalContent({
         title: 'Game Over 😔',
-        message: `You're out of guesses! The location was ${correctLocation.current.latitude.toFixed(4)}, ${correctLocation.current.longitude.toFixed(4)}`,
+        message: `You're out of guesses!`,
         subMessage: `Time: ${formatTime(elapsedTime)}`,
       })
       setShowGameEventModal(true)
@@ -290,44 +289,6 @@ export default function Game() {
     }
   }
 
-  // Function to render Google Maps iframe for web
-  const renderGoogleMap = (width: string | number, height: string | number) => {
-    return (
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3236.9950865144584!2d-78.68429492427866!3d35.78469997258063!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89acf5a2e3c3b38f%3A0xbc19fe1c5a8312ef!2sNorth%20Carolina%20State%20University!5e0!3m2!1sen!2sus!4v1716414060646!5m2!1sen!2sus"
-        width={width}
-        height={height}
-        style={{ border: 0, borderRadius: isWeb ? '16px' : undefined }}
-        allowFullScreen={false}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
-    )
-  }
-
-  // Function to render native map for mobile
-  const renderNativeMap = (smallMap: boolean) => {
-    if (isWeb || !MapView || !Marker) return null
-
-    const mapStyle = smallMap ? styles.smallMap : styles.fullMap
-
-    return (
-      <MapView
-        style={mapStyle}
-        initialRegion={{
-          latitude: 35.7847,
-          longitude: -78.6821,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        onPress={handleMapPress}
-      >
-        {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
-        {gameOver && <Marker coordinate={correctLocation} pinColor="green" />}
-      </MapView>
-    )
-  }
-
   return (
     <View className="flex-1 items-center justify-center p-4">
       {/* Game End Modal */}
@@ -337,11 +298,13 @@ export default function Game() {
         onClose={
           gameOver
             ? async () => {
+                console.log('adding game')
                 await addPlayedGame(
                   gameDate,
                   closestGuess.current.latitude,
                   closestGuess.current.longitude
                 )
+                console.log('navigating')
                 router.replace({
                   pathname: '/game-finished',
                   params: {
@@ -357,134 +320,62 @@ export default function Game() {
         subMessage={gameEventModalContent.subMessage}
       />
 
-      <Text className="text-3xl mb-4">Where is this?</Text>
-      <View className="flex-row items-center justify-between w-full px-4 mb-2">
+      <Text className="text-3xl">Where is this?</Text>
+      <View className="flex-row items-center justify-between w-full">
         <Text className="text-gray-500">
           Guesses remaining: {3 - guessCount}
         </Text>
         <Text className="text-gray-500">Time: {formatTime(elapsedTime)}</Text>
       </View>
 
-      <TouchableOpacity onPress={() => setExpandedImage('map')}>
-        <View className="relative p-2">
-          <View className="overflow-hidden rounded-2xl">
-            {isWeb ? renderGoogleMap(300, 200) : renderNativeMap(true)}
-          </View>
-          <View className="absolute top-4 right-4 bg-black/90 rounded-full w-14 h-14 items-center justify-center">
-            <Text className="text-black-200/90 text-4xl font-bold">+</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => setExpandedImage('belltower')}>
-        <View className="relative p-2">
-          <View className="overflow-hidden rounded-2xl">
-            {error ? (
-              <Text className="text-red-500">{error}</Text>
-            ) : imageUrl ? (
-              <Image
-                source={{ uri: imageUrl }}
-                style={{ width: 300, height: 200 }}
-              />
-            ) : (
-              <Text>Loading image...</Text>
-            )}
-          </View>
-          <View className="absolute top-4 right-4 bg-black/90 rounded-full w-14 h-14 items-center justify-center">
-            <Text className="text-black-200/90 text-4xl font-bold">+</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      <Modal visible={expandedImage !== null} transparent={true}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
-          {/* Modal content */}
-          <View style={{ flex: 1 }}>
-            {expandedImage === 'map' ? (
-              isWeb ? (
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'white',
-                    margin: 20,
-                    borderRadius: 16,
-                    padding: 20,
-                  }}
-                >
-                  {renderGoogleMap('90%', '90%')}
-                </View>
-              ) : (
-                <View
-                  style={{
-                    flex: 1,
-                    margin: 20,
-                    borderRadius: 16,
-                    overflow: 'hidden',
-                    backgroundColor: 'white',
-                  }}
-                >
-                  {renderNativeMap(false)}
-                </View>
-              )
-            ) : (
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  margin: 20,
-                  backgroundColor: 'white',
-                  borderRadius: 16,
-                  padding: 20,
-                }}
-                activeOpacity={1}
-                onPress={() => setExpandedImage(null)}
-              >
-                {error ? (
-                  <Text className="text-red-500">{error}</Text>
-                ) : imageUrl ? (
-                  <Image
-                    source={{ uri: imageUrl }}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      resizeMode: 'contain',
-                    }}
-                  />
-                ) : (
-                  <Text>Loading image...</Text>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Bottom close button */}
-          {expandedImage === 'map' && (
-            <View
-              style={{
-                position: 'absolute',
-                bottom: 40,
-                left: 0,
-                right: 0,
-                alignItems: 'center',
-                zIndex: 1,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => setExpandedImage(null)}
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.7)',
-                  paddingHorizontal: 24,
-                  paddingVertical: 12,
-                  borderRadius: 30,
-                }}
-              >
-                <Text className="text-white text-base font-bold">
-                  Close Map
-                </Text>
-              </TouchableOpacity>
-            </View>
+      <TouchableOpacity
+        className="absolute bottom-4 left-4 h-24 w-24 rounded-2xl"
+        onPress={() => setExpandedImage(true)}
+      >
+        <View className="overflow-hidden rounded-2xl">
+          {error ? (
+            <Text className="text-red-500">{error}</Text>
+          ) : imageUrl ? (
+            <Image source={{ uri: imageUrl }} className="h-24 w-24" />
+          ) : (
+            <Text>Loading image...</Text>
           )}
+        </View>
+      </TouchableOpacity>
+
+      <View className="w-full h-[70%]">
+        <View className="overflow-hidden rounded-2xl">
+          <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
+        </View>
+      </View>
+
+      <Modal visible={expandedImage} transparent={true} className="h-fit">
+        <View
+          className="h-fit"
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <TouchableOpacity
+              className="h-full bg-white border-r-16 m-2 p-2 flex-1"
+              activeOpacity={1}
+              onPress={() => setExpandedImage(false)}
+            >
+              {error ? (
+                <Text className="text-red-500">{error}</Text>
+              ) : imageUrl ? (
+                <Image
+                  source={{ uri: imageUrl }}
+                  className="w-full h-full"
+                  resizeMode="contain"
+                />
+              ) : (
+                <Text>Loading image...</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
 
@@ -505,6 +396,8 @@ export default function Game() {
         </View>
       </TouchableOpacity>
 
+      <Text className="absolute bottom-14">(Click image to expand)</Text>
+
       {gameOver && (
         <TouchableOpacity
           onPress={() => {
@@ -518,28 +411,82 @@ export default function Game() {
           </View>
         </TouchableOpacity>
       )}
-
-      {/* Dev button for instant game completion */}
-      {__DEV__ && SHOW_DEV_CONTROLS && (
-        <TouchableOpacity
-          onPress={() => {
-            setGameOver(true)
-            setGameEventModalContent({
-              title: 'Game Over 😔',
-              message: `You're out of guesses! The location was ${correctLocation.current.latitude.toFixed(4)}, ${correctLocation.current.longitude.toFixed(4)}`,
-              subMessage: `Time: ${formatTime(elapsedTime)}`,
-            })
-            setShowGameEventModal(true)
-            submitStats(0.001, true) // Submit near-perfect score for dev button (1 meter)
-          }}
-          style={{ position: 'absolute', bottom: 10, right: 10 }}
-        >
-          <View className="bg-gray-200 px-3 py-1 rounded-full border border-gray-400">
-            <Text className="text-xs text-gray-600">DEV: Win</Text>
-          </View>
-        </TouchableOpacity>
-      )}
     </View>
+  )
+}
+
+const GameMap = ({
+  guessMarker,
+  onPress,
+  onClose,
+}: {
+  guessMarker: GuessMarker | null
+  onPress: (event: any) => void
+  onClose?: () => void
+}) => {
+  const mapRef = useRef<MapView | null>(null)
+
+  const [mapReady, setMapReady] = useState(false)
+  const [layoutReady, setLayoutReady] = useState(false)
+
+  useEffect(() => {
+    if (mapReady && layoutReady) moveMapToCenter()
+  }, [mapReady, layoutReady])
+
+  const moveMapToCenter = () => {
+    if (!guessMarker?.latitude || !guessMarker.longitude) return
+    mapRef.current?.animateToRegion(
+      {
+        ...guessMarker,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      },
+      500
+    )
+  }
+  return (
+    <>
+      <MapView
+        ref={mapRef}
+        style={styles.fullMap}
+        initialRegion={{
+          latitude: 35.7847,
+          longitude: -78.6821,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+        onMapReady={() => setMapReady(true)}
+        onLayout={() => setLayoutReady(true)}
+        onPress={onPress}
+        provider={
+          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+        }
+      >
+        {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
+      </MapView>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 40,
+          left: 0,
+          right: 0,
+          alignItems: 'center',
+          zIndex: 1,
+        }}
+      >
+        <TouchableOpacity
+          onPress={moveMapToCenter}
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 30,
+          }}
+        >
+          <Text className="text-white text-base font-bold">Center Pin</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   )
 }
 

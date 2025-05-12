@@ -9,15 +9,7 @@ import { fetchGame } from '../util'
 import { ImageDto } from '@ncsuguessr/types/src/images'
 
 import { calculateDistance } from '../util/map'
-import { LatLng } from 'react-native-maps'
-
-// Conditionally import MapView
-const MapView =
-  Platform.OS === 'web' ? null : require('react-native-maps').default
-const Marker =
-  Platform.OS === 'web' ? null : require('react-native-maps').Marker
-const Polyline =
-  Platform.OS === 'web' ? null : require('react-native-maps').Polyline
+import MapView, { Marker, Polyline, LatLng } from 'react-native-maps'
 
 type GameFinishedProps = { gameDate: string; userGuess: LatLng | undefined }
 type GameFinishedParams = { gameDate: string; userGuess: string }
@@ -28,7 +20,7 @@ export function GameFinishedMap(props: GameFinishedProps) {
 
   const [gameData, setGameData] = useState<ImageDto | null>(null)
 
-  const mapRef = useRef<typeof MapView>(null)
+  const mapRef = useRef<MapView>(null)
   const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
