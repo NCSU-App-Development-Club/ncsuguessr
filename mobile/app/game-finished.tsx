@@ -10,14 +10,7 @@ import { ImageDto } from '@ncsuguessr/types/src/images'
 
 import { calculateDistance } from '../util/map'
 import BackLink from '../components/global/BackLink'
-
-// Conditionally import MapView
-const MapView =
-  Platform.OS === 'web' ? null : require('react-native-maps').default
-const Marker =
-  Platform.OS === 'web' ? null : require('react-native-maps').Marker
-const Polyline =
-  Platform.OS === 'web' ? null : require('react-native-maps').Polyline
+import MapView, { Marker, Polyline } from 'react-native-maps'
 
 type GameFinishedParams = {
   gameDate: string
@@ -32,7 +25,7 @@ export default function GameFinished() {
 
   const [gameData, setGameData] = useState<ImageDto | null>(null)
 
-  const mapRef = useRef<typeof MapView>(null)
+  const mapRef = useRef<MapView>(null)
   const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
@@ -78,14 +71,10 @@ export default function GameFinished() {
 
   const distance = calculateDistance(userGuess, actualLocation).toFixed(2)
   const locationName = gameData?.location_name || ''
-  const isWeb = Platform.OS === 'web'
 
   if (loading) return <Text>Loading...</Text>
 
-  // Function to render native map
-  const renderNativeMap = () => {
-    if (isWeb || !MapView || !Marker || !Polyline) return null
-
+  const GameFinishedMap = () => {
     return (
       <MapView
         ref={mapRef}
@@ -164,7 +153,7 @@ export default function GameFinished() {
       </TouchableOpacity>
 
       <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300 mb-6">
-        {!isWeb && renderNativeMap()}
+        <GameFinishedMap />
       </View>
 
       <View className="w-full flex-row space-x-4 mb-6">
