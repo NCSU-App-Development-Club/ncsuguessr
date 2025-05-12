@@ -39,8 +39,8 @@ export default function GameSelect() {
           toMark[game.date] = { marked: true }
         })
 
-        playedGames.forEach((date) => {
-          toMark[date] = {
+        playedGames.forEach((game) => {
+          toMark[game.date] = {
             marked: true,
             dotColor: 'green',
             disabled: true,

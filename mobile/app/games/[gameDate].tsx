@@ -337,7 +337,11 @@ export default function Game() {
         onClose={
           gameOver
             ? async () => {
-                await addPlayedGame(gameDate)
+                await addPlayedGame(
+                  gameDate,
+                  closestGuess.current.latitude,
+                  closestGuess.current.longitude
+                )
                 router.replace({
                   pathname: '/game-finished',
                   params: {
