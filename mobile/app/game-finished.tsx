@@ -177,7 +177,7 @@ export function GameFinishedMap(props: GameFinishedProps) {
 
 export default function GameFinished() {
   const params: any = useLocalSearchParams<GameFinishedParams>()
-  params.userGuess = JSON.stringify(params.userGuess) || {
+  params.userGuess = JSON.parse(params.userGuess) || {
     latitude: 0,
     longitude: 0,
   }
