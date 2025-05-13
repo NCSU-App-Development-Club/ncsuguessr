@@ -134,25 +134,14 @@ export default function Game() {
     title: string
     message: string
     subMessage?: string
-  }>({
-    title: '',
-    message: '',
-    subMessage: '',
-  })
+  }>({ title: '', message: '', subMessage: '' })
   const [startTime] = useState(Date.now())
   const [elapsedTime, setElapsedTime] = useState(0)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const correctLocation = useRef({
-    name: '',
-    latitude: 0,
-    longitude: 0,
-  })
+  const correctLocation = useRef({ name: '', latitude: 0, longitude: 0 })
 
-  const closestGuess = useRef<{
-    latitude: number
-    longitude: number
-  }>({
+  const closestGuess = useRef<{ latitude: number; longitude: number }>({
     latitude: 0,
     longitude: 0,
   })
@@ -491,12 +480,6 @@ const GameMap = ({
 }
 
 const styles = StyleSheet.create({
-  smallMap: {
-    width: 300,
-    height: 200,
-  },
-  fullMap: {
-    width: '100%',
-    height: '100%',
-  },
+  smallMap: { width: 300, height: 200 },
+  fullMap: { width: '100%', height: '100%' },
 })

@@ -2,6 +2,7 @@ import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'
 import BackLink from '../components/global/BackLink'
 import {
+  addPlayedGame,
   GamesPlayedData,
   getPlayedGames,
   PlayedGame,
@@ -42,7 +43,7 @@ export default function Archive() {
   const yesterday = useMemo(() => formatOffsetDate(1), [])
 
   return (
-    <ScreenView className="items-center flex-col p-8">
+    <ScreenView className="flex-1 items-center flex-col p-8">
       <BackLink to="/" />
 
       <View className="h-max flex-1 justify-center">
@@ -50,7 +51,6 @@ export default function Archive() {
           <Text>Select a day to view statistics.</Text>
         ) : (
           <View>
-            <Text>Showing {selectedDate} </Text>
             <GameFinishedMap
               gameDate={selectedDate}
               userGuess={{
@@ -61,7 +61,7 @@ export default function Archive() {
           </View>
         )}
       </View>
-      <View className="h-max flex-1 justify-center">
+      <View className="h-max w-full h-100 justify-center">
         <Calendar
           disableAllTouchEventsForDisabledDays={true}
           theme={{
