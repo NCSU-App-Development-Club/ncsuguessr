@@ -40,7 +40,7 @@ export default function Archive() {
     fetchGames()
   })
 
-  const yesterday = useMemo(() => formatOffsetDate(1), [])
+  const today = useMemo(() => formatOffsetDate(0), [])
 
   return (
     <ScreenView className="flex-1 items-center flex-col p-8">
@@ -80,7 +80,7 @@ export default function Archive() {
               disableTouchEvent: true,
             },
           }}
-          maxDate={yesterday}
+          maxDate={today}
           minDate="2025-05-01"
         />
       </View>
