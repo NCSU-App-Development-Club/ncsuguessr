@@ -38,26 +38,28 @@ export default function Archive() {
       setGames(data)
     }
     fetchGames()
-  })
+  }, [])
 
   const today = useMemo(() => formatOffsetDate(0), [])
 
   return (
     <ScreenView className="flex-1 items-center flex-col p-8">
-      <BackLink to="/" />
+      <BackLink to="/home" />
 
       <View className="h-max flex-1 justify-center">
         {selectedGame === undefined ? (
           <Text>Select a day to view statistics.</Text>
         ) : (
           <View>
-            <GameFinishedMap
-              gameDate={selectedDate}
-              userGuess={{
-                latitude: selectedGame.latGuess,
-                longitude: selectedGame.longGuess,
-              }}
-            />
+            {selectedDate && (
+              <GameFinishedMap
+                gameDate={selectedDate}
+                userGuess={{
+                  latitude: selectedGame.latGuess,
+                  longitude: selectedGame.longGuess,
+                }}
+              />
+            )}
           </View>
         )}
       </View>

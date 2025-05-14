@@ -8,7 +8,7 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <ScreenView className="flex flex-col items-center justify-center gap-6">
+    <ScreenView className="flex flex-col items-center justify-center gap-4">
       <View className="w-full">
         <View className="w-full h-24 flex items-center justify-center">
           <Text className="text-[#c00] text-5xl font-bold mb-3">
@@ -27,7 +27,7 @@ export default function Home() {
 
       <TouchableOpacity
         onPress={() => router.push('/game-select')}
-        className="bg-ncsured w-60 py-4 rounded-full items-center"
+        className="bg-ncsured w-60 py-4 rounded-full items-center mt-4"
       >
         <Text className="text-white text-xl font-bold">Start Game</Text>
       </TouchableOpacity>
@@ -37,6 +37,13 @@ export default function Home() {
         className="bg-ncsured w-60 py-4 rounded-full items-center"
       >
         <Text className="text-white text-xl font-bold">Stats</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => router.push('/archive')}
+        className="bg-ncsured w-60 py-4 rounded-full items-center"
+      >
+        <Text className="text-white text-xl font-bold">Archive</Text>
       </TouchableOpacity>
       {__DEV__ && <BackLink to="/" />}
     </ScreenView>
