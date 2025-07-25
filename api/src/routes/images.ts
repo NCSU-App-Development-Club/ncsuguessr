@@ -9,7 +9,7 @@ import {
 } from '@ncsuguessr/types/images'
 import { generateHttpExceptionMessage, getImageExtension } from '../util'
 import { getImage, getImagesByUsed, insertImage } from '../repository/images'
-import { getReadPresignedUrl } from '../util/r2'
+import { ImageBucketClient } from '../util/buckets'
 import { validator } from 'hono/validator'
 import { adminTokenAuth } from '../middleware/auth'
 
@@ -60,15 +60,14 @@ imagesRouter.post(
       })
     }
 
+    const imageBucketClient = new ImageBucketClient(ctx.env)
+
     // TODO: handle heic/heif
 
-    const fileLocation = crypto.randomUUID().trim() + fileExtension
-    const imageContent = await image.arrayBuffer()
+    const imageKey = crypto.randomUUID().trim() + fileExtension
 
     try {
-      await ctx.env.R2.put(fileLocation, imageContent, {
-        httpMetadata: { contentType: image.type },
-      })
+      await imageBucketClient.putImage(imageKey, image)
     } catch (e) {
       console.error('failed to process uploaded image', e)
       throw new HTTPException(500, {
@@ -78,7 +77,7 @@ imagesRouter.post(
 
     const newImage: NewImage = {
       ...parsedFormFields,
-      file_location: fileLocation,
+      file_location: imageKey,
       used: false,
     }
 
@@ -98,7 +97,7 @@ imagesRouter.post(
 
       // cleanup by attempting to delete the image from r2
       try {
-        await ctx.env.R2.delete(fileLocation)
+        await imageBucketClient.deleteImage(imageKey)
       } catch (e) {
         console.error(
           'failed to insert image record into database, orphaned object remains',
@@ -132,6 +131,8 @@ imagesRouter.get('/:imageId/url', async (ctx) => {
     })
   }
 
+  const imageBucketClient = new ImageBucketClient(ctx.env)
+
   const image = await getImage(ctx.env.D1, imageId)
 
   if (!image) {
@@ -140,7 +141,9 @@ imagesRouter.get('/:imageId/url', async (ctx) => {
     })
   }
 
-  const signedUrl = await getReadPresignedUrl(ctx.env, image.file_location)
+  const signedUrl = await imageBucketClient.generateGetPresignedUrl(
+    image.file_location
+  )
 
   return ctx.json({ success: true, imageUrl: signedUrl })
 })

@@ -18,9 +18,9 @@ import {
 import { generateHttpExceptionMessage } from '../util'
 import { ImageRow } from '@ncsuguessr/types/images'
 import { getImage, markImageUsed } from '../repository/images'
-import { getReadPresignedUrl } from '../util/r2'
 import { zValidator } from '@hono/zod-validator'
 import { adminTokenAuth } from '../middleware/auth'
+import { ImageBucketClient } from '../util/buckets'
 
 export const gamesRouter = new Hono<{ Bindings: Bindings }>()
 
@@ -66,9 +66,13 @@ gamesRouter.get('/:gameDate', async (ctx) => {
     })
   }
 
+  const imageBucketClient = new ImageBucketClient(ctx.env)
+
   let signedUrl: string
   try {
-    signedUrl = await getReadPresignedUrl(ctx.env, image.file_location)
+    signedUrl = await imageBucketClient.generateGetPresignedUrl(
+      image.file_location
+    )
   } catch (e) {
     console.error('failed to get presigned url', e)
     throw new HTTPException(500, {
