@@ -1,16 +1,15 @@
 import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'
-import { View, TouchableOpacity, Platform, Share } from 'react-native'
-import { Link, useLocalSearchParams, router } from 'expo-router'
+import { View, TouchableOpacity, Share } from 'react-native'
+import { useLocalSearchParams, router } from 'expo-router'
 import { useState, useEffect, useRef } from 'react'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 import React from 'react'
-import { fetchGame } from '../util'
 import { ImageDto } from '@ncsuguessr/types/src/images'
-
 import { calculateDistance } from '../util/map'
 import BackLink from '../components/global/BackLink'
 import MapView, { Marker, Polyline } from 'react-native-maps'
+import { fetchGame } from '../util/api/games'
 
 type GameFinishedParams = {
   gameDate: string

@@ -14,3 +14,23 @@ export const formatOffsetDate = (offsetDays: number): string => {
   const dateString = `${year}-${month}-${day}`
   return dateString
 }
+
+export const lastNDays = (n: number): Date[] => {
+  const dates: Date[] = []
+
+  const today = new Date()
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+
+    dates.push(d)
+  }
+
+  return dates
+}
+
+export const formatSecondsToMMSS = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.round(seconds % 60)
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}

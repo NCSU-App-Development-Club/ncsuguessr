@@ -170,3 +170,7 @@ const getISOWeek = (date: Date): string => {
   )
   return weekNo.toString().padStart(2, '0')
 }
+
+export const resetStats = async (): Promise<void> => {
+  await AsyncStorage.removeItem(STATS_KEY)
+}

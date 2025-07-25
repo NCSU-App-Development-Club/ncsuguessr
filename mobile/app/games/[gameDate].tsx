@@ -1,36 +1,28 @@
 import Text from '../../components/global/Text'
-
 import {
   View,
   Image,
   TouchableOpacity,
   Modal,
   StyleSheet,
-  Pressable,
   Platform,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-
 import {
   GetGameSuccessResponse,
   GetGameSuccessResponseSchema,
 } from '@ncsuguessr/types/src/games'
-
-import { recordGuess } from '../../storage/statsStorage'
-
+import { recordGuess } from '../../util/storage/statsStorage'
 import MapView, {
   Marker,
   PROVIDER_DEFAULT,
   PROVIDER_GOOGLE,
 } from 'react-native-maps'
-
 import { useState, useEffect, useRef } from 'react'
-
 import { formatTime } from '../../util/time'
-
 import { calculateDistance } from '../../util/map'
-import { addPlayedGame } from '../../storage/gamesStorage'
 import React from 'react'
+import { addLocalPlayedGame } from '../../util/storage/gamesStorage'
 
 type GuessMarker = {
   latitude: number
@@ -298,7 +290,7 @@ export default function Game() {
           onClose={
             gameOver
               ? async () => {
-                  await addPlayedGame(gameDate)
+                  await addLocalPlayedGame(gameDate)
                   router.replace({
                     pathname: '/game-finished',
                     params: {

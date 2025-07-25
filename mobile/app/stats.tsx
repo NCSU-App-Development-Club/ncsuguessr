@@ -1,114 +1,51 @@
-import { ScrollView, View, Text, Alert, TouchableOpacity } from 'react-native'
-import ScreenView from '../components/global/ScreenView'
-import BackLink from '../components/global/BackLink'
-import StatBox from '../components/team-3/StatBox'
-import LineGraph from '../components/team-3/LineGraph'
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 import { useEffect, useState } from 'react'
-import { getStats } from '../storage/statsStorage'
-import { incrementGamesPlayed } from '../storage/statsStorage'
-import { recordGuess } from '../storage/statsStorage'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import BackLink from '../components/global/BackLink'
+import ScreenView from '../components/global/ScreenView'
+import LineGraph from '../components/stats/LineGraph'
+import StatBox from '../components/stats/StatBox'
+import { getStats, resetStats, StatsData } from '../util/storage/statsStorage'
+import { formatSecondsToMMSS, lastNDays } from '../util/time'
 
 export default function Stats() {
-  const [gamesPlayed, setGamesPlayedState] = useState<number | null>(null)
-  const [averageGuessDistance, setAverageGuessDistance] = useState<
-    number | null
-  >(null)
-  const [bestOverallGuess, setBestOverallGuess] = useState<{
-    distance: number
-    location: string
-  } | null>(null)
-  const [bestWeeklyGuess, setBestWeeklyGuess] = useState<{
-    distance: number
-    location: string
-    weekOf: string
-  } | null>(null)
-  const [playStreak, setPlayStreak] = useState<{
-    current: number
-    lastPlayed: string
-  } | null>(null)
-  const [averageGuessTime, setAverageGuessTime] = useState<number | null>(null)
   const [graphData, setGraphData] = useState<number[]>([])
   const [graphLabels, setGraphLabels] = useState<string[]>([])
 
+  const [statsState, setStatsState] = useState<StatsData | null>(null)
+
+  // fetches stats from local device storage on initialization
   useEffect(() => {
+    const buildDailyGraphData = (stats: StatsData): number[] =>
+      lastNDays(7).map((day) => {
+        const dateKey = day.toISOString().split('T')[0]
+        return stats.dailyGames ? stats.dailyGames[dateKey] || 0 : 0
+      })
+
+    const buildDailyGraphLabels = (): string[] =>
+      lastNDays(7).map((day) =>
+        day.toLocaleDateString('en-US', { weekday: 'short' })
+      )
+
     const fetchStats = async () => {
       const stats = await getStats()
-      if (stats) {
-        setGamesPlayedState(stats.gamesPlayed)
-        setAverageGuessDistance(stats.averageGuessDistance)
-        setBestOverallGuess(stats.bestOverallGuess)
-        setBestWeeklyGuess(stats.bestWeeklyGuess)
-        setPlayStreak(stats.playStreak)
-        setAverageGuessTime(stats.averageGuessTime)
 
-        // Build daily graph data based on the daily games count
-        const today = new Date()
-        const dailyData: number[] = []
-        const labels: string[] = []
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(today)
-          d.setDate(today.getDate() - i)
-          const dateKey = d.toISOString().split('T')[0]
-          dailyData.push(stats.dailyGames ? stats.dailyGames[dateKey] || 0 : 0)
-          labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }))
-        }
-        setGraphData(dailyData)
-        setGraphLabels(labels)
-      } else {
-        // Initialize with zeros if no stats exist
-        setGraphData(Array(7).fill(0))
-        const today = new Date()
-        const labels: string[] = []
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(today)
-          d.setDate(today.getDate() - i)
-          labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }))
-        }
-        setGraphLabels(labels)
-      }
+      const labels = buildDailyGraphLabels()
+      const data = stats
+        ? (setStatsState(stats), buildDailyGraphData(stats))
+        : Array(7).fill(0)
+
+      setGraphData(data)
+      setGraphLabels(labels)
     }
+
     fetchStats()
   }, [])
 
-  const handleTestIncrement = async () => {
-    await incrementGamesPlayed()
-    const stats = await getStats()
-    if (stats) {
-      setGamesPlayedState(stats.gamesPlayed)
-      setPlayStreak(stats.playStreak)
-    }
-  }
-
   const handleResetStats = async () => {
-    await AsyncStorage.removeItem('@myapp:stats')
-    setGamesPlayedState(null)
-    setAverageGuessDistance(null)
-    setBestOverallGuess(null)
-    setBestWeeklyGuess(null)
-    setPlayStreak(null)
-    setAverageGuessTime(null)
+    await resetStats()
+    setStatsState(null)
     console.log('Stats cleared')
-  }
-
-  const handleTestRecordGuess = async () => {
-    await recordGuess(0.12, 'Talley', '2025-04-08', 52)
-    const stats = await getStats()
-    if (stats) {
-      setGamesPlayedState(stats.gamesPlayed)
-      setAverageGuessDistance(stats.averageGuessDistance)
-      setBestOverallGuess(stats.bestOverallGuess)
-      setBestWeeklyGuess(stats.bestWeeklyGuess)
-      setPlayStreak(stats.playStreak)
-      setAverageGuessTime(stats.averageGuessTime)
-    }
-  }
-
-  const formatSecondsToMMSS = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.round(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
   const showResetConfirmation = () => {
@@ -146,7 +83,11 @@ export default function Stats() {
             <StatBox
               icon={<SimpleLineIcons name="map" size={28} color="#CC0000" />}
               title="Games Played"
-              text={gamesPlayed !== null ? `${gamesPlayed} Games` : '0 Games'}
+              text={
+                statsState && statsState.gamesPlayed !== null
+                  ? `${statsState.gamesPlayed} Games`
+                  : '0 Games'
+              }
             />
           </View>
           <View className="w-1/2 p-2">
@@ -160,8 +101,8 @@ export default function Stats() {
               }
               title="Average Distance"
               text={
-                averageGuessDistance !== null
-                  ? `${averageGuessDistance.toFixed(2)} km`
+                statsState && statsState.averageGuessDistance !== null
+                  ? `${statsState.averageGuessDistance.toFixed(2)} km`
                   : '0 km'
               }
             />
@@ -171,8 +112,8 @@ export default function Stats() {
               icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
               title="Best Overall Guess"
               text={
-                bestOverallGuess
-                  ? `${bestOverallGuess.location}: ${bestOverallGuess.distance.toFixed(2)} km`
+                statsState && statsState.bestOverallGuess
+                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toFixed(2)} km`
                   : 'None yet'
               }
             />
@@ -182,8 +123,8 @@ export default function Stats() {
               icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
               title="Best Weekly Guess"
               text={
-                bestWeeklyGuess
-                  ? `${bestWeeklyGuess.location}: ${bestWeeklyGuess.distance.toFixed(2)} km`
+                statsState && statsState.bestWeeklyGuess
+                  ? `${statsState.bestWeeklyGuess.location}: ${statsState.bestWeeklyGuess.distance.toFixed(2)} km`
                   : 'None this week'
               }
             />
@@ -193,8 +134,8 @@ export default function Stats() {
               icon={<SimpleLineIcons name="fire" size={28} color="#CC0000" />}
               title="Play Streak"
               text={
-                playStreak
-                  ? `${playStreak.current} Day${playStreak.current !== 1 ? 's' : ''}`
+                statsState && statsState.playStreak
+                  ? `${statsState.playStreak.current} Day${statsState.playStreak.current !== 1 ? 's' : ''}`
                   : '0 Days'
               }
             />
@@ -204,8 +145,8 @@ export default function Stats() {
               icon={<SimpleLineIcons name="clock" size={28} color="#CC0000" />}
               title="Average Time"
               text={
-                averageGuessTime !== null
-                  ? formatSecondsToMMSS(averageGuessTime)
+                statsState && statsState.averageGuessTime !== null
+                  ? formatSecondsToMMSS(statsState.averageGuessTime)
                   : '0:00'
               }
             />
@@ -225,21 +166,6 @@ export default function Stats() {
             labels={graphLabels}
           />
         </View>
-
-        {/* 🔧 TEST BUTTON */}
-        {/* <View className="mt-4 items-center">
-            <Button
-              title="Test Increment Games Played"
-              onPress={handleTestIncrement}
-            />
-          </View>
-          <View className="mt-4 items-center">
-            <Button
-              title="Test Record Guess"
-              onPress={handleTestRecordGuess}
-              color="#007aff"
-            />
-          </View> */}
 
         {/* Styled Reset Stats Button */}
         <View className="mt-8 items-center">

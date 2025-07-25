@@ -3,13 +3,11 @@ import { View, Text, TouchableOpacity, Image } from 'react-native'
 import ScreenView from '../components/global/ScreenView'
 import BackLink from '../components/global/BackLink'
 import { useRouter } from 'expo-router'
-
 import { formatOffsetDate } from '../util/time'
-import { getGameDates } from '../util'
-
 import { Calendar, DateData } from 'react-native-calendars'
 import { MarkedDates } from 'react-native-calendars/src/types'
-import { getPlayedGames } from '../storage/gamesStorage'
+import { getLocalPlayedGames } from '../util/storage/gamesStorage'
+import { getGameDates } from '../util/api/games'
 
 export default function GameSelect() {
   const [error, setError] = useState('')
@@ -44,7 +42,7 @@ export default function GameSelect() {
       try {
         setGameDatesLoading(true)
         const gameDatesResponse = await getGameDates()
-        const playedGames = await getPlayedGames()
+        const playedGames = await getLocalPlayedGames()
 
         setPlayedAlready(playedGames)
 

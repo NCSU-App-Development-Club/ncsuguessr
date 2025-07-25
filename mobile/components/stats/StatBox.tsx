@@ -1,4 +1,4 @@
-import { View, Platform } from 'react-native'
+import { View } from 'react-native'
 import Text from '../global/Text'
 
 interface Icon {
