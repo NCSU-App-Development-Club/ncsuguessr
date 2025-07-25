@@ -8,10 +8,10 @@ import {
   NewImage,
 } from '@ncsuguessr/types/images'
 import { generateHttpExceptionMessage, getImageExtension } from '../util'
-import { getImage, getImagesByUsed, insertImage } from '../repository/images'
 import { ImageBucketClient } from '../util/buckets'
 import { validator } from 'hono/validator'
 import { adminTokenAuth } from '../middleware/auth'
+import { GameTableClient, ImageTableClient } from '../util/tables'
 
 export const imagesRouter = new Hono<{ Bindings: Bindings }>()
 
@@ -61,6 +61,7 @@ imagesRouter.post(
     }
 
     const imageBucketClient = new ImageBucketClient(ctx.env)
+    const imageTableClient = new ImageTableClient(ctx.env)
 
     // TODO: handle heic/heif
 
@@ -82,7 +83,7 @@ imagesRouter.post(
     }
 
     try {
-      const insertResult = await insertImage(ctx.env.D1, newImage)
+      const insertResult = await imageTableClient.insertImage(newImage)
       if (!insertResult.success) {
         throw new Error(
           insertResult.error
@@ -132,8 +133,9 @@ imagesRouter.get('/:imageId/url', async (ctx) => {
   }
 
   const imageBucketClient = new ImageBucketClient(ctx.env)
+  const imageTableClient = new ImageTableClient(ctx.env)
 
-  const image = await getImage(ctx.env.D1, imageId)
+  const image = await imageTableClient.getImage(imageId)
 
   if (!image) {
     throw new HTTPException(404, {
@@ -160,9 +162,12 @@ imagesRouter.get('/', adminTokenAuth(), async (ctx) => {
 
   const usedParam = usedParamStr === 'true'
 
+  const imageTableClient = new ImageTableClient(ctx.env)
+
   let images: ImagesDto
   try {
-    images = (await getImagesByUsed(ctx.env.D1, usedParam)).map((image) => ({
+    const imagesByUsed = await imageTableClient.getImages(usedParam)
+    images = imagesByUsed.map((image) => ({
       ...image,
       taken_at: image.taken_at.getTime(),
     }))
