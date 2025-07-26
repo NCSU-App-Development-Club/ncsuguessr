@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { ErrorJSONResponseSchema, generateSuccessJSONResponseSchema } from '.'
-import { ImageDtoSchema, ImageRowSchema } from './images'
+import { ImageDtoSchema } from './images'
 
 // NOTE: this must be kept in sync with game table definition
 export const GameRowSchema = z.object({
