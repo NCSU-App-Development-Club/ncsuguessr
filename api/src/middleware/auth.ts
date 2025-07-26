@@ -15,6 +15,7 @@ export const adminTokenAuth = (): MiddlewareHandler<{ Bindings: Bindings }> => {
       })
     }
 
+    // slice off the 'Bearer '
     const token = authHeader.slice(7).trim()
 
     if (!token) {
