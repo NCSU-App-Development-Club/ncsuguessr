@@ -1,23 +1,21 @@
-import Text from '../components/global/Text'
-import ScreenView from '../components/global/ScreenView'
-import { View, TouchableOpacity, Share } from 'react-native'
-import { useLocalSearchParams, router } from 'expo-router'
-import { useState, useEffect, useRef } from 'react'
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
-import React from 'react'
+import { FontAwesome } from '@expo/vector-icons'
 import { ImageDto } from '@ncsuguessr/types/src/images'
-import { calculateDistance } from '../util/map'
-import BackLink from '../components/global/BackLink'
-import MapView, { Marker, Polyline } from 'react-native-maps'
-import { fetchGame } from '../util/api/games'
+import { router, useLocalSearchParams } from 'expo-router'
+import React, { useEffect, useRef, useState } from 'react'
+import { Share, TouchableOpacity, View } from 'react-native'
+import MapView from 'react-native-maps'
 import z from 'zod'
+import GameFinishedMap from '../components/game/GameFinishedMap'
+import BackLink from '../components/global/BackLink'
+import ScreenView from '../components/global/ScreenView'
+import Text from '../components/global/Text'
+import { fetchGame } from '../util/api/games'
+import { Coordinate } from '../util/space/location'
 
 const UserGuessSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
 })
-
-type UserGuess = z.infer<typeof UserGuessSchema>
 
 const GameFinishedParamsSchema = z.object({
   gameDate: z.string(),
@@ -28,10 +26,16 @@ type GameFinishedParams = z.infer<typeof GameFinishedParamsSchema>
 
 export default function GameFinished() {
   const params = useLocalSearchParams<GameFinishedParams>()
+  const userGuess = Coordinate.ofObject(
+    UserGuessSchema.parse(JSON.parse(params.userGuess))
+  )
 
   const [gameDataLoading, setGameDataLoading] = useState(true)
   const [gameDataError, setGameDataError] = useState<string | null>(null)
-  const [gameData, setGameData] = useState<ImageDto | null>(null)
+  const [imageData, setImageData] = useState<ImageDto | null>(null)
+  const actualLocation = imageData
+    ? new Coordinate(imageData.latitude, imageData.longitude)
+    : null
 
   const mapRef = useRef<MapView>(null)
   const [mapReady, setMapReady] = useState(false)
@@ -46,7 +50,7 @@ export default function GameFinished() {
           throw new Error(gameDataResponse.error)
         }
 
-        setGameData(gameDataResponse.game.image)
+        setImageData(gameDataResponse.game.image)
       } catch (e) {
         console.error(e)
         setGameDataError(`${e}`)
@@ -58,85 +62,42 @@ export default function GameFinished() {
     fetchGameData()
   }, [])
 
-  const actualLocation = {
-    latitude: gameData?.latitude || 0,
-    longitude: gameData?.longitude || 0,
-  }
-
-  const userGuess = UserGuessSchema.parse(JSON.parse(params.userGuess)) || {
-    latitude: 0,
-    longitude: 0,
-  }
-
   useEffect(() => {
-    if (mapRef.current && gameData) {
-      mapRef.current.fitToCoordinates([actualLocation, userGuess], {
-        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-        animated: true,
-      })
+    if (mapRef.current && imageData && actualLocation) {
+      mapRef.current.fitToCoordinates(
+        [actualLocation.toJSON(), userGuess.toJSON()],
+        {
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+          animated: true,
+        }
+      )
     }
-  }, [gameData, mapReady])
-
-  const distance = calculateDistance(userGuess, actualLocation).toFixed(2)
-  const locationName = gameData?.location_name || ''
-
-  if (gameDataLoading) {
-    return <Text>Loading...</Text>
-  }
-
-  const GameFinishedMap = () => {
-    return (
-      <MapView
-        ref={mapRef}
-        style={{ width: '100%', height: '100%' }}
-        onMapReady={() => setMapReady(true)}
-        initialRegion={{
-          latitude: (userGuess.latitude + actualLocation.latitude) / 2,
-          longitude: (userGuess.longitude + actualLocation.longitude) / 2,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
-        }}
-      >
-        {/* User's guess marker */}
-        <Marker coordinate={userGuess} pinColor="blue">
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <MaterialIcons name="person-pin" size={30} color="#4285F4" />
-          </View>
-        </Marker>
-
-        {/* Actual location marker with flag */}
-        <Marker coordinate={actualLocation} pinColor="red">
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <MaterialIcons name="flag" size={30} color="#EA4335" />
-          </View>
-        </Marker>
-
-        {/* Line connecting the points */}
-        <Polyline
-          coordinates={[userGuess, actualLocation]}
-          strokeColor="black"
-          strokeWidth={2}
-          lineDashPattern={[5, 5]}
-        />
-      </MapView>
-    )
-  }
+  }, [imageData, mapReady])
 
   const handleShareScore = async () => {
     const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distance}km ----🏁`
     await Share.share({
       message: shareText,
     })
+  }
+
+  const distance = actualLocation ? userGuess.distance(actualLocation) : null
+  const locationName = imageData?.location_name || ''
+
+  if (gameDataLoading) {
+    return <Text>Loading...</Text>
+  }
+
+  if (gameDataError) {
+    return (
+      <ScreenView className="items-center justify-center py-10 px-5">
+        <BackLink to="/home" label="Home" />
+        <Text className="text-4xl font-bold mb-10">Results</Text>
+        <Text className="text-red-600 text-xl font-bold text-center">
+          Error: {gameDataError}
+        </Text>
+      </ScreenView>
+    )
   }
 
   return (
@@ -148,8 +109,10 @@ export default function GameFinished() {
       <View className="w-full items-center justify-center mb-4">
         <Text className="text-2xl text-center mb-2">
           Your closest guess was{' '}
-          <Text className="text-red-600 font-bold">{distance} km</Text> from the
-          location:{' '}
+          <Text className="text-red-600 font-bold">
+            {distance?.toKilometers().toFixed(2)} km
+          </Text>{' '}
+          from the location:{' '}
           <Text className="text-red-600 font-bold">{locationName}</Text>
         </Text>
       </View>
@@ -163,7 +126,12 @@ export default function GameFinished() {
       </TouchableOpacity>
 
       <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300 mb-6">
-        <GameFinishedMap />
+        <GameFinishedMap
+          mapRef={mapRef}
+          setMapReady={setMapReady}
+          userGuess={userGuess}
+          actualLocation={actualLocation}
+        />
       </View>
 
       <View className="w-full flex-row space-x-4 mb-6">

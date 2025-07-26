@@ -1,4 +1,5 @@
 // Unified API client for all network requests
+import z, { ZodType } from 'zod'
 import { API_URL } from '.'
 
 export type ApiClientOptions = {
@@ -7,10 +8,11 @@ export type ApiClientOptions = {
   body?: any
 }
 
-export async function apiClient(
+export async function apiClient<T extends ZodType<any, any, any>>(
   endpoint: string,
+  responseSchema: T,
   options: ApiClientOptions
-): Promise<any> {
+): Promise<z.output<T>> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     method: options.method,
     headers: {
@@ -27,5 +29,7 @@ export async function apiClient(
     throw new Error(`API error: ${response.status} - ${errorText}`)
   }
 
-  return response.json()
+  const responseJson = await response.json()
+
+  return responseSchema.parse(responseJson)
 }

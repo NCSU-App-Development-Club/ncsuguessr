@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native'
 import MapView, {
+  MapPressEvent,
   Marker,
   PROVIDER_DEFAULT,
   PROVIDER_GOOGLE,
 } from 'react-native-maps'
 import Text from '../../components/global/Text'
+import { Coordinate } from '../../util/space/location'
 
 const styles = StyleSheet.create({
   fullMap: {
@@ -17,11 +19,9 @@ const styles = StyleSheet.create({
 const GameMap = ({
   guessMarker,
   onPress,
-  onClose,
 }: {
-  guessMarker: GuessMarker | null
-  onPress: (event: any) => void
-  onClose?: () => void
+  guessMarker: Coordinate | null
+  onPress: (event: MapPressEvent) => void
 }) => {
   const mapRef = useRef<MapView | null>(null)
 
@@ -33,10 +33,11 @@ const GameMap = ({
   }, [mapReady, layoutReady])
 
   const moveMapToCenter = () => {
-    if (!guessMarker?.latitude || !guessMarker.longitude) return
+    if (guessMarker === null) return
+
     mapRef.current?.animateToRegion(
       {
-        ...guessMarker,
+        ...guessMarker.toJSON(),
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
       },
@@ -61,7 +62,9 @@ const GameMap = ({
           Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
         }
       >
-        {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
+        {guessMarker && (
+          <Marker coordinate={guessMarker.toJSON()} pinColor="blue" />
+        )}
       </MapView>
       <View
         style={{

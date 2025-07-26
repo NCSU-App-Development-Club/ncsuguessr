@@ -4,9 +4,11 @@ import {
 } from '@ncsuguessr/types/src/games'
 import { apiClient } from './client'
 
-export async function fetchGame(gameDate: string) {
+export const fetchGame = async (gameDate: string) => {
   try {
-    const data = await apiClient(`/games/${gameDate}`, { method: 'GET' })
+    const data = await apiClient(`/games/${gameDate}`, GetGameResponseSchema, {
+      method: 'GET',
+    })
     return GetGameResponseSchema.parse(data)
   } catch (error: any) {
     console.error('Error fetching game:', error)
@@ -14,10 +16,11 @@ export async function fetchGame(gameDate: string) {
   }
 }
 
-export async function getGameDates() {
+export const getGameDates = async () => {
   try {
-    const data = await apiClient(`/games?select=date`, { method: 'GET' })
-    return GetGameDatesResponseSchema.parse(data)
+    return await apiClient(`/games?select=date`, GetGameDatesResponseSchema, {
+      method: 'GET',
+    })
   } catch (error: any) {
     console.error('Error fetching game dates:', error)
     throw error
