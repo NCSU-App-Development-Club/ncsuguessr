@@ -1,0 +1,19 @@
+-- Migration number: 0001 	 2025-05-01T21:16:24.170Z
+
+CREATE TABLE IF NOT EXISTS images (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  file_location VARCHAR(50) NOT NULL,
+  latitude DOUBLE PRECISION NOT NULL,
+  longitude DOUBLE PRECISION NOT NULL,
+  taken_at TIMESTAMP NOT NULL,
+  used BOOLEAN NOT NULL,
+  location_name VARCHAR(50) NOT NULL,
+  description TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS games (
+  date DATE PRIMARY KEY,
+  image_id INTEGER NOT NULL REFERENCES images(id),
+  plays INTEGER NOT NULL,
+  total_dist INTEGER NOT NULL
+);
