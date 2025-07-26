@@ -1,117 +1,17 @@
-import Text from '../../components/global/Text'
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Platform,
-} from 'react-native'
-import { useRouter, useLocalSearchParams } from 'expo-router'
 import {
   GetGameSuccessResponse,
   GetGameSuccessResponseSchema,
 } from '@ncsuguessr/types/src/games'
-import { recordGuess } from '../../util/storage/statsStorage'
-import MapView, {
-  Marker,
-  PROVIDER_DEFAULT,
-  PROVIDER_GOOGLE,
-} from 'react-native-maps'
-import { useState, useEffect, useRef } from 'react'
-import { formatTime } from '../../util/time'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useEffect, useRef, useState } from 'react'
+import { Image, Modal, TouchableOpacity, View } from 'react-native'
+import GameEventModal from '../../components/game/GameEventModal'
+import GameMap from '../../components/game/GameMap'
+import Text from '../../components/global/Text'
 import { calculateDistance } from '../../util/map'
-import React from 'react'
 import { addLocalPlayedGame } from '../../util/storage/gamesStorage'
-
-type GuessMarker = {
-  latitude: number
-  longitude: number
-}
-
-// const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
-
-// Mock function for stats submission - to be replaced by actual implementation
-const submitGameStats = (stats: {
-  locationName: string
-  timeSpentMs: number
-  finalDistanceKm: number
-  wasSuccessful: boolean
-}) => {
-  console.log('Submitting game stats:', stats)
-}
-
-const GameEventModal = ({
-  open,
-  setOpen,
-  onClose,
-  title,
-  message,
-  subMessage,
-}: {
-  open: boolean
-  setOpen: (s: boolean) => void
-  onClose?: () => void
-  title: string
-  message: string
-  subMessage?: string
-}) => {
-  return (
-    <Modal visible={open} transparent={true} animationType="fade">
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: 24,
-              borderRadius: 16,
-              width: '80%',
-              maxWidth: 320,
-              alignItems: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-              display: 'flex',
-              gap: 10,
-            }}
-          >
-            <Text className="text-2xl font-bold">{title}</Text>
-            <Text className="text-lg text-center">{message}</Text>
-            {subMessage ? (
-              <Text className="text-base text-center text-gray-600">
-                {subMessage}
-              </Text>
-            ) : null}
-            <TouchableOpacity
-              onPress={() => {
-                setOpen(false)
-                onClose?.()
-              }}
-              style={{ width: '100%' }}
-            >
-              <View
-                style={{
-                  backgroundColor: '#CC0000',
-                  borderRadius: 9999,
-                  paddingVertical: 12,
-                  paddingHorizontal: 24,
-                }}
-              >
-                <Text className="text-white text-center font-bold text-lg">
-                  Continue
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  )
-}
+import { recordGuess } from '../../util/storage/statsStorage'
+import { formatTime } from '../../util/time'
 
 export default function Game() {
   const router = useRouter()
@@ -235,8 +135,6 @@ export default function Game() {
     } catch (error) {
       console.error('Failed to record stats:', error)
     }
-
-    submitGameStats(stats) // Keep your existing submission if needed
   }
 
   const handleGuess = () => {
@@ -402,89 +300,3 @@ export default function Game() {
     </>
   )
 }
-
-const GameMap = ({
-  guessMarker,
-  onPress,
-  onClose,
-}: {
-  guessMarker: GuessMarker | null
-  onPress: (event: any) => void
-  onClose?: () => void
-}) => {
-  const mapRef = useRef<MapView | null>(null)
-
-  const [mapReady, setMapReady] = useState(false)
-  const [layoutReady, setLayoutReady] = useState(false)
-
-  useEffect(() => {
-    if (mapReady && layoutReady) moveMapToCenter()
-  }, [mapReady, layoutReady])
-
-  const moveMapToCenter = () => {
-    if (!guessMarker?.latitude || !guessMarker.longitude) return
-    mapRef.current?.animateToRegion(
-      {
-        ...guessMarker,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      },
-      500
-    )
-  }
-  return (
-    <>
-      <MapView
-        ref={mapRef}
-        style={styles.fullMap}
-        initialRegion={{
-          latitude: 35.7847,
-          longitude: -78.6821,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        onMapReady={() => setMapReady(true)}
-        onLayout={() => setLayoutReady(true)}
-        onPress={onPress}
-        provider={
-          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-        }
-      >
-        {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
-      </MapView>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 40,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-          zIndex: 1,
-        }}
-      >
-        <TouchableOpacity
-          onPress={moveMapToCenter}
-          style={{
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 30,
-          }}
-        >
-          <Text className="text-white text-base font-bold">Center Pin</Text>
-        </TouchableOpacity>
-      </View>
-    </>
-  )
-}
-
-const styles = StyleSheet.create({
-  smallMap: {
-    width: 300,
-    height: 200,
-  },
-  fullMap: {
-    width: '100%',
-    height: '100%',
-  },
-})
