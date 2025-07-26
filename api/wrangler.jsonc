@@ -29,9 +29,9 @@
       },
     },
     "production": {
-      "name": "ncsuguessr-api-production",
+      "name": "ncsuguessr-api-prod",
       "vars": {
-        "ENVIRONMENT": "production",
+        "ENVIRONMENT": "prod",
         "R2_BUCKET_NAME": "ncsuguessr-prod",
       },
       "r2_buckets": [

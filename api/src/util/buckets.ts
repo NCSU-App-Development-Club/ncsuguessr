@@ -15,18 +15,10 @@ export class ImageBucketClient {
 
   constructor(env: Bindings) {
     this.r2 = env.R2
-    this.awsClient = new AwsClient(
-      env.ENVIRONMENT === 'staging'
-        ? {
-            accessKeyId: env.NCSUGUESSR_STAGING_R2_ACCESS_KEY_ID,
-            secretAccessKey: env.NCSUGUESSR_STAGING_R2_SECRET_ACCESS_KEY,
-          }
-        : {
-            // TODO
-            accessKeyId: '',
-            secretAccessKey: '',
-          }
-    )
+    this.awsClient = new AwsClient({
+      accessKeyId: env.NCSUGUESSR_R2_ACCESS_KEY_ID,
+      secretAccessKey: env.NCSUGUESSR_R2_SECRET_ACCESS_KEY,
+    })
     this.bucketName = env.R2_BUCKET_NAME
     this.accountId = env.ACCOUNT_ID
   }
