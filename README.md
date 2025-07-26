@@ -39,6 +39,7 @@ Optional VSCode Extensions:
    ```bash
    git clone https://github.com/NCSU-App-Development-Club/ncsuguessr.git
    cd ncsuguessr
+   cd mobile # enter the directory with the mobile app
    ```
 
 2. Install and use Node.js version 22.9.0 with nvm:
@@ -65,6 +66,8 @@ Optional VSCode Extensions:
 
 ## Contribution - App Development Club Members Only
 
+Important note: if network requests fail on an iPhone emulator with iOS 18.4, try downgrading to iOS 18.3: [https://github.com/expo/expo/issues/36136](https://github.com/expo/expo/issues/36136)
+
 You and your small group will be assigned [issues](https://github.com/NCSU-App-Development-Club/ncsuguessr/issues) to work on as a team. For each issue, do the following:
 
 1. Create a new branch from the development branch:
@@ -82,3 +85,9 @@ You and your small group will be assigned [issues](https://github.com/NCSU-App-D
 ---
 
 Wolfpack up and test your campus knowledge with **ncsuguessr**! Go Pack!
+
+## Misc
+
+```
+npm install @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu && npm install && npm run build-web && mv dist/assets/node_modules/* dist/assets/ && find dist/_expo/static/js/web/ -type f -print0 | xargs -0 sed -i 's/assets\/node_modules/assets/g'
+```

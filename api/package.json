@@ -1,0 +1,23 @@
+{
+  "name": "@ncsuguessr/api",
+  "scripts": {
+    "typecheck": "npx tsc --build --noEmit",
+    "dev:staging": "wrangler dev --env staging",
+    "migrate:dev:staging": "wrangler d1 migrations apply ncsuguessr-staging --env staging",
+    "deploy:staging": "wrangler deploy --minify --env staging",
+    "migrate:staging": "wrangler d1 migrations apply ncsuguessr-staging --env staging --remote",
+    "deploy:prod": "wrangler deploy --minify --env production",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20250430.0",
+    "@hono/zod-validator": "^0.5.0",
+    "aws4fetch": "^1.0.20",
+    "hono": "^4.7.8",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@ncsuguessr/types": "*",
+    "wrangler": "^4.4.0"
+  }
+}
