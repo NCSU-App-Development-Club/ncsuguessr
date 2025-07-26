@@ -22,10 +22,8 @@ export const getGameDates = async () => {
       },
     })
 
-    console.log('parsing into json')
     const data = await res.json()
 
-    console.log('parsing into schema')
     return GetGameDatesResponseSchema.parse(data)
   } catch (error: any) {
     console.error('Error fetching game dates:', error)

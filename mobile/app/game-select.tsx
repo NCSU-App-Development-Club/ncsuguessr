@@ -10,7 +10,7 @@ import { getLocalPlayedGames } from '../util/storage/gamesStorage'
 import { getGameDates } from '../util/api/games'
 
 export default function GameSelect() {
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const [gameDatesLoading, setGameDatesLoading] = useState(false)
@@ -133,7 +133,7 @@ export default function GameSelect() {
           </GameButton>
           {todayGameExists || (
             <Text className="my-4">
-              *Today's game hasn't been posted yet, stay tuned!
+              Today's game hasn't been posted yet, stay tuned!
             </Text>
           )}
         </View>

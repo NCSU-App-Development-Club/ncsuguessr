@@ -29,8 +29,7 @@ type GuessMarker = {
   longitude: number
 }
 
-// Development settings
-const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
+// const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
 
 // Mock function for stats submission - to be replaced by actual implementation
 const submitGameStats = (stats: {

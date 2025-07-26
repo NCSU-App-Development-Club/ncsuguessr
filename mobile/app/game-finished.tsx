@@ -10,18 +10,27 @@ import { calculateDistance } from '../util/map'
 import BackLink from '../components/global/BackLink'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { fetchGame } from '../util/api/games'
+import z from 'zod'
 
-type GameFinishedParams = {
-  gameDate: string
-  userGuess: string
-}
+const UserGuessSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+})
+
+type UserGuess = z.infer<typeof UserGuessSchema>
+
+const GameFinishedParamsSchema = z.object({
+  gameDate: z.string(),
+  userGuess: z.string(),
+})
+
+type GameFinishedParams = z.infer<typeof GameFinishedParamsSchema>
 
 export default function GameFinished() {
   const params = useLocalSearchParams<GameFinishedParams>()
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
+  const [gameDataLoading, setGameDataLoading] = useState(true)
+  const [gameDataError, setGameDataError] = useState<string | null>(null)
   const [gameData, setGameData] = useState<ImageDto | null>(null)
 
   const mapRef = useRef<MapView>(null)
@@ -30,7 +39,7 @@ export default function GameFinished() {
   useEffect(() => {
     const fetchGameData = async () => {
       try {
-        setLoading(true)
+        setGameDataLoading(true)
         const gameDataResponse = await fetchGame(params.gameDate)
 
         if (!gameDataResponse.success) {
@@ -40,9 +49,9 @@ export default function GameFinished() {
         setGameData(gameDataResponse.game.image)
       } catch (e) {
         console.error(e)
-        setError(`${e}`)
+        setGameDataError(`${e}`)
       } finally {
-        setLoading(false)
+        setGameDataLoading(false)
       }
     }
 
@@ -54,7 +63,7 @@ export default function GameFinished() {
     longitude: gameData?.longitude || 0,
   }
 
-  const userGuess = JSON.parse(params.userGuess) || {
+  const userGuess = UserGuessSchema.parse(JSON.parse(params.userGuess)) || {
     latitude: 0,
     longitude: 0,
   }
@@ -71,7 +80,9 @@ export default function GameFinished() {
   const distance = calculateDistance(userGuess, actualLocation).toFixed(2)
   const locationName = gameData?.location_name || ''
 
-  if (loading) return <Text>Loading...</Text>
+  if (gameDataLoading) {
+    return <Text>Loading...</Text>
+  }
 
   const GameFinishedMap = () => {
     return (
