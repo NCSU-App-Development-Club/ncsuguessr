@@ -66,6 +66,8 @@ Optional VSCode Extensions:
 
 ## Contribution - App Development Club Members Only
 
+Important note: if network requests fail on an iPhone emulator with iOS 18.4, try downgrading to iOS 18.3: [https://github.com/expo/expo/issues/36136](https://github.com/expo/expo/issues/36136)
+
 You and your small group will be assigned [issues](https://github.com/NCSU-App-Development-Club/ncsuguessr/issues) to work on as a team. For each issue, do the following:
 
 1. Create a new branch from the development branch:
