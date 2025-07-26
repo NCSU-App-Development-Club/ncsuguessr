@@ -6,7 +6,8 @@
     "build:mobile:web": "npm run build-web --workspace=mobile",
     "dev:mobile": "npm run start --workspace=mobile",
     "check": "npx prettier . --check",
-    "format": "npx prettier . --write"
+    "format": "npx prettier . --write",
+    "build:admin": "npm run build --workspace admin"
   },
   "keywords": [],
   "author": "",
