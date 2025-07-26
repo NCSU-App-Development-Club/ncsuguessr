@@ -32,10 +32,21 @@
       "name": "ncsuguessr-api-production",
       "vars": {
         "ENVIRONMENT": "production",
-        // TODO
-        "R2_BUCKET_NAME": "",
+        "R2_BUCKET_NAME": "ncsuguessr-prod",
       },
-      // TODO: bindings for prod r2 and d1
+      "r2_buckets": [
+        {
+          "bucket_name": "ncsuguessr-prod",
+          "binding": "R2"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "D1",
+          "database_name": "ncsuguessr-prod",
+          "database_id": "db7cb001-919a-45de-b209-c4f28cedd1a8",
+        }
+      ],  
       "observability": {
         "enabled": true,
         "head_sampling_rate": 1,
