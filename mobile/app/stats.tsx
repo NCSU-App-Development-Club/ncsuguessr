@@ -5,8 +5,8 @@ import BackLink from '../components/global/BackLink'
 import ScreenView from '../components/global/ScreenView'
 import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
-import { getStats, resetStats, StatsData } from '../util/storage/statsStorage'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
+import { StatsData, StatsLocalStore } from '../util/storage/stats'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -28,7 +28,7 @@ export default function Stats() {
       )
 
     const fetchStats = async () => {
-      const stats = await getStats()
+      const stats = await StatsLocalStore.getStats()
 
       const labels = buildDailyGraphLabels()
       const data = stats
@@ -43,7 +43,7 @@ export default function Stats() {
   }, [])
 
   const handleResetStats = async () => {
-    await resetStats()
+    await StatsLocalStore.resetStats()
     setStatsState(null)
     console.log('Stats cleared')
   }
@@ -101,8 +101,8 @@ export default function Stats() {
               }
               title="Average Distance"
               text={
-                statsState && statsState.averageGuessDistance !== null
-                  ? `${statsState.averageGuessDistance.toFixed(2)} km`
+                statsState?.totalGuessDistance && statsState?.gamesPlayed
+                  ? `${statsState.totalGuessDistance.divide(statsState.gamesPlayed).toKilometers().toFixed(2)} km`
                   : '0 km'
               }
             />
@@ -113,12 +113,13 @@ export default function Stats() {
               title="Best Overall Guess"
               text={
                 statsState && statsState.bestOverallGuess
-                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toFixed(2)} km`
+                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toKilometers().toFixed(2)} km`
                   : 'None yet'
               }
             />
           </View>
-          <View className="w-1/2 p-2">
+          {/* TODO: replace this with something */}
+          {/* <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
               title="Best Weekly Guess"
@@ -128,7 +129,7 @@ export default function Stats() {
                   : 'None this week'
               }
             />
-          </View>
+          </View> */}
           <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="fire" size={28} color="#CC0000" />}
@@ -145,8 +146,12 @@ export default function Stats() {
               icon={<SimpleLineIcons name="clock" size={28} color="#CC0000" />}
               title="Average Time"
               text={
-                statsState && statsState.averageGuessTime !== null
-                  ? formatSecondsToMMSS(statsState.averageGuessTime)
+                statsState?.totalGuessTime && statsState?.gamesPlayed
+                  ? formatSecondsToMMSS(
+                      statsState.totalGuessTime
+                        .divide(statsState.gamesPlayed)
+                        .toSeconds()
+                    )
                   : '0:00'
               }
             />

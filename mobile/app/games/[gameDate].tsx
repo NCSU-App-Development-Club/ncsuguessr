@@ -1,124 +1,29 @@
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useEffect, useRef, useState } from 'react'
+import { Image, Modal, TouchableOpacity, View } from 'react-native'
+import { MapPressEvent } from 'react-native-maps'
+import GameEventModal from '../../components/game/GameEventModal'
+import GameMap from '../../components/game/GameMap'
 import Text from '../../components/global/Text'
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Platform,
-} from 'react-native'
-import { useRouter, useLocalSearchParams } from 'expo-router'
-import {
-  GetGameSuccessResponse,
-  GetGameSuccessResponseSchema,
-} from '@ncsuguessr/types/src/games'
-import { recordGuess } from '../../util/storage/statsStorage'
-import MapView, {
-  Marker,
-  PROVIDER_DEFAULT,
-  PROVIDER_GOOGLE,
-} from 'react-native-maps'
-import { useState, useEffect, useRef } from 'react'
+import { fetchGame } from '../../util/api'
+import { Distance } from '../../util/space/distance'
+import { Coordinate } from '../../util/space/location'
+import { GamesLocalStore } from '../../util/storage/games'
+import { StatsLocalStore } from '../../util/storage/stats'
 import { formatTime } from '../../util/time'
-import { calculateDistance } from '../../util/map'
-import React from 'react'
-import { addLocalPlayedGame } from '../../util/storage/gamesStorage'
-
-type GuessMarker = {
-  latitude: number
-  longitude: number
-}
-
-// const SHOW_DEV_CONTROLS = true // Toggle this to show/hide dev controls
-
-// Mock function for stats submission - to be replaced by actual implementation
-const submitGameStats = (stats: {
-  locationName: string
-  timeSpentMs: number
-  finalDistanceKm: number
-  wasSuccessful: boolean
-}) => {
-  console.log('Submitting game stats:', stats)
-}
-
-const GameEventModal = ({
-  open,
-  setOpen,
-  onClose,
-  title,
-  message,
-  subMessage,
-}: {
-  open: boolean
-  setOpen: (s: boolean) => void
-  onClose?: () => void
-  title: string
-  message: string
-  subMessage?: string
-}) => {
-  return (
-    <Modal visible={open} transparent={true} animationType="fade">
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
-        <View
-          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        >
-          <View
-            style={{
-              backgroundColor: 'white',
-              padding: 24,
-              borderRadius: 16,
-              width: '80%',
-              maxWidth: 320,
-              alignItems: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-              display: 'flex',
-              gap: 10,
-            }}
-          >
-            <Text className="text-2xl font-bold">{title}</Text>
-            <Text className="text-lg text-center">{message}</Text>
-            {subMessage ? (
-              <Text className="text-base text-center text-gray-600">
-                {subMessage}
-              </Text>
-            ) : null}
-            <TouchableOpacity
-              onPress={() => {
-                setOpen(false)
-                onClose?.()
-              }}
-              style={{ width: '100%' }}
-            >
-              <View
-                style={{
-                  backgroundColor: '#CC0000',
-                  borderRadius: 9999,
-                  paddingVertical: 12,
-                  paddingHorizontal: 24,
-                }}
-              >
-                <Text className="text-white text-center font-bold text-lg">
-                  Continue
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  )
-}
+import { Day } from '../../util/time/day'
+import { Duration } from '../../util/time/duration'
 
 export default function Game() {
   const router = useRouter()
   const { gameDate } = useLocalSearchParams<{ gameDate: string }>()
+  const gameDay = Day.ofString(gameDate)
+
   const [expandedImage, setExpandedImage] = useState<boolean>(false)
-  const [guessMarker, setGuessMarker] = useState<GuessMarker | null>(null)
+
+  const [guessMarker, setGuessMarker] = useState<Coordinate | null>(null)
   const [guessCount, setGuessCount] = useState(0)
+
   const [gameOver, setGameOver] = useState(false)
   const [showGameEventModal, setShowGameEventModal] = useState(false)
   const [gameEventModalContent, setGameEventModalContent] = useState<{
@@ -130,54 +35,49 @@ export default function Game() {
     message: '',
     subMessage: '',
   })
-  const [startTime] = useState(Date.now())
-  const [elapsedTime, setElapsedTime] = useState(0)
+  const [startTime] = useState(new Date())
+  const [elapsedTime, setElapsedTime] = useState(Duration.zero())
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const correctLocation = useRef({
-    name: '',
-    latitude: 0,
-    longitude: 0,
-  })
 
-  const closestGuess = useRef<{
-    latitude: number
-    longitude: number
-  }>({
-    latitude: 0,
-    longitude: 0,
-  })
-  const closestDistance = useRef<number>(Infinity)
+  const correctLocation = useRef<{
+    name: string
+    coord: Coordinate
+  } | null>(null)
+  const closestGuess = useRef<Coordinate | null>(null)
+  const closestDistance = useRef<Distance>(Distance.infinity())
 
   // Update timer every second
   useEffect(() => {
     if (gameOver) return
 
     const timer = setInterval(() => {
-      setElapsedTime(Date.now() - startTime)
+      const now = new Date()
+      setElapsedTime(Duration.fromDates(startTime, now))
     }, 1000)
 
     return () => clearInterval(timer)
   }, [startTime, gameOver])
 
   useEffect(() => {
+    // TODO: a loading state?
     const fetchGameAndImage = async () => {
-      setError('')
+      setError(null)
+
       try {
-        const gameResponse = await fetch(
-          `https://ncsuguessr-api-staging.ncsuappdevelopmentclub.workers.dev/games/${gameDate}`
-        )
-        if (!gameResponse.ok) {
-          throw new Error('Failed to fetch game')
+        const gameData = await fetchGame(gameDate)
+        if (!gameData.success) {
+          throw new Error(`failed to fetch game: ${gameData.error}`)
         }
-        const gameJson = await gameResponse.json()
-        const gameData: GetGameSuccessResponse =
-          GetGameSuccessResponseSchema.parse(gameJson)
+
         setImageUrl(gameData.game.image.url)
+
         correctLocation.current = {
           name: gameData.game.image.location_name,
-          latitude: gameData.game.image.latitude,
-          longitude: gameData.game.image.longitude,
+          coord: new Coordinate(
+            gameData.game.image.latitude,
+            gameData.game.image.longitude
+          ),
         }
       } catch (err) {
         setError('Failed to load image')
@@ -185,6 +85,7 @@ export default function Game() {
       }
     }
 
+    // TODO: why? better way to do this?
     if (gameDate) {
       fetchGameAndImage()
     } else {
@@ -192,88 +93,88 @@ export default function Game() {
     }
   }, [gameDate])
 
-  const handleMapPress = (event: any) => {
+  const handleMapPress = (event: MapPressEvent) => {
     if (gameOver) return
-    const coords = event.nativeEvent.coordinate
+
+    const coords = Coordinate.ofObject(event.nativeEvent.coordinate)
     setGuessMarker(coords)
   }
 
-  // In game.tsx, update the submitStats function to use recordGuess:
-
-  const submitStats = async (finalDistance: number, wasSuccessful: boolean) => {
-    const timeSpent = Date.now() - startTime
-    const timeSpentSeconds = Math.round(timeSpent / 1000)
-    const today = new Date().toISOString().split('T')[0]
-
-    const stats = {
-      locationName: correctLocation.current.name,
-      timeSpentMs: timeSpent,
-      finalDistanceKm: finalDistance,
-      wasSuccessful,
-    }
+  const submitGameStats = async (
+    finalDistance: Distance,
+    wasSuccessful: boolean
+  ) => {
+    const gameEndTime = new Date()
+    const timeSpent = Duration.fromDates(startTime, gameEndTime)
+    const today = Day.ofDate(gameEndTime)
 
     // Log stats in a more readable format for development
     if (__DEV__) {
       console.log('Game Stats:')
-      console.log(`Location: ${stats.locationName}`)
-      console.log(
-        `Time Spent: ${(stats.timeSpentMs / 1000).toFixed(1)} seconds`
-      )
-      console.log(`Final Distance: ${stats.finalDistanceKm.toFixed(2)} km`)
-      console.log(`Found Location: ${stats.wasSuccessful ? 'Yes' : 'No'}`)
+      console.log(`Location: ${correctLocation.current?.name}`)
+      console.log(`Time Spent: ${timeSpent.toSeconds()} seconds`)
+      console.log(`Final Distance: ${finalDistance.toKilometers()} km`)
+      console.log(`Found Location: ${wasSuccessful ? 'Yes' : 'No'}`)
       console.log('-------------------')
     }
 
     // Record the guess in stats
     try {
-      await recordGuess(
+      await StatsLocalStore.recordGame(
         finalDistance,
-        correctLocation.current.name,
+        // TODO: how to handle null location?
+        correctLocation.current?.name ?? '',
         today,
-        timeSpentSeconds
+        timeSpent
       )
     } catch (error) {
       console.error('Failed to record stats:', error)
     }
-
-    submitGameStats(stats) // Keep your existing submission if needed
   }
 
   const handleGuess = () => {
     if (!guessMarker || gameOver) return
 
-    const distance = calculateDistance(guessMarker, correctLocation.current)
+    if (correctLocation.current === null) {
+      // TODO: throw some kind of error?
+      return
+    }
+
+    const distance = guessMarker.distance(correctLocation.current.coord)
+    // TODO: what
     const remainingGuesses = 3 - (guessCount + 1)
 
     if (distance < closestDistance.current) {
       closestDistance.current = distance
-      closestGuess.current = { ...guessMarker }
+      // TODO: guessMarker was copied before being assigned to closestGuess.current. Why?
+      closestGuess.current = guessMarker
     }
 
-    if (distance < 0.2) {
+    if (distance < Distance.ofMeters(200)) {
       // Within ~200 meters - Success!
       setGameOver(true)
       setGameEventModalContent({
         title: 'Yay! 🎉',
         message: 'Congratulations! You found the correct location!',
-        subMessage: `Time: ${formatTime(elapsedTime)}`,
+        subMessage: `Time: ${formatTime(elapsedTime.toMillis())}`,
       })
       setShowGameEventModal(true)
-      submitStats(distance, true)
+      submitGameStats(distance, true)
     } else if (guessCount >= 2) {
       // Out of guesses - Game Over
       setGameOver(true)
       setGameEventModalContent({
         title: 'Game Over 😔',
         message: `You're out of guesses!`,
-        subMessage: `Time: ${formatTime(elapsedTime)}`,
+        subMessage: `Time: ${formatTime(elapsedTime.toMillis())}`,
       })
       setShowGameEventModal(true)
-      submitStats(distance, false)
+      submitGameStats(distance, false)
     } else {
+      // Not a correct guess and more guesses left
       setGameEventModalContent({
         title: 'Try Again',
-        message: `You're about ${distance.toFixed(2)}km away. ${remainingGuesses} ${remainingGuesses === 1 ? 'guess' : 'guesses'} remaining.`,
+        message: `You're about ${distance.toKilometers().toFixed(2)}km away. ${remainingGuesses} ${remainingGuesses === 1 ? 'guess' : 'guesses'} remaining.`,
       })
       setShowGameEventModal(true)
       setGuessCount((prev) => prev + 1)
@@ -288,8 +189,9 @@ export default function Game() {
           setOpen={setShowGameEventModal}
           onClose={
             gameOver
-              ? async () => {
-                  await addLocalPlayedGame(gameDate)
+              ? // TODO: why this check? when would gameOver be false here?
+                async () => {
+                  await GamesLocalStore.addLocalPlayedGame(gameDay)
                   router.replace({
                     pathname: '/game-finished',
                     params: {
@@ -310,7 +212,9 @@ export default function Game() {
           <Text className="text-gray-500">
             Guesses remaining: {3 - guessCount}
           </Text>
-          <Text className="text-gray-500">Time: {formatTime(elapsedTime)}</Text>
+          <Text className="text-gray-500">
+            Time: {formatTime(elapsedTime.toMillis())}
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -402,89 +306,3 @@ export default function Game() {
     </>
   )
 }
-
-const GameMap = ({
-  guessMarker,
-  onPress,
-  onClose,
-}: {
-  guessMarker: GuessMarker | null
-  onPress: (event: any) => void
-  onClose?: () => void
-}) => {
-  const mapRef = useRef<MapView | null>(null)
-
-  const [mapReady, setMapReady] = useState(false)
-  const [layoutReady, setLayoutReady] = useState(false)
-
-  useEffect(() => {
-    if (mapReady && layoutReady) moveMapToCenter()
-  }, [mapReady, layoutReady])
-
-  const moveMapToCenter = () => {
-    if (!guessMarker?.latitude || !guessMarker.longitude) return
-    mapRef.current?.animateToRegion(
-      {
-        ...guessMarker,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      },
-      500
-    )
-  }
-  return (
-    <>
-      <MapView
-        ref={mapRef}
-        style={styles.fullMap}
-        initialRegion={{
-          latitude: 35.7847,
-          longitude: -78.6821,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        onMapReady={() => setMapReady(true)}
-        onLayout={() => setLayoutReady(true)}
-        onPress={onPress}
-        provider={
-          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-        }
-      >
-        {guessMarker && <Marker coordinate={guessMarker} pinColor="blue" />}
-      </MapView>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 40,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-          zIndex: 1,
-        }}
-      >
-        <TouchableOpacity
-          onPress={moveMapToCenter}
-          style={{
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 30,
-          }}
-        >
-          <Text className="text-white text-base font-bold">Center Pin</Text>
-        </TouchableOpacity>
-      </View>
-    </>
-  )
-}
-
-const styles = StyleSheet.create({
-  smallMap: {
-    width: 300,
-    height: 200,
-  },
-  fullMap: {
-    width: '100%',
-    height: '100%',
-  },
-})

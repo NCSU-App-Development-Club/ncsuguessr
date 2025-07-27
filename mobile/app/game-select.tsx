@@ -1,26 +1,26 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { View, Text, TouchableOpacity, Image } from 'react-native'
-import ScreenView from '../components/global/ScreenView'
-import BackLink from '../components/global/BackLink'
 import { useRouter } from 'expo-router'
-import { formatOffsetDate } from '../util/time'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Calendar, DateData } from 'react-native-calendars'
 import { MarkedDates } from 'react-native-calendars/src/types'
-import { getLocalPlayedGames } from '../util/storage/gamesStorage'
+import BackLink from '../components/global/BackLink'
+import ScreenView from '../components/global/ScreenView'
 import { getGameDates } from '../util/api/games'
+import { GamesLocalStore } from '../util/storage/games'
+import { Day } from '../util/time/day'
 
 export default function GameSelect() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const [gameDatesLoading, setGameDatesLoading] = useState(false)
-  const [gameDates, setGameDates] = useState<string[]>([])
+  const [gameDates, setGameDates] = useState<Day[]>([])
 
-  const [selectedDate, setSelectedDate] = useState(formatOffsetDate(0))
-  const [playedAlready, setPlayedAlready] = useState<string[]>([])
+  const [selectedDate, setSelectedDate] = useState(Day.ofDate(new Date()))
+  const [playedAlready, setPlayedAlready] = useState<Day[]>([])
   const [markedDates, setMarkedDates] = useState<MarkedDates>({})
 
-  const today = useMemo(() => formatOffsetDate(0), [])
+  const [today] = useState(Day.ofDate(new Date()))
 
   const todayGameExists = useMemo(
     () => gameDates.includes(today),
@@ -42,7 +42,7 @@ export default function GameSelect() {
       try {
         setGameDatesLoading(true)
         const gameDatesResponse = await getGameDates()
-        const playedGames = await getLocalPlayedGames()
+        const playedGames = await GamesLocalStore.getPlayedGamesOrDefault()
 
         setPlayedAlready(playedGames)
 
@@ -50,19 +50,23 @@ export default function GameSelect() {
           throw new Error(gameDatesResponse.error)
         }
 
-        setGameDates(gameDatesResponse.games.map((game) => game.date))
-        const toMark: MarkedDates = {}
+        setGameDates(
+          gameDatesResponse.games.map((game) => Day.ofString(game.date))
+        )
 
-        gameDatesResponse.games.forEach((game) => {
-          toMark[game.date] = { marked: true }
-        })
+        const playedGamesSet = new Set(
+          [...playedGames].map((gameDay) => gameDay.toString())
+        )
 
-        playedGames.forEach((date) => {
-          toMark[date] = {
-            marked: true,
-            dotColor: 'green',
-          }
-        })
+        const toMark: MarkedDates = Object.fromEntries(
+          gameDatesResponse.games.map((game) => [
+            game.date,
+            {
+              marked: true,
+              dotColor: playedGamesSet.has(game.date) ? 'green' : undefined,
+            },
+          ])
+        )
 
         setMarkedDates(toMark)
       } catch (e) {
@@ -106,12 +110,12 @@ export default function GameSelect() {
               arrowColor: '#CC0000',
             }}
             onDayPress={(day: DateData) => {
-              setSelectedDate(day.dateString)
+              setSelectedDate(new Day(day.year, day.month, day.day))
             }}
             markedDates={{
               ...markedDates,
-              [selectedDate]: {
-                ...markedDates[selectedDate],
+              [selectedDate.toString()]: {
+                ...markedDates[selectedDate.toString()],
                 selected: true,
                 disableTouchEvent: true,
               },
