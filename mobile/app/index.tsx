@@ -1,6 +1,8 @@
 import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'
 import { Link, Redirect } from 'expo-router'
+import { GamesLocalStore } from '../util/storage/games'
+import ScreenButton from '../components/global/ScreenButton'
 
 export default function App() {
   if (!__DEV__) return <Redirect href="/home" />
@@ -17,6 +19,15 @@ export default function App() {
       <ScreenLink link="/contribute/photo">Take Photo</ScreenLink>
       <ScreenLink link="/contribute/finalize">Contribute Finalize</ScreenLink>
       <ScreenLink link="/stats">Stats</ScreenLink>
+      <ScreenButton
+        onPress={async () => {
+          console.log('clearing games')
+          await GamesLocalStore.clearGames()
+          console.log('cleared games')
+          console.log(await GamesLocalStore.getPlayedGames())
+        }}
+        title="Clear games local data"
+      />
     </ScreenView>
   )
 }

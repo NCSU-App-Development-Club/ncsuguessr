@@ -31,5 +31,7 @@ export async function apiClient<T extends ZodType<any, any, any>>(
 
   const responseJson = await response.json()
 
+  console.log(responseJson)
+
   return responseSchema.parse(responseJson)
 }

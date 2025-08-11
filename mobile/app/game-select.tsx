@@ -42,6 +42,7 @@ export default function GameSelect() {
       try {
         setGameDatesLoading(true)
         const gameDatesResponse = await getGameDates()
+        console.log('got game daetes')
         const playedGames = await GamesLocalStore.getPlayedGamesOrDefault()
 
         setPlayedAlready(playedGames)

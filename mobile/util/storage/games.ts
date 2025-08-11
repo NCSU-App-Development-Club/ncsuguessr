@@ -28,4 +28,8 @@ export class GamesLocalStore {
     games.push(gameDay)
     await this.setPlayedGames(games)
   }
+
+  static async clearGames(): Promise<void> {
+    return await this.store.removeItem()
+  }
 }
