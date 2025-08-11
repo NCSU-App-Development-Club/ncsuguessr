@@ -26,7 +26,7 @@ export class Duration {
   }
 
   static ofJSON(millis: number): Duration {
-    return this.ofMillis(millis)
+    return Duration.ofMillis(millis)
   }
 
   add(other: Duration): Duration {

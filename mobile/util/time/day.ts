@@ -23,7 +23,7 @@ export class Day {
   }
 
   static ofEpochMillis(epochMillis: number): Day {
-    return this.ofDate(new Date(epochMillis))
+    return Day.ofDate(new Date(epochMillis))
   }
 
   getYear(): number {
@@ -98,7 +98,7 @@ export class Day {
   }
 
   static ofJSON(epochMillis: number): Day {
-    return this.ofEpochMillis(epochMillis)
+    return Day.ofEpochMillis(epochMillis)
   }
 
   /**
