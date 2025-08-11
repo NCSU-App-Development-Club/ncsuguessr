@@ -2,6 +2,9 @@ import 'dotenv/config'
 
 export default () => ({
   expo: {
+    experiments: {
+      reactCanary: true,
+    },
     owner: 'appdevncsu',
     scheme: 'ncsuguessr',
     name: 'NCSUGuessr',
