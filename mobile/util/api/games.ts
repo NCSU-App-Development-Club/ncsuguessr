@@ -1,7 +1,7 @@
 import {
   GetGameDatesResponseSchema,
   GetGameResponseSchema,
-} from '@ncsuguessr/types/src/games'
+} from '@ncsuguessr/types/games'
 import { apiClient } from './client'
 
 export const fetchGame = async (gameDate: string) => {

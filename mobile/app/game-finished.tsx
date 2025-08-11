@@ -1,5 +1,5 @@
 import { FontAwesome } from '@expo/vector-icons'
-import { ImageDto } from '@ncsuguessr/types/src/images'
+import { ImageDto } from '@ncsuguessr/types/images'
 import { router, useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { Share, TouchableOpacity, View } from 'react-native'

@@ -5,7 +5,6 @@ import { MapPressEvent } from 'react-native-maps'
 import GameEventModal from '../../components/game/GameEventModal'
 import GameMap from '../../components/game/GameMap'
 import Text from '../../components/global/Text'
-import { fetchGame } from '../../util/api'
 import { Distance } from '../../util/space/distance'
 import { Coordinate } from '../../util/space/location'
 import { GamesLocalStore } from '../../util/storage/games'
@@ -13,6 +12,7 @@ import { StatsLocalStore } from '../../util/storage/stats'
 import { formatTime } from '../../util/time'
 import { Day } from '../../util/time/day'
 import { Duration } from '../../util/time/duration'
+import { fetchGame } from '../../util/api/games'
 
 export default function Game() {
   const router = useRouter()

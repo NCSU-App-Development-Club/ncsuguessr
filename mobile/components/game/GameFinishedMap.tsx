@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { Coordinate } from '../../util/space/location'
 
 interface GameFinishedMapProps {
-  mapRef: React.RefObject<MapView>
+  mapRef: React.RefObject<MapView | null>
   setMapReady: (ready: boolean) => void
   userGuess: Coordinate
   actualLocation: Coordinate | null

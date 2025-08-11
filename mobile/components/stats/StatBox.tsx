@@ -1,5 +1,6 @@
 import { View } from 'react-native'
 import Text from '../global/Text'
+import { JSX } from 'react'
 
 interface Icon {
   icon: JSX.Element // Accepts an entire icon component

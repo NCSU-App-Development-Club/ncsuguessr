@@ -14,8 +14,8 @@ export default function App() {
       <ScreenLink link="/game-finished">Game Finished</ScreenLink>
       <ScreenLink link="/archive">Archive</ScreenLink>
       <ScreenLink link="/contribute">Contribute</ScreenLink>
-      <ScreenLink link="/contribute-photo">Take Photo</ScreenLink>
-      <ScreenLink link="/contribute-finalize">Contribute Finalize</ScreenLink>
+      <ScreenLink link="/contribute/photo">Take Photo</ScreenLink>
+      <ScreenLink link="/contribute/finalize">Contribute Finalize</ScreenLink>
       <ScreenLink link="/stats">Stats</ScreenLink>
     </ScreenView>
   )

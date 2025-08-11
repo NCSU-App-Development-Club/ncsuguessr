@@ -102,7 +102,7 @@ export default function GameSelect() {
         <View>
           <Text className="font-bold text-lg">Daily Games:</Text>
           <Calendar
-            initialDate={today}
+            initialDate={today.toString()}
             disableAllTouchEventsForDisabledDays={true}
             theme={{
               selectedDayBackgroundColor: '#CC0000',
@@ -120,7 +120,7 @@ export default function GameSelect() {
                 disableTouchEvent: true,
               },
             }}
-            maxDate={today}
+            maxDate={today.toString()}
             minDate="2025-05-01"
           />
 
