@@ -5,12 +5,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Share, TouchableOpacity, View } from 'react-native'
 import MapView from 'react-native-maps'
 import z from 'zod'
-import GameFinishedMap from '../components/game/GameFinishedMap'
-import BackLink from '../components/global/BackLink'
-import ScreenView from '../components/global/ScreenView'
-import Text from '../components/global/Text'
-import { fetchGame } from '../util/api/games'
-import { Coordinate } from '../util/space/location'
+import GameFinishedMap from '../../components/game/GameFinishedMap'
+import BackLink from '../../components/global/BackLink'
+import ScreenView from '../../components/global/ScreenView'
+import Text from '../../components/global/Text'
+import { fetchGame } from '../../util/api/games'
+import { Coordinate } from '../../util/space/location'
 
 const UserGuessSchema = z.object({
   latitude: z.number(),

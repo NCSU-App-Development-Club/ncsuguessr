@@ -70,14 +70,12 @@ export default function Stats() {
     <ScreenView className="flex-1">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <BackLink to="/home" label="Home" />
-        {/* Title */}
-        <View className="mb-8 mt-14">
-          <Text className="text-5xl font-bold text-[#000000] text-center">
+        <View className="mb-5 mt-14">
+          <Text className="text-4xl font-bold text-[#000000] text-center">
             Statistics
           </Text>
         </View>
 
-        {/* Stat Boxes */}
         <View className="flex flex-row flex-wrap justify-between w-full">
           <View className="w-1/2 p-2">
             <StatBox
@@ -118,7 +116,7 @@ export default function Stats() {
               }
             />
           </View>
-          {/* TODO: replace this with something */}
+          {/* TODO: replace this with something, perhaps best of last 10 days */}
           {/* <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
@@ -158,7 +156,7 @@ export default function Stats() {
           </View>
         </View>
 
-        {/* Line Graph for Daily Games Played */}
+        {/* TODO: is this graph really relevant? */}
         <View className="items-center mt-8 w-full">
           <Text className="text-2xl font-bold mb-4 text-center">
             Daily Games Played
@@ -172,7 +170,6 @@ export default function Stats() {
           />
         </View>
 
-        {/* Styled Reset Stats Button */}
         <View className="mt-8 items-center">
           <TouchableOpacity
             onPress={showResetConfirmation}
