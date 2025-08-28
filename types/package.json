@@ -10,8 +10,5 @@
   },
   "scripts": {
     "typecheck": "npx tsc"
-  },
-  "dependencies": {
-    "zod": "^3.22.3"
   }
 }

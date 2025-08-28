@@ -1,1 +1,1 @@
-// TODO: any code that involves interacting with the image portion of the backend api should go here
+// TODO: this is where any image-related functions should go

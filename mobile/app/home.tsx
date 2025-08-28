@@ -1,8 +1,9 @@
-import { View, TouchableOpacity, Image } from 'react-native'
+import { View, Image } from 'react-native'
 import { useRouter } from 'expo-router'
 import Text from '../components/global/Text'
 import ScreenView from '../components/global/ScreenView'
 import BackLink from '../components/global/BackLink'
+import Button from '../components/global/Button'
 
 export default function Home() {
   const router = useRouter()
@@ -23,21 +24,24 @@ export default function Home() {
       <Image
         className="w-[25vh] h-[27vh]"
         source={require('../assets/wolf.png')}
-      ></Image>
+      />
 
-      <TouchableOpacity
-        onPress={() => router.push('/game-select')}
-        className="bg-ncsured w-60 py-4 rounded-full items-center"
-      >
-        <Text className="text-white text-xl font-bold">Start Game</Text>
-      </TouchableOpacity>
+      <View className="w-60 flex flex-col gap-3">
+        <Button
+          onPress={() => router.push('/games/select')}
+          title="Play"
+          size="lg"
+          fullWidth
+        />
 
-      <TouchableOpacity
-        onPress={() => router.push('/stats')}
-        className="bg-ncsured w-60 py-4 rounded-full items-center"
-      >
-        <Text className="text-white text-xl font-bold">Stats</Text>
-      </TouchableOpacity>
+        <Button
+          onPress={() => router.push('/stats')}
+          title="Stats"
+          size="lg"
+          fullWidth
+        />
+      </View>
+
       {__DEV__ && <BackLink to="/" />}
     </ScreenView>
   )

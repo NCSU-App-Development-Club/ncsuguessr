@@ -22,5 +22,8 @@
   "private": true,
   "devDependencies": {
     "prettier": "^3.5.3"
+  },
+  "dependencies": {
+    "zod": "^3.22.3"
   }
 }

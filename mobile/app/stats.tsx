@@ -5,8 +5,8 @@ import BackLink from '../components/global/BackLink'
 import ScreenView from '../components/global/ScreenView'
 import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
-import { getStats, resetStats, StatsData } from '../util/storage/statsStorage'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
+import { StatsData, StatsLocalStore } from '../util/storage/stats'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -28,7 +28,7 @@ export default function Stats() {
       )
 
     const fetchStats = async () => {
-      const stats = await getStats()
+      const stats = await StatsLocalStore.getStats()
 
       const labels = buildDailyGraphLabels()
       const data = stats
@@ -43,7 +43,7 @@ export default function Stats() {
   }, [])
 
   const handleResetStats = async () => {
-    await resetStats()
+    await StatsLocalStore.resetStats()
     setStatsState(null)
     console.log('Stats cleared')
   }
@@ -70,14 +70,12 @@ export default function Stats() {
     <ScreenView className="flex-1">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <BackLink to="/home" label="Home" />
-        {/* Title */}
-        <View className="mb-8 mt-14">
-          <Text className="text-5xl font-bold text-[#000000] text-center">
+        <View className="mb-5 mt-14">
+          <Text className="text-4xl font-bold text-[#000000] text-center">
             Statistics
           </Text>
         </View>
 
-        {/* Stat Boxes */}
         <View className="flex flex-row flex-wrap justify-between w-full">
           <View className="w-1/2 p-2">
             <StatBox
@@ -101,8 +99,8 @@ export default function Stats() {
               }
               title="Average Distance"
               text={
-                statsState && statsState.averageGuessDistance !== null
-                  ? `${statsState.averageGuessDistance.toFixed(2)} km`
+                statsState?.totalGuessDistance && statsState?.gamesPlayed
+                  ? `${statsState.totalGuessDistance.divide(statsState.gamesPlayed).toKilometers().toFixed(2)} km`
                   : '0 km'
               }
             />
@@ -113,12 +111,13 @@ export default function Stats() {
               title="Best Overall Guess"
               text={
                 statsState && statsState.bestOverallGuess
-                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toFixed(2)} km`
+                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toKilometers().toFixed(2)} km`
                   : 'None yet'
               }
             />
           </View>
-          <View className="w-1/2 p-2">
+          {/* TODO: replace this with something, perhaps best of last 10 days */}
+          {/* <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
               title="Best Weekly Guess"
@@ -128,7 +127,7 @@ export default function Stats() {
                   : 'None this week'
               }
             />
-          </View>
+          </View> */}
           <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="fire" size={28} color="#CC0000" />}
@@ -145,15 +144,19 @@ export default function Stats() {
               icon={<SimpleLineIcons name="clock" size={28} color="#CC0000" />}
               title="Average Time"
               text={
-                statsState && statsState.averageGuessTime !== null
-                  ? formatSecondsToMMSS(statsState.averageGuessTime)
+                statsState?.totalGuessTime && statsState?.gamesPlayed
+                  ? formatSecondsToMMSS(
+                      statsState.totalGuessTime
+                        .divide(statsState.gamesPlayed)
+                        .toSeconds()
+                    )
                   : '0:00'
               }
             />
           </View>
         </View>
 
-        {/* Line Graph for Daily Games Played */}
+        {/* TODO: is this graph really relevant? maybe cumulative games played instead */}
         <View className="items-center mt-8 w-full">
           <Text className="text-2xl font-bold mb-4 text-center">
             Daily Games Played
@@ -167,7 +170,6 @@ export default function Stats() {
           />
         </View>
 
-        {/* Styled Reset Stats Button */}
         <View className="mt-8 items-center">
           <TouchableOpacity
             onPress={showResetConfirmation}
