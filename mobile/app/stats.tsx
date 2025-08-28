@@ -156,7 +156,7 @@ export default function Stats() {
           </View>
         </View>
 
-        {/* TODO: is this graph really relevant? */}
+        {/* TODO: is this graph really relevant? maybe cumulative games played instead */}
         <View className="items-center mt-8 w-full">
           <Text className="text-2xl font-bold mb-4 text-center">
             Daily Games Played

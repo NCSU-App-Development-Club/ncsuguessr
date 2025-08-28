@@ -74,7 +74,7 @@ export class StatsLocalStore {
   //   await this.store.setItem(newStats)
   // }
 
-  // TODO: do stats not stored number of wins?
+  // TODO: do stats not store number of wins?
   static async recordGame(
     distance: Distance,
     location: string,

@@ -18,7 +18,6 @@ export async function apiClient<T extends ZodType<any, any, any>>(
     headers: {
       'content-type': 'application/json',
       accept: 'application/json',
-      // 'user-agent': 'Ncsuguessr/1.0',
       ...(options.headers || {}),
     },
     ...(options.body ? { body: JSON.stringify(options.body) } : {}),
