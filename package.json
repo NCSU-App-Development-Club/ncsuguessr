@@ -24,6 +24,9 @@
     "prettier": "^3.5.3"
   },
   "dependencies": {
-    "zod": "^3.22.3"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-native-web": "^0.21.1",
+    "zod": "^4.1.8"
   }
 }
