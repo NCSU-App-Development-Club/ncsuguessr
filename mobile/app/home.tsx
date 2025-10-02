@@ -26,12 +26,18 @@ export default function Home() {
         source={require('../assets/wolf.png')}
       />
 
-      <View className="w-60 flex flex-col gap-3">
+      <View className="w-64 flex flex-col gap-3">
         <Button
           onPress={() => router.push('/games/select')}
           title="Play"
           size="lg"
           fullWidth
+          icon={
+            <Image
+              source={require('../assets/favicon.png')}
+              className="w-6 h-6"
+            />
+          }
         />
 
         <Button
@@ -39,6 +45,7 @@ export default function Home() {
           title="Stats"
           size="lg"
           fullWidth
+          variant="secondary"
         />
       </View>
 

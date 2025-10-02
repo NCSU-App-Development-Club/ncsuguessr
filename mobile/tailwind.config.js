@@ -5,9 +5,14 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
-      backgroundColor: {
+      colors: {
         ncsured: '#CC0000',
         ncsured2: '#990000',
+        primary: '#CC0000',
+        primarylight: '#F20000',
+        primarydark: '#A60000',
+        secondarydark: '#4A4A4A',
+        alternate: '#0066CC',
         ncsuorange: '#D14905',
         ncsuyellow: '#FAC800',
         ncsugreen: '#6F7D1C',
