@@ -11,9 +11,9 @@ export default function App() {
     <ScreenView className="items-center justify-center">
       <Text className="font-bold text-5xl m-4 mb-8">NCSUGuessr</Text>
       <ScreenLink link="/home">Home</ScreenLink>
-      <ScreenLink link="/game/select">Game Select</ScreenLink>
+      <ScreenLink link="/games/select">Game Select</ScreenLink>
       <ScreenLink link="/games/play/2025-05-01">Game 2025-05-01</ScreenLink>
-      <ScreenLink link="/game/finished">Game Finished</ScreenLink>
+      <ScreenLink link="/games/finished">Game Finished</ScreenLink>
       <ScreenLink link="/archive">Archive</ScreenLink>
       <ScreenLink link="/contribute">Contribute</ScreenLink>
       <ScreenLink link="/contribute/photo">Take Photo</ScreenLink>

@@ -193,7 +193,7 @@ export default function Game() {
                 async () => {
                   await GamesLocalStore.addLocalPlayedGame(gameDay)
                   router.replace({
-                    pathname: '/game-finished',
+                    pathname: '/games/finished',
                     params: {
                       gameDate,
                       userGuess: JSON.stringify(closestGuess.current),
