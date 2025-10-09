@@ -1,13 +1,14 @@
 import { GestureResponderEvent, Pressable, Text, View } from 'react-native'
 import { ReactNode } from 'react'
 
-type ButtonSize = 'sm' | 'md' | 'lg'
+type ButtonSize = 'sm' | 'md' | 'lg' | 'xl'
 type ButtonVariant = 'primary' | 'secondary'
 
 const SIZE_CLASSES: Record<ButtonSize, { container: string; text: string }> = {
   sm: { container: 'px-3 py-1.5 rounded-xl', text: 'text-md' },
   md: { container: 'px-4 py-2 rounded-2xl', text: 'text-xl' },
   lg: { container: 'px-5 py-3 rounded-3xl', text: 'text-2xl' },
+  xl: { container: 'px-6 py-4 rounded-3xl', text: 'text-3xl' },
 }
 
 const VARIANT_CLASSES: Record<
@@ -45,7 +46,8 @@ export default function Button({
     <Pressable
       onPress={onPress}
       className={`
-        items-center justify-center
+        items-center justify-center shadow-button
+        active:opacity-60 transition-opacity duration-75
         ${sizeClasses.container}
         ${variantClasses.container}
         ${fullWidth ? 'w-full' : ''}
@@ -53,12 +55,12 @@ export default function Button({
       `}
     >
       <View className="flex-row items-center gap-2">
+        {icon}
         <Text
           className={`font-bold text-center ${sizeClasses.text} ${variantClasses.text}`}
         >
           {title}
         </Text>
-        {icon}
       </View>
     </Pressable>
   )
