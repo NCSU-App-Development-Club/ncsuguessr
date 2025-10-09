@@ -74,9 +74,6 @@ export default function Stats() {
         <View className="mb-5 mt-14">
           <PageTitle
             text= "Statistics"
-            color="#000000"
-            fontSize={32}
-            fontWeight="bold"
             />
         </View>
 
