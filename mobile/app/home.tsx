@@ -1,55 +1,79 @@
-import { View, Image } from 'react-native'
-import { useRouter } from 'expo-router'
+import {
+  Image,
+  ImageBackground,
+  View,
+  ScrollView,
+  useWindowDimensions,
+} from 'react-native'
 import Text from '../components/global/Text'
-import ScreenView from '../components/global/ScreenView'
-import BackLink from '../components/global/BackLink'
 import Button from '../components/global/Button'
 
 export default function Home() {
-  const router = useRouter()
+  const { height } = useWindowDimensions()
+  const bottomSnap = height * 0.67
+  const topSnap = height * 0.2
 
   return (
-    <ScreenView className="flex flex-col items-center justify-center gap-6">
-      <View className="w-full">
-        <View className="w-full h-24 flex items-center justify-center">
-          <Text className="text-[#c00] text-5xl font-bold mb-3">
-            NCSUGuessr
-          </Text>
-          <Text className="text-md font-bold">
-            By NCSU App Development Club
-          </Text>
-        </View>
-      </View>
-
-      <Image
-        className="w-[25vh] h-[27vh]"
-        source={require('../assets/wolf.png')}
-      />
-
-      <View className="w-64 flex flex-col gap-3">
-        <Button
-          onPress={() => router.push('/games/select')}
-          title="Play"
-          size="lg"
-          fullWidth
-          icon={
-            <Image
-              source={require('../assets/favicon.png')}
-              className="w-6 h-6"
+    <ImageBackground
+      source={require('../assets/lighthouse.jpeg')}
+      className="flex-1"
+      resizeMode="cover"
+    >
+      <View className="absolute inset-0 bg-black/40" />
+      <ScrollView
+        className="flex-1"
+        snapToOffsets={[0, topSnap]}
+        snapToEnd={false}
+        decelerationRate="fast" // TODO: make this good
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ height: bottomSnap }} />
+        <View
+          style={{ height: height * 0.5 }}
+          className="bg-white/0 rounded-t-3xl p-6"
+        >
+          <View className="w-[90%] self-center flex flex-col gap-3">
+            <Button
+              onPress={() => console.log('TODO: play')}
+              title="Play"
+              variant="primary"
+              size="xl"
+              fullWidth
+              icon={
+                <Image
+                  source={require('../assets/favicon.png')}
+                  className="w-6 h-6"
+                />
+              }
+              className="opacity-90"
             />
-          }
-        />
 
-        <Button
-          onPress={() => router.push('/stats')}
-          title="Stats"
-          size="lg"
-          fullWidth
-          variant="secondary"
-        />
-      </View>
+            <Button
+              onPress={() => console.log('TODO: contribute')}
+              title="Contribute"
+              variant="secondary"
+              size="xl"
+              fullWidth
+              icon={
+                <Image
+                  source={require('../assets/favicon.png')}
+                  className="w-6 h-6"
+                />
+              }
+              className="opacity-95"
+            />
+          </View>
 
-      {__DEV__ && <BackLink to="/" />}
-    </ScreenView>
+          <View className="mt-8 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
+            <Text className="text-xl font-bold mb-2">Dummy Card</Text>
+            <Text className="text-md">
+              This is some dummy content that appears when you swipe up on the
+              homepage.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    </ImageBackground>
   )
 }
