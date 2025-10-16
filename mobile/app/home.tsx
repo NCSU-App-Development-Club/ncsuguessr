@@ -24,16 +24,17 @@ export default function Home() {
         className="flex-1"
         snapToOffsets={[0, topSnap]}
         snapToEnd={false}
-        decelerationRate="fast" // TODO: make this good
+        decelerationRate="fast"
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <View style={{ height: bottomSnap }} />
         <View
           style={{ height: height * 0.5 }}
           className="bg-white/0 rounded-t-3xl p-6"
         >
-          <View className="w-[90%] self-center flex flex-col gap-3">
+          <View className="w-[90%] self-center flex flex-col gap-4">
             <Button
               onPress={() => console.log('TODO: play')}
               title="Play"
@@ -65,7 +66,7 @@ export default function Home() {
             />
           </View>
 
-          <View className="mt-8 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
+          <View className="mt-6 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
             <Text className="text-xl font-bold mb-2">Dummy Card</Text>
             <Text className="text-md">
               This is some dummy content that appears when you swipe up on the
