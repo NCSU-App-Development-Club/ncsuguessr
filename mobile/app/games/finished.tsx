@@ -75,7 +75,7 @@ export default function GameFinished() {
   }, [imageData, mapReady])
 
   const handleShareScore = async () => {
-    const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distance}km ----🏁`
+    const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distance?.toKilometers()} km ----🏁`
     await Share.share({
       message: shareText,
     })
