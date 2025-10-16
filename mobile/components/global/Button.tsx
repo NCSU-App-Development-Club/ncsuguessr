@@ -1,5 +1,10 @@
 import { GestureResponderEvent, Pressable, Text, View } from 'react-native'
 import { ReactNode } from 'react'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
 
 type ButtonSize = 'sm' | 'md' | 'lg' | 'xl'
 type ButtonVariant = 'primary' | 'secondary'
@@ -22,10 +27,13 @@ const VARIANT_CLASSES: Record<
   },
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+
 export default function Button({
   onPress,
   title,
-  className,
+  buttonClassName,
+  textClassName,
   size = 'md',
   variant = 'primary',
   fullWidth = false,
@@ -33,7 +41,8 @@ export default function Button({
 }: {
   onPress: (event: GestureResponderEvent) => void
   title: string
-  className?: string
+  buttonClassName?: string
+  textClassName?: string
   size?: ButtonSize
   variant?: ButtonVariant
   fullWidth?: boolean
@@ -41,27 +50,41 @@ export default function Button({
 }) {
   const sizeClasses = SIZE_CLASSES[size]
   const variantClasses = VARIANT_CLASSES[variant]
+  const opacity = useSharedValue(1)
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    }
+  })
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
+      onPressIn={() => {
+        opacity.value = withTiming(0.6, { duration: 75 })
+      }}
+      onPressOut={() => {
+        opacity.value = withTiming(1, { duration: 75 })
+      }}
+      // only use this prop for animated styles; keep everything else in tailwind
+      style={animatedStyle}
       className={`
         items-center justify-center shadow-button
-        active:opacity-60 transition-opacity duration-75
         ${sizeClasses.container}
         ${variantClasses.container}
         ${fullWidth ? 'w-full' : ''}
-        ${className ?? ''}
+        ${buttonClassName ?? ''}
       `}
     >
       <View className="flex-row items-center gap-2">
         {icon}
         <Text
-          className={`font-bold text-center ${sizeClasses.text} ${variantClasses.text}`}
+          className={`text-center ${sizeClasses.text} ${variantClasses.text} ${textClassName ?? ''}`}
         >
           {title}
         </Text>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   )
 }

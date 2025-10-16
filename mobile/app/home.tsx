@@ -9,6 +9,7 @@ import Text from '../components/global/Text'
 import Button from '../components/global/Button'
 
 export default function Home() {
+  // this only gets the size on the initial load, not on every render
   const { height } = useWindowDimensions()
   const bottomSnap = height * 0.67
   const topSnap = height * 0.2
@@ -47,26 +48,43 @@ export default function Home() {
                   className="w-6 h-6"
                 />
               }
-              className="opacity-90"
+              buttonClassName="opacity-90"
+              textClassName="font-bold"
             />
 
-            <Button
-              onPress={() => console.log('TODO: contribute')}
-              title="Contribute"
-              variant="secondary"
-              size="xl"
-              fullWidth
-              icon={
-                <Image
-                  source={require('../assets/favicon.png')}
-                  className="w-6 h-6"
-                />
-              }
-              className="opacity-95"
-            />
+            <View className="flex flex-row gap-3 justify-between">
+              <Button
+                onPress={() => console.log('TODO: contribute')}
+                title="Contribute"
+                variant="secondary"
+                size="lg"
+                icon={
+                  <Image
+                    source={require('../assets/favicon.png')}
+                    className="w-6 h-6"
+                  />
+                }
+                buttonClassName="opacity-95 flex-1"
+                textClassName="font-medium"
+              />
+              <Button
+                onPress={() => console.log('TODO: stats')}
+                title="Stats"
+                variant="secondary"
+                size="lg"
+                icon={
+                  <Image
+                    source={require('../assets/favicon.png')}
+                    className="w-6 h-6"
+                  />
+                }
+                buttonClassName="opacity-95 flex-1"
+                textClassName="font-medium"
+              />
+            </View>
           </View>
 
-          <View className="mt-6 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
+          <View className="mt-5 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
             <Text className="text-xl font-bold mb-2">Dummy Card</Text>
             <Text className="text-md">
               This is some dummy content that appears when you swipe up on the
