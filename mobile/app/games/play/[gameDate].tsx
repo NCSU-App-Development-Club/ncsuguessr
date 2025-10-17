@@ -13,6 +13,7 @@ import { formatTime } from '../../../util/time'
 import { Day } from '../../../util/time/day'
 import { Duration } from '../../../util/time/duration'
 import { fetchGame } from '../../../util/api/games'
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 
 export default function Game() {
   const router = useRouter()
@@ -218,22 +219,33 @@ export default function Game() {
         </View>
 
         <TouchableOpacity
-          className="absolute bottom-4 left-4 h-24 w-24 rounded-2xl"
+          // className="absolute bottom-4 left-4 h-24 w-24 rounded-2xl"
           onPress={() => setExpandedImage(true)}
         >
-          <View className="overflow-hidden rounded-2xl">
+          <View className="z-0 relative overflow-hidden rounded-2xl">
             {error ? (
               <Text className="text-red-500">{error}</Text>
             ) : imageUrl ? (
-              <Image source={{ uri: imageUrl }} className="h-24 w-24" />
+              <>
+                <View className="z-10 absolute inset-0 bg-black/50" />
+                <Image source={{ uri: imageUrl }} className="w-96 h-96" />
+
+                <View className="absolute bottom-3 right-3 justify-center z-20 bg-black/05 rounded-full p-2">
+                  <SimpleLineIcons
+                    name="magnifier-add"
+                    size={32}
+                    color="#FFFFFF"
+                  />
+                </View>
+              </>
             ) : (
               <Text>Loading image...</Text>
             )}
           </View>
         </TouchableOpacity>
 
-        <View className="w-full h-[70%]">
-          <View className="overflow-hidden rounded-2xl">
+        <View className="w-full h-[70%] flex items-center ">
+          <View className="overflow-hidden rounded-2xl w-96 h-80">
             <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
           </View>
         </View>
@@ -253,7 +265,7 @@ export default function Game() {
                 onPress={() => setExpandedImage(false)}
               >
                 {error ? (
-                  <Text className="text-red-500">{error}</Text>
+                  <Text className="text-red">{error}</Text>
                 ) : imageUrl ? (
                   <Image
                     source={{ uri: imageUrl }}
@@ -285,7 +297,7 @@ export default function Game() {
           </View>
         </TouchableOpacity>
 
-        <Text className="absolute bottom-14">(Click image to expand)</Text>
+        {/* <Text className="absolute bottom-14">(Click image to expand)</Text> */}
 
         {gameOver && (
           <TouchableOpacity
