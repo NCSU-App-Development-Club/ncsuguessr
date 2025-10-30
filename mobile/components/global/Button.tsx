@@ -4,6 +4,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  FadeIn,
+  FadeOut,
 } from 'react-native-reanimated'
 
 type ButtonSize = 'sm' | 'md' | 'lg' | 'xl'
@@ -82,16 +84,25 @@ export default function Button({
       `}
     >
       {disabled && (
-        <View className="absolute inset-0 bg-gray-600/50 rounded-3xl" />
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+          className="absolute inset-0 bg-gray-600/50 rounded-3xl"
+        />
       )}
-      <View className="flex-row items-center gap-2">
+      <Animated.View
+        key={`${title}-${disabled}`}
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(200)}
+        className="flex-row items-center gap-2"
+      >
         {icon}
         <Text
           className={`text-center ${sizeClasses.text} ${variantClasses.text} ${textClassName ?? ''}`}
         >
           {title}
         </Text>
-      </View>
+      </Animated.View>
     </AnimatedPressable>
   )
 }
