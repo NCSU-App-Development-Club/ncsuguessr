@@ -121,4 +121,8 @@ export class Day {
     }
     return new Day(year, month, day)
   }
+
+  valueOf(): number {
+    return this.toDate().getTime()
+  }
 }

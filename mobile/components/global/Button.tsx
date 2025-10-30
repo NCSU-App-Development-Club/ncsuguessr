@@ -38,8 +38,9 @@ export default function Button({
   variant = 'primary',
   fullWidth = false,
   icon,
+  baseOpacity = 1,
 }: {
-  onPress: (event: GestureResponderEvent) => void
+  onPress?: (event: GestureResponderEvent) => void
   title: string
   buttonClassName?: string
   textClassName?: string
@@ -47,10 +48,12 @@ export default function Button({
   variant?: ButtonVariant
   fullWidth?: boolean
   icon?: ReactNode
+  baseOpacity?: number
 }) {
+  const disabled = !onPress
   const sizeClasses = SIZE_CLASSES[size]
   const variantClasses = VARIANT_CLASSES[variant]
-  const opacity = useSharedValue(1)
+  const opacity = useSharedValue(disabled ? 0.5 : baseOpacity)
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -65,8 +68,9 @@ export default function Button({
         opacity.value = withTiming(0.6, { duration: 75 })
       }}
       onPressOut={() => {
-        opacity.value = withTiming(1, { duration: 75 })
+        opacity.value = withTiming(baseOpacity, { duration: 75 })
       }}
+      disabled={disabled}
       // only use this prop for animated styles; keep everything else in tailwind
       style={animatedStyle}
       className={`
@@ -77,6 +81,9 @@ export default function Button({
         ${buttonClassName ?? ''}
       `}
     >
+      {disabled && (
+        <View className="absolute inset-0 bg-gray-600/50 rounded-3xl" />
+      )}
       <View className="flex-row items-center gap-2">
         {icon}
         <Text
