@@ -1,5 +1,5 @@
 import { GestureResponderEvent, Pressable, Text, View } from 'react-native'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -55,7 +55,11 @@ export default function Button({
   const disabled = !onPress
   const sizeClasses = SIZE_CLASSES[size]
   const variantClasses = VARIANT_CLASSES[variant]
-  const opacity = useSharedValue(disabled ? 0.5 : baseOpacity)
+  const opacity = useSharedValue(baseOpacity)
+
+  useEffect(() => {
+    opacity.value = disabled ? 0.5 : baseOpacity
+  }, [disabled, baseOpacity, opacity])
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

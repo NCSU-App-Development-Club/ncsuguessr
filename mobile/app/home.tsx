@@ -155,11 +155,13 @@ export default function Home() {
                 selectedGameExists ? () => console.log('TODO: play') : undefined
               }
               title={
-                selectedGameExists
-                  ? selectedDate === today
-                    ? 'Play'
-                    : 'Play Selected'
-                  : 'No Game'
+                gameDatesLoading
+                  ? 'Loading...'
+                  : selectedGameExists
+                    ? selectedDate === today
+                      ? 'Play'
+                      : 'Play Selected'
+                    : 'No Game'
               }
               variant="primary"
               size="xl"
