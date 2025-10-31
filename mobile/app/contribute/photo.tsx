@@ -19,9 +19,11 @@ export default function ContributePhoto() {
 
   if (!cameraPermission || !locationPermission) {
     // Permissions are still loading.
-    return <View>
-      <BackLink to="/" />
-     </View>
+    return (
+      <View>
+        <BackLink to="/" />
+      </View>
+    )
   }
 
   if (!cameraPermission.granted) {
