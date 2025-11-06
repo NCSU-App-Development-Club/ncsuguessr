@@ -63,7 +63,7 @@ export default function GameSelect() {
             game.date,
             {
               marked: true,
-              dotColor: playedGamesSet.has(game.date) ? 'green' : undefined,
+              dotColor: playedGamesSet.has(game.date) ? 'gray' : '#CC0000',
             },
           ])
         )

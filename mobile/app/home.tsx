@@ -79,13 +79,22 @@ export default function Home() {
   const [gameDatesLoading, setGameDatesLoading] = useState(false)
   const [gameDates, setGameDates] = useState<Day[]>([])
 
+  const [playedAlready, setPlayedAlready] = useState<Day[]>([])
+
   const selectedGameExists = useMemo(
     () =>
       gameDates.map((day) => day.toString()).includes(selectedDate.toString()),
     [selectedDate, gameDates]
   )
 
-  const [playedAlready, setPlayedAlready] = useState<Day[]>([]) // TODO: necessary?
+  const selectedGamePlayed = useMemo(
+    () =>
+      playedAlready
+        .map((day) => day.toString())
+        .includes(selectedDate.toString()),
+    [selectedDate, playedAlready]
+  )
+
   const [markedDates, setMarkedDates] = useState<MarkedDates>({})
 
   useEffect(() => {
@@ -114,7 +123,7 @@ export default function Home() {
             game.date,
             {
               marked: true,
-              dotColor: playedGamesSet.has(game.date) ? 'green' : undefined,
+              dotColor: playedGamesSet.has(game.date) ? 'gray' : '#CC0000',
             },
           ])
         )
@@ -152,15 +161,19 @@ export default function Home() {
           <View className="w-[90%] self-center flex flex-col gap-4">
             <Button
               onPress={
-                selectedGameExists ? () => console.log('TODO: play') : undefined
+                selectedGameExists && !selectedGamePlayed
+                  ? () => console.log('TODO: play')
+                  : undefined
               }
               title={
                 gameDatesLoading
                   ? 'Loading...'
                   : selectedGameExists
-                    ? selectedDate === today
-                      ? 'Play'
-                      : 'Play Selected'
+                    ? selectedGamePlayed
+                      ? 'Already Played'
+                      : selectedDate === today
+                        ? 'Play'
+                        : 'Play Selected'
                     : 'No Game'
               }
               variant="primary"
@@ -170,7 +183,9 @@ export default function Home() {
                 <Image
                   source={
                     selectedGameExists
-                      ? require('../assets/play.png')
+                      ? selectedGamePlayed
+                        ? require('../assets/disallowed.png')
+                        : require('../assets/play.png')
                       : require('../assets/clock.png')
                   }
                   className="w-9 h-9"
