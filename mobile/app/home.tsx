@@ -43,7 +43,7 @@ export default function Home() {
         <Button
           onPress={() => router.push('/stats')}
           title="Stats"
-          size="lg"
+          size="sm"
           fullWidth
           variant="secondary"
         />

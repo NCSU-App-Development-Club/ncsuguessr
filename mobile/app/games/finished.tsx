@@ -11,6 +11,8 @@ import ScreenView from '../../components/global/ScreenView'
 import Text from '../../components/global/Text'
 import { fetchGame } from '../../util/api/games'
 import { Coordinate } from '../../util/space/location'
+import Button from '../../components/global/Button'
+import { blue } from 'react-native-reanimated/lib/typescript/Colors'
 
 const UserGuessSchema = z.object({
   latitude: z.number(),
@@ -117,13 +119,14 @@ export default function GameFinished() {
         </Text>
       </View>
 
-      <TouchableOpacity
-        className="bg-red-600 w-full py-4 rounded-full mb-6 flex-row justify-center items-center"
+      <Button
         onPress={handleShareScore}
-      >
-        <Text className="text-2xl font-bold mr-2">Share Score</Text>
-        <FontAwesome name="clipboard" size={24} color="black" />
-      </TouchableOpacity>
+        title="Share Score"
+        fullWidth
+        icon={<FontAwesome name="clipboard" size={24} color="white"></FontAwesome>}
+        size="lg"
+      />
+
 
       <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300 mb-6">
         <GameFinishedMap
@@ -134,24 +137,20 @@ export default function GameFinished() {
         />
       </View>
 
-      <View className="w-full flex-row space-x-4 mb-6">
-        <TouchableOpacity
-          className="bg-red-600 flex-1 py-4 rounded-full"
-          onPress={() => router.replace('/')}
-        >
-          <Text className="text-white text-xl font-bold text-center">
-            Play More
-          </Text>
-        </TouchableOpacity>
+      <View className="w-full flex-row gap-4 justify-center space-x-4 mb-6">
 
-        <TouchableOpacity
-          className="bg-blue-600 flex-1 py-4 rounded-full"
-          onPress={() => router.push('/stats')}
-        >
-          <Text className="text-white text-xl font-bold text-center">
-            View Stats
-          </Text>
-        </TouchableOpacity>
+        <Button
+        onPress={handleShareScore}
+        title="Play More"
+        size="lg"
+        />
+
+        <Button
+        onPress={handleShareScore}
+        title="View Stats"
+        size="lg"
+        />
+
       </View>
     </ScreenView>
   )

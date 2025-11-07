@@ -7,6 +7,7 @@ import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
 import { StatsData, StatsLocalStore } from '../util/storage/stats'
+import Button from '../components/global/Button'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -171,17 +172,15 @@ export default function Stats() {
         </View>
 
         <View className="mt-8 items-center">
-          <TouchableOpacity
-            onPress={showResetConfirmation}
-            className="bg-red-500 px-6 py-3 rounded-lg shadow-md active:bg-red-600"
-          >
-            <View className="flex-row items-center">
-              <SimpleLineIcons name="trash" size={20} color="red" />
-              <Text className="font-bold ml-2 text-lg">
-                Reset All Statistics
-              </Text>
-            </View>
-          </TouchableOpacity>
+
+            <Button
+              onPress={showResetConfirmation}
+              title="Reset All Statistic"
+              size="lg"
+              variant="primary"
+              icon={<SimpleLineIcons name="trash" size={20} color="white" />}
+              />
+
         </View>
       </ScrollView>
     </ScreenView>

@@ -2,11 +2,13 @@ import Text from '../../components/global/Text'
 import ScreenView from '../../components/global/ScreenView'
 import BackLink from '../../components/global/BackLink'
 import React, { useRef, useState } from 'react'
-import { View, Button, TouchableOpacity, Pressable } from 'react-native'
+import { View, TouchableOpacity, Pressable } from 'react-native'
 import { useCameraPermissions, CameraView } from 'expo-camera'
 import * as Location from 'expo-location'
 import { router } from 'expo-router'
 import ScreenButton from '../../components/global/ScreenButton'
+import Button from '../../components/global/Button'
+
 
 export default function ContributePhoto() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions()
@@ -79,12 +81,13 @@ export default function ContributePhoto() {
           ratio="4:3"
         />
       )}
-      <Pressable
-        onPress={takePhoto}
-        className={`rounded bg-ncsured w-52 p-1.5 m-1.5`}
-      >
-        <Text className="text-center text-white font-bold">text</Text>
-      </Pressable>
+      <View className="w-full flex-row space-x-4 top-5 mb-6 gap-4 justify-center">
+              <Button
+              onPress={takePhoto}
+              title="Take photo"
+              size="lg"
+              />
+      </View>
       <BackLink to="/" />
     </ScreenView>
   )

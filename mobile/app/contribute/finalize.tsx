@@ -5,6 +5,8 @@ import { Image, View } from 'react-native'
 import ScreenButton from '../../components/global/ScreenButton'
 import React from 'react'
 import Text from '../../components/global/Text'
+import Button from '../../components/global/Button'
+
 
 export default function ContributeFinalize() {
   const { imageData, latitude, longitude, locationName } =
@@ -53,13 +55,17 @@ export default function ContributeFinalize() {
           <Text>No image provided</Text>
         </View>
       )}
-      <View className="flex-row justify-items-end">
-        <ScreenButton
-          className="flex-1"
-          title="Retake"
-          onPress={() => router.navigate({ pathname: '/contribute/photo' })}
+      <View className="w-full flex-row space-x-4 mb-6 py-1 gap-4 justify-center">
+        <Button
+        onPress={() => router.navigate('/contribute/photo')}
+        title="Retake"
+        size="lg"
         />
-        <ScreenButton className="flex-1" title="Submit" onPress={submitImage} />
+        <Button
+        onPress={submitImage}
+        title="Submit"
+        size="lg"
+        />
       </View>
       <BackLink to="/" />
     </ScreenView>
