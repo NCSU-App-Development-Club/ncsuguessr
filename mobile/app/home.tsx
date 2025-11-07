@@ -66,11 +66,6 @@ const GameSelectCalendar = ({
 }
 
 export default function Home() {
-  // this only gets the size on the initial load, not on every render
-  const { height } = useWindowDimensions()
-  const bottomSnap = height * 0.67
-  const topSnap = height * 0.5
-
   const [error, setError] = useState<string | null>(null)
 
   const [today] = useState(Day.ofDate(new Date()))
@@ -147,18 +142,20 @@ export default function Home() {
       resizeMode="cover"
     >
       <View className="absolute inset-0 bg-black/40" />
-      <ScrollView
-        className="flex-1"
-        snapToOffsets={[0, topSnap]}
-        snapToEnd={false}
-        decelerationRate="fast"
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        <View style={{ height: bottomSnap }} />
+      <View className="flex-1 justify-end">
         <View className="bg-white/0 rounded-t-3xl p-6">
-          <View className="w-[90%] self-center flex flex-col gap-4">
+          <View className="mt-5 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
+            <GameSelectCalendar
+              gameDatesLoading={gameDatesLoading}
+              error={error}
+              today={today}
+              markedDates={markedDates}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
+          </View>
+
+          <View className="w-[90%] self-center flex flex-col gap-4 mt-4">
             <Button
               onPress={
                 selectedGameExists && !selectedGamePlayed
@@ -228,19 +225,8 @@ export default function Home() {
               />
             </View>
           </View>
-
-          <View className="mt-5 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
-            <GameSelectCalendar
-              gameDatesLoading={gameDatesLoading}
-              error={error}
-              today={today}
-              markedDates={markedDates}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </View>
         </View>
-      </ScrollView>
+      </View>
     </ImageBackground>
   )
 }
