@@ -5,6 +5,7 @@ import { MapPressEvent } from 'react-native-maps'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
 import Text from '../../../components/global/Text'
+import BackLink from '../../../components/global/BackLink'
 import { Distance } from '../../../util/space/distance'
 import { Coordinate } from '../../../util/space/location'
 import { GamesLocalStore } from '../../../util/storage/games'
@@ -47,6 +48,50 @@ export default function Game() {
   const closestGuess = useRef<Coordinate | null>(null)
   const closestDistance = useRef<Distance>(Distance.infinity())
 
+    // generate a circle polygon (returns [{latitude, longitude}, ...])
+  function circlePolygon(
+    center: { latitude: number; longitude: number },
+    radiusMeters: number,
+    points = 64
+  ) {
+    const coords: { latitude: number; longitude: number }[] = []
+    const R = 6378137 // Earth radius in meters
+    const latRad = (center.latitude * Math.PI) / 180
+    const lonRad = (center.longitude * Math.PI) / 180
+    const dDivR = radiusMeters / R
+  
+    for (let i = 0; i < points; i++) {
+      const theta = (i / points) * 2 * Math.PI
+      const lat =
+        Math.asin(
+          Math.sin(latRad) * Math.cos(dDivR) +
+            Math.cos(latRad) * Math.sin(dDivR) * Math.cos(theta)
+        ) * (180 / Math.PI)
+      const lon =
+        (lonRad +
+          Math.atan2(
+            Math.sin(theta) * Math.sin(dDivR) * Math.cos(latRad),
+            Math.cos(dDivR) - Math.sin(latRad) * Math.sin((lat * Math.PI) / 180)
+          )) *
+        (180 / Math.PI)
+      coords.push({ latitude: lat, longitude: lon })
+    }
+  
+    return coords
+  }
+
+  // example: replace your square allowedPolygon with a circle centered on campus
+const allowedPolygon = circlePolygon(
+  { latitude: 35.7835, longitude: -78.682 }, // change center to desired lat/lon
+  500, // radius in meters (adjust)
+  64 // number of points (higher = smoother)
+)
+  // const allowedPolygon = [
+  //   { latitude: 35.788, longitude: -78.69 },
+  //   { latitude: 35.788, longitude: -78.675 },
+  //   { latitude: 35.778, longitude: -78.675 },
+  //   { latitude: 35.778, longitude: -78.69 },
+  // ]
   // Update timer every second
   useEffect(() => {
     if (gameOver) return
@@ -231,12 +276,18 @@ export default function Game() {
             )}
           </View>
         </TouchableOpacity>
-
         <View className="w-full h-[70%]">
           <View className="overflow-hidden rounded-2xl">
-            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
-          </View>
+            <GameMap guessMarker={guessMarker}
+            onPress={handleMapPress}
+            allowedPolygon={allowedPolygon}
+            />
         </View>
+        </View>
+        {/* <View className="w-full h-[70%]">
+          <View className="overflow-hidden rounded-2xl">
+            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
+          </View> */}
 
         <Modal visible={expandedImage} transparent={true} className="h-fit">
           <View
@@ -306,3 +357,7 @@ export default function Game() {
     </>
   )
 }
+function circlePolygon(arg0: { latitude: number; longitude: number }, arg1: number, arg2: number) {
+  throw new Error('Function not implemented.')
+}
+
