@@ -80,18 +80,12 @@ export default function Game() {
     return coords
   }
 
-  // example: replace your square allowedPolygon with a circle centered on campus
-const allowedPolygon = circlePolygon(
-  { latitude: 35.7835, longitude: -78.682 }, // change center to desired lat/lon
-  500, // radius in meters (adjust)
-  64 // number of points (higher = smoother)
-)
-  // const allowedPolygon = [
-  //   { latitude: 35.788, longitude: -78.69 },
-  //   { latitude: 35.788, longitude: -78.675 },
-  //   { latitude: 35.778, longitude: -78.675 },
-  //   { latitude: 35.778, longitude: -78.69 },
-  // ]
+  // allowed area where player can drop a pin
+  const allowedPolygon = circlePolygon(
+    { latitude: 35.78, longitude: -78.675 }, // long and lat for center of the circle
+    5250, // radius in meters of the circle on the map
+    64 // number of points for the circle
+  )
   // Update timer every second
   useEffect(() => {
     if (gameOver) return
@@ -284,11 +278,6 @@ const allowedPolygon = circlePolygon(
             />
         </View>
         </View>
-        {/* <View className="w-full h-[70%]">
-          <View className="overflow-hidden rounded-2xl">
-            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
-          </View> */}
-
         <Modal visible={expandedImage} transparent={true} className="h-fit">
           <View
             className="h-fit"
@@ -356,8 +345,5 @@ const allowedPolygon = circlePolygon(
       </View>
     </>
   )
-}
-function circlePolygon(arg0: { latitude: number; longitude: number }, arg1: number, arg2: number) {
-  throw new Error('Function not implemented.')
 }
 
