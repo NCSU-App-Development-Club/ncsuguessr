@@ -1,0 +1,58 @@
+import { Image } from 'react-native'
+import { Day } from '../../util/time/day'
+import Button from '../global/Button'
+import { Router } from 'expo-router'
+
+export const PlayButton = ({
+  selectedGameExists,
+  selectedGamePlayed,
+  gameDatesLoading,
+  selectedDate,
+  today,
+  router,
+}: {
+  selectedGameExists: boolean
+  selectedGamePlayed: boolean
+  gameDatesLoading: boolean
+  selectedDate: Day
+  today: Day
+  router: Router
+}) => {
+  return (
+    <Button
+      onPress={
+        selectedGameExists && !selectedGamePlayed
+          ? () => router.push(`/games/play/${selectedDate.toString()}`)
+          : undefined
+      }
+      title={
+        gameDatesLoading
+          ? 'Loading...'
+          : selectedGameExists
+            ? selectedGamePlayed
+              ? 'Already Played'
+              : selectedDate === today
+                ? 'Play'
+                : 'Play Selected'
+            : 'No Game'
+      }
+      variant="primary"
+      size="xl"
+      fullWidth
+      icon={
+        <Image
+          source={
+            selectedGameExists
+              ? selectedGamePlayed
+                ? require('../../assets/disallowed.png')
+                : require('../../assets/play.png')
+              : require('../../assets/clock.png')
+          }
+          className="w-9 h-9"
+        />
+      }
+      baseOpacity={0.9}
+      textClassName="font-bold"
+    />
+  )
+}

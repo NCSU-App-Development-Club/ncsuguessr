@@ -1,71 +1,18 @@
-import {
-  Image,
-  ImageBackground,
-  View,
-  ScrollView,
-  useWindowDimensions,
-} from 'react-native'
-import Text from '../components/global/Text'
-import Button from '../components/global/Button'
+import { BlurView } from 'expo-blur'
+import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Day } from '../util/time/day'
-import { DateData, MarkedDates } from 'react-native-calendars/src/types'
+import { ImageBackground, useWindowDimensions, View } from 'react-native'
+import { MarkedDates } from 'react-native-calendars/src/types'
+import { GameSelectCalendar } from '../components/home/GameSelectCalendar'
+import { PlayButton } from '../components/home/PlayButton'
+import { TabBar } from '../components/home/TabBar'
 import { getGameDates } from '../util/api/games'
 import { GamesLocalStore } from '../util/storage/games'
-import { Calendar } from 'react-native-calendars'
-
-const GameSelectCalendar = ({
-  gameDatesLoading,
-  error,
-  today,
-  markedDates,
-  selectedDate,
-  setSelectedDate,
-}: {
-  gameDatesLoading: boolean
-  error: string | null
-  today: Day
-  markedDates: MarkedDates
-  selectedDate: Day
-  setSelectedDate: (d: Day) => void
-}) => {
-  return gameDatesLoading ? (
-    <View>
-      <Text className="text-center">Loading games...</Text>
-    </View>
-  ) : error ? (
-    <View>
-      <Text className="text-center">Error: {error}</Text>
-    </View>
-  ) : (
-    <View>
-      <Calendar
-        initialDate={today.toString()}
-        disableAllTouchEventsForDisabledDays={true}
-        theme={{
-          selectedDayBackgroundColor: '#CC0000',
-          dotColor: '#CC0000',
-          arrowColor: '#CC0000',
-        }}
-        onDayPress={(day: DateData) => {
-          setSelectedDate(new Day(day.year, day.month, day.day))
-        }}
-        markedDates={{
-          ...markedDates,
-          [selectedDate.toString()]: {
-            ...markedDates[selectedDate.toString()],
-            selected: true,
-            disableTouchEvent: true,
-          },
-        }}
-        maxDate={today.toString()}
-        minDate="2025-05-01"
-      />
-    </View>
-  )
-}
+import { Day } from '../util/time/day'
 
 export default function Home() {
+  const router = useRouter()
+
   const [error, setError] = useState<string | null>(null)
 
   const [today] = useState(Day.ofDate(new Date()))
@@ -135,98 +82,57 @@ export default function Home() {
     fetchGameDates()
   }, [])
 
+  const { height } = useWindowDimensions()
+
   return (
-    <ImageBackground
-      source={require('../assets/lighthouse.jpeg')}
-      className="flex-1"
-      resizeMode="cover"
-    >
-      <View className="absolute inset-0 bg-black/40" />
-      <View className="flex-1 justify-end">
-        <View className="bg-white/0 rounded-t-3xl p-6">
-          <View className="mt-5 w-[90%] self-center bg-white p-4 rounded-xl border border-gray-200">
-            <GameSelectCalendar
-              gameDatesLoading={gameDatesLoading}
-              error={error}
-              today={today}
-              markedDates={markedDates}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </View>
-
-          <View className="w-[90%] self-center flex flex-col gap-4 mt-4">
-            <Button
-              onPress={
-                selectedGameExists && !selectedGamePlayed
-                  ? () => console.log('TODO: play')
-                  : undefined
-              }
-              title={
-                gameDatesLoading
-                  ? 'Loading...'
-                  : selectedGameExists
-                    ? selectedGamePlayed
-                      ? 'Already Played'
-                      : selectedDate === today
-                        ? 'Play'
-                        : 'Play Selected'
-                    : 'No Game'
-              }
-              variant="primary"
-              size="xl"
-              fullWidth
-              icon={
-                <Image
-                  source={
-                    selectedGameExists
-                      ? selectedGamePlayed
-                        ? require('../assets/disallowed.png')
-                        : require('../assets/play.png')
-                      : require('../assets/clock.png')
-                  }
-                  className="w-9 h-9"
-                />
-              }
-              baseOpacity={0.9}
-              textClassName="font-bold"
-            />
-
-            <View className="flex flex-row gap-3 justify-between">
-              <Button
-                onPress={() => console.log('TODO: contribute')}
-                title="Contribute"
-                variant="secondary"
-                size="lg"
-                icon={
-                  <Image
-                    source={require('../assets/camera.png')}
-                    className="w-6 h-6"
-                  />
-                }
-                buttonClassName="flex-1"
-                baseOpacity={0.95}
-                textClassName="font-medium"
-              />
-              <Button
-                onPress={() => console.log('TODO: stats')}
-                title="Stats"
-                variant="secondary"
-                size="lg"
-                icon={
-                  <Image
-                    source={require('../assets/stats.png')}
-                    className="w-6 h-6"
-                  />
-                }
-                buttonClassName="flex-1"
-                baseOpacity={0.95}
-                textClassName="font-medium"
-              />
-            </View>
-          </View>
+    <View className="flex-1 bg-white">
+      <View className="flex-1 justify-center">
+        <View className="w-full h-full self-center">
+          <GameSelectCalendar
+            gameDatesLoading={gameDatesLoading}
+            error={error}
+            today={today}
+            markedDates={markedDates}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </View>
       </View>
-    </ImageBackground>
+
+      <View
+        style={{ height: height * 0.35 }}
+        className="rounded-t-3xl overflow-hidden shadow-2xl"
+      >
+        <ImageBackground
+          source={require('../assets/lighthouse.jpeg')}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        >
+          <BlurView
+            intensity={80}
+            tint="dark"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          />
+          <View className="flex-1 justify-center items-center px-8">
+            <PlayButton
+              selectedGameExists={selectedGameExists}
+              selectedGamePlayed={selectedGamePlayed}
+              gameDatesLoading={gameDatesLoading}
+              selectedDate={selectedDate}
+              today={today}
+              router={router}
+            />
+          </View>
+        </ImageBackground>
+      </View>
+
+      <TabBar router={router} />
+    </View>
   )
 }
