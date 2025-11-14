@@ -1,4 +1,4 @@
-import { MarkedDates } from 'react-native-calendars/src/types'
+import { DateData, MarkedDates } from 'react-native-calendars/src/types'
 import { Day } from '../../util/time/day'
 import { View } from 'react-native'
 import Text from '../global/Text'
