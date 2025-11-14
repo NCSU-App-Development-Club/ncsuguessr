@@ -104,7 +104,7 @@ export default function Home() {
         className="rounded-t-3xl overflow-hidden shadow-2xl"
       >
         <ImageBackground
-          source={require('../assets/lighthouse.jpeg')}
+          source={require('../assets/belltower.png')}
           style={{ width: '100%', height: '100%' }}
           resizeMode="cover"
         >
