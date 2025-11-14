@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-    mapContainer: {
+  mapContainer: {
     width: '100%',
     height: '100%',
     borderWidth: 2,
@@ -69,14 +69,12 @@ const GameMap = ({
       const yj = polygon[j].latitude
 
       const intersect =
-        (yi > lat) !== (yj > lat) &&
-        lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
+        yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
 
       if (intersect) inside = !inside
     }
     return inside
   }
-
 
   const handlePress = (event: MapPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate
@@ -90,27 +88,27 @@ const GameMap = ({
   }
   return (
     <>
-     <View style={styles.mapContainer}>
-      <MapView
-        ref={mapRef}
-        style={styles.fullMap}
-        initialRegion={{
-          latitude: 35.7847,
-          longitude: -78.6821,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        onMapReady={() => setMapReady(true)}
-        onLayout={() => setLayoutReady(true)}
-        onPress={handlePress}
-        provider={
-          Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-        }
-      >
-        {guessMarker && (
-          <Marker coordinate={guessMarker.toJSON()} pinColor="blue" />
-        )}
-        {allowedPolygon && allowedPolygon.length > 2 && (
+      <View style={styles.mapContainer}>
+        <MapView
+          ref={mapRef}
+          style={styles.fullMap}
+          initialRegion={{
+            latitude: 35.7847,
+            longitude: -78.6821,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+          onMapReady={() => setMapReady(true)}
+          onLayout={() => setLayoutReady(true)}
+          onPress={handlePress}
+          provider={
+            Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
+          }
+        >
+          {guessMarker && (
+            <Marker coordinate={guessMarker.toJSON()} pinColor="blue" />
+          )}
+          {allowedPolygon && allowedPolygon.length > 2 && (
             <Polygon
               coordinates={allowedPolygon}
               strokeColor="#CC0000"
@@ -118,7 +116,7 @@ const GameMap = ({
               fillColor="rgba(204,0,0,0.06)"
             />
           )}
-      </MapView>
+        </MapView>
       </View>
       <View
         style={{
