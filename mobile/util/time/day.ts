@@ -55,7 +55,7 @@ export class Day {
     return `${this.getYear()}-${this.getMonth().toString().padStart(2, '0')}-${this.getDay().toString().padStart(2, '0')}`
   }
 
-  isEqual(other: Day): boolean {
+  equals(other: Day): boolean {
     return (
       this.getYear() === other.getYear() &&
       this.getMonth() === other.getMonth() &&

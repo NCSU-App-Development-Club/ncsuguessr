@@ -31,7 +31,7 @@ export const PlayButton = ({
           : selectedGameExists
             ? selectedGamePlayed
               ? 'Already Played'
-              : selectedDate === today
+              : selectedDate.equals(today)
                 ? 'Play'
                 : 'Play Selected'
             : 'No Game'
