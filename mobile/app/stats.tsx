@@ -172,15 +172,13 @@ export default function Stats() {
         </View>
 
         <View className="mt-8 items-center">
-
-            <Button
-              onPress={showResetConfirmation}
-              title="Reset All Statistic"
-              size="lg"
-              variant="primary"
-              icon={<SimpleLineIcons name="trash" size={20} color="white" />}
-              />
-
+          <Button
+            onPress={showResetConfirmation}
+            title="Reset All Statistic"
+            size="lg"
+            variant="primary"
+            icon={<SimpleLineIcons name="trash" size={20} color="white" />}
+          />
         </View>
       </ScrollView>
     </ScreenView>

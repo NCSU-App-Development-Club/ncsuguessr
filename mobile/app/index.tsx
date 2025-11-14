@@ -6,8 +6,6 @@ import ScreenButton from '../components/global/ScreenButton'
 import Button from '../components/global/Button'
 import { View, TouchableOpacity, Pressable } from 'react-native'
 
-
-
 export default function App() {
   if (!__DEV__) return <Redirect href="/home" />
 
@@ -25,9 +23,11 @@ export default function App() {
       <ScreenLink link="/stats">Stats</ScreenLink>
       <View className="w-64 flex flex-row space-x-4 top-2 mb-6 gap-4 justify-center">
         <Button
-        onPress={() => { GamesLocalStore.clearGames(); }}
-        title="Clear Games Local Data"
-        size="sm"
+          onPress={() => {
+            GamesLocalStore.clearGames()
+          }}
+          title="Clear Games Local Data"
+          size="sm"
         />
       </View>
     </ScreenView>

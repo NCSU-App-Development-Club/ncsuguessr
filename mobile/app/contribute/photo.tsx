@@ -9,7 +9,6 @@ import { router } from 'expo-router'
 import ScreenButton from '../../components/global/ScreenButton'
 import Button from '../../components/global/Button'
 
-
 export default function ContributePhoto() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions()
   const [locationPermission, requestLocationPermission] =
@@ -82,11 +81,7 @@ export default function ContributePhoto() {
         />
       )}
       <View className="w-full flex-row space-x-4 top-5 mb-6 gap-4 justify-center">
-              <Button
-              onPress={takePhoto}
-              title="Take photo"
-              size="lg"
-              />
+        <Button onPress={takePhoto} title="Take photo" size="lg" />
       </View>
       <BackLink to="/" />
     </ScreenView>

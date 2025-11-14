@@ -123,10 +123,11 @@ export default function GameFinished() {
         onPress={handleShareScore}
         title="Share Score"
         fullWidth
-        icon={<FontAwesome name="clipboard" size={24} color="white"></FontAwesome>}
+        icon={
+          <FontAwesome name="clipboard" size={24} color="white"></FontAwesome>
+        }
         size="lg"
       />
-
 
       <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300 mb-6">
         <GameFinishedMap
@@ -138,19 +139,9 @@ export default function GameFinished() {
       </View>
 
       <View className="w-full flex-row gap-4 justify-center space-x-4 mb-6">
+        <Button onPress={handleShareScore} title="Play More" size="lg" />
 
-        <Button
-        onPress={handleShareScore}
-        title="Play More"
-        size="lg"
-        />
-
-        <Button
-        onPress={handleShareScore}
-        title="View Stats"
-        size="lg"
-        />
-
+        <Button onPress={handleShareScore} title="View Stats" size="lg" />
       </View>
     </ScreenView>
   )

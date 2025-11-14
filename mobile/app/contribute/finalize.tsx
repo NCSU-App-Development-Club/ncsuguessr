@@ -7,7 +7,6 @@ import React from 'react'
 import Text from '../../components/global/Text'
 import Button from '../../components/global/Button'
 
-
 export default function ContributeFinalize() {
   const { imageData, latitude, longitude, locationName } =
     useLocalSearchParams()
@@ -57,15 +56,11 @@ export default function ContributeFinalize() {
       )}
       <View className="w-full flex-row space-x-4 mb-6 py-1 gap-4 justify-center">
         <Button
-        onPress={() => router.navigate('/contribute/photo')}
-        title="Retake"
-        size="lg"
+          onPress={() => router.navigate('/contribute/photo')}
+          title="Retake"
+          size="lg"
         />
-        <Button
-        onPress={submitImage}
-        title="Submit"
-        size="lg"
-        />
+        <Button onPress={submitImage} title="Submit" size="lg" />
       </View>
       <BackLink to="/" />
     </ScreenView>

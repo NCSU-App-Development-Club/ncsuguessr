@@ -167,6 +167,5 @@ function GameButton({
         {children}
       </Text>
     </TouchableOpacity>
-
   )
 }
