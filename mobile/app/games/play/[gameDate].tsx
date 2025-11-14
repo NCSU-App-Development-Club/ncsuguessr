@@ -5,7 +5,6 @@ import { MapPressEvent } from 'react-native-maps'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
 import Text from '../../../components/global/Text'
-import BackLink from '../../../components/global/BackLink'
 import { Distance } from '../../../util/space/distance'
 import { Coordinate } from '../../../util/space/location'
 import { GamesLocalStore } from '../../../util/storage/games'
@@ -48,7 +47,7 @@ export default function Game() {
   const closestGuess = useRef<Coordinate | null>(null)
   const closestDistance = useRef<Distance>(Distance.infinity())
 
-    // generate a circle polygon (returns [{latitude, longitude}, ...])
+  // generate a circle polygon (returns [{latitude, longitude}, ...])
   function circlePolygon(
     center: { latitude: number; longitude: number },
     radiusMeters: number,
@@ -59,14 +58,15 @@ export default function Game() {
     const latRad = (center.latitude * Math.PI) / 180
     const lonRad = (center.longitude * Math.PI) / 180
     const dDivR = radiusMeters / R
-  
+
     for (let i = 0; i < points; i++) {
       const theta = (i / points) * 2 * Math.PI
       const lat =
         Math.asin(
           Math.sin(latRad) * Math.cos(dDivR) +
             Math.cos(latRad) * Math.sin(dDivR) * Math.cos(theta)
-        ) * (180 / Math.PI)
+        ) *
+        (180 / Math.PI)
       const lon =
         (lonRad +
           Math.atan2(
@@ -76,10 +76,9 @@ export default function Game() {
         (180 / Math.PI)
       coords.push({ latitude: lat, longitude: lon })
     }
-  
+
     return coords
   }
-
   // allowed area where player can drop a pin
   const allowedPolygon = circlePolygon(
     { latitude: 35.78, longitude: -78.675 }, // long and lat for center of the circle
@@ -272,11 +271,12 @@ export default function Game() {
         </TouchableOpacity>
         <View className="w-full h-[70%]">
           <View className="overflow-hidden rounded-2xl">
-            <GameMap guessMarker={guessMarker}
-            onPress={handleMapPress}
-            allowedPolygon={allowedPolygon}
+            <GameMap
+              guessMarker={guessMarker}
+              onPress={handleMapPress}
+              allowedPolygon={allowedPolygon}
             />
-        </View>
+          </View>
         </View>
         <Modal visible={expandedImage} transparent={true} className="h-fit">
           <View
@@ -346,4 +346,3 @@ export default function Game() {
     </>
   )
 }
-
