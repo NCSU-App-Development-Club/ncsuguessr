@@ -1,6 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, Modal, TouchableOpacity, View } from 'react-native'
+import {
+  Animated,
+  Easing,
+  Image,
+  Modal,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { MapPressEvent } from 'react-native-maps'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
@@ -14,13 +21,13 @@ import { Day } from '../../../util/time/day'
 import { Duration } from '../../../util/time/duration'
 import { fetchGame } from '../../../util/api/games'
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
+import BackLink from '../../../components/global/BackLink'
+import { FontAwesome6 } from '@expo/vector-icons'
 
 export default function Game() {
   const router = useRouter()
   const { gameDate } = useLocalSearchParams<{ gameDate: string }>()
   const gameDay = Day.ofString(gameDate)
-
-  const [expandedImage, setExpandedImage] = useState<boolean>(false)
 
   const [guessMarker, setGuessMarker] = useState<Coordinate | null>(null)
   const [guessCount, setGuessCount] = useState(0)
@@ -182,9 +189,15 @@ export default function Game() {
     }
   }
 
+  const [imageExpanded, setImageExpanded] = useState(false)
+  const [mapExpanded, setMapExpanded] = useState(false)
+
   return (
     <>
-      <View className="p-4 flex-1 items-center gap-4 mt-8">
+      <View>
+        <BackLink to="/" />
+      </View>
+      <View className="p-4 flex-1 items-center gap-2 mt-8">
         <GameEventModal
           open={showGameEventModal}
           setOpen={setShowGameEventModal}
@@ -208,112 +221,78 @@ export default function Game() {
           subMessage={gameEventModalContent.subMessage}
         />
 
-        <Text className="text-3xl">Where is this?</Text>
-        <View className="flex-row items-center justify-between w-full">
-          <Text className="text-gray-500">
-            Guesses remaining: {3 - guessCount}
-          </Text>
-          <Text className="text-gray-500">
-            Time: {formatTime(elapsedTime.toMillis())}
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          // className="absolute bottom-4 left-4 h-24 w-24 rounded-2xl"
-          onPress={() => setExpandedImage(true)}
-        >
-          <View className="z-0 relative overflow-hidden rounded-2xl">
-            {error ? (
-              <Text className="text-red-500">{error}</Text>
-            ) : imageUrl ? (
-              <>
-                <View className="z-10 absolute inset-0 bg-black/50" />
-                <Image source={{ uri: imageUrl }} className="w-96 h-96" />
-
-                <View className="absolute bottom-3 right-3 justify-center z-20 bg-black/05 rounded-full p-2">
-                  <SimpleLineIcons
-                    name="magnifier-add"
-                    size={32}
-                    color="#FFFFFF"
-                  />
-                </View>
-              </>
-            ) : (
-              <Text>Loading image...</Text>
-            )}
-          </View>
-        </TouchableOpacity>
-
-        <View className="w-full h-[70%] flex items-center ">
-          <View className="overflow-hidden rounded-2xl w-96 h-80">
-            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
-          </View>
-        </View>
-
-        <Modal visible={expandedImage} transparent={true} className="h-fit">
-          <View
-            className="h-fit"
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-            }}
+        <View className="absolute bottom-6 right-10 z-20">
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setImageExpanded(!imageExpanded)}
           >
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity
-                className="h-full bg-white border-r-16 m-2 p-2 flex-1"
-                activeOpacity={1}
-                onPress={() => setExpandedImage(false)}
-              >
-                {error ? (
-                  <Text className="text-red">{error}</Text>
-                ) : imageUrl ? (
+            <View
+              className={`overflow-hidden rounded-2xl ${
+                imageExpanded ? 'w-60 h-96' : 'w-48 h-48'
+              } `}
+            >
+              {error ? (
+                <View className="w-full h-full justify-center items-center">
+                  <Text className="text-red-500">{error}</Text>
+                </View>
+              ) : imageUrl ? (
+                <>
                   <Image
                     source={{ uri: imageUrl }}
                     className="w-full h-full"
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
-                ) : (
+
+                  <View className="absolute bottom-2 right-2 bg-black/40 rounded-full p-2">
+                    <SimpleLineIcons
+                      name={
+                        imageExpanded ? 'magnifier-remove' : 'magnifier-add'
+                      }
+                      size={28}
+                      color="#fff"
+                    />
+                  </View>
+                </>
+              ) : (
+                <View className="w-full h-full justify-center items-center">
                   <Text>Loading image...</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        <TouchableOpacity
-          onPress={handleGuess}
-          disabled={!guessMarker || gameOver}
-        >
-          <View
-            className={`rounded w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center ${!guessMarker || gameOver ? 'bg-gray-400' : 'bg-ncsured'}`}
-          >
-            <Text className="text-white font-bold text-center">
-              {gameOver
-                ? 'Game Over'
-                : guessMarker
-                  ? 'Submit Guess'
-                  : 'Drop a pin first'}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* <Text className="absolute bottom-14">(Click image to expand)</Text> */}
-
-        {gameOver && (
-          <TouchableOpacity
-            onPress={() => {
-              setGuessCount(0)
-              setGuessMarker(null)
-              setGameOver(false)
-            }}
-          >
-            <View className="rounded bg-blue-500 w-52 p-1.5 m-1.5 text-center font-bold flex flex-row justify-center items-center">
-              <Text className="text-white font-bold text-center">
-                Play Again
-              </Text>
+                </View>
+              )}
             </View>
           </TouchableOpacity>
-        )}
+        </View>
+
+        <TouchableOpacity activeOpacity={0.9}>
+          <View className={'w-96 h-full overflow-hidden rounded-2xl'}>
+            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
+          </View>
+        </TouchableOpacity>
+        <View className="absolute bottom-6 left-10 z-20 ">
+          <TouchableOpacity
+            onPress={handleGuess}
+            disabled={!guessMarker || gameOver}
+          >
+            <View
+              className={`bg-black/40 rounded-full p-2 m-1.5 text-center font-bold flex flex-row justify-center items-center ${!guessMarker || gameOver ? 'bg-gray-400' : 'bg-ncsured'}`}
+            >
+              <SimpleLineIcons
+                onPress={handleGuess}
+                name="check"
+                size={28}
+                color="#fff"
+              />
+            </View>
+          </TouchableOpacity>
+          {gameOver && (
+            <TouchableOpacity
+              onPress={() => {
+                setGuessCount(0)
+                setGuessMarker(null)
+                setGameOver(false)
+              }}
+            ></TouchableOpacity>
+          )}
+        </View>
       </View>
     </>
   )

@@ -66,12 +66,12 @@ const GameMap = ({
           <Marker coordinate={guessMarker.toJSON()} pinColor="blue" />
         )}
       </MapView>
-      <View
+      {/* <View
         style={{
           position: 'absolute',
           bottom: 40,
           left: 0,
-          right: 0,
+          right: 1,
           alignItems: 'center',
           zIndex: 1,
         }}
@@ -87,7 +87,7 @@ const GameMap = ({
         >
           <Text className="text-white text-base font-bold">Center Pin</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </>
   )
 }
