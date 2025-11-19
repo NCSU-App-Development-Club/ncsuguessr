@@ -11,7 +11,7 @@ export default function BackLink({
 }) {
   return (
     <Link
-      className="w-28 border-1 text-center p-1.5 m-1 absolute top-1 left-1 font-bold text-lg"
+      className="w-28 border-1 text-center p-1.5 m-1 absolute top-1 left-1 font-bold text-lg z-50"
       href={to}
     >
       <Feather name="arrow-left" color="black" size={16} /> {label || 'Back'}

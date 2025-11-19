@@ -1,13 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  Animated,
-  Easing,
-  Image,
-  Modal,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Image, TouchableOpacity, View } from 'react-native'
 import { MapPressEvent } from 'react-native-maps'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
@@ -22,7 +15,6 @@ import { Duration } from '../../../util/time/duration'
 import { fetchGame } from '../../../util/api/games'
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 import BackLink from '../../../components/global/BackLink'
-import { FontAwesome6 } from '@expo/vector-icons'
 
 export default function Game() {
   const router = useRouter()
@@ -197,7 +189,7 @@ export default function Game() {
       <View>
         <BackLink to="/" />
       </View>
-      <View className="p-4 flex-1 items-center gap-2 mt-8">
+      <View className="flex-1 items-center gap-2 absolute top-0 left-0 right-0 bottom-0">
         <GameEventModal
           open={showGameEventModal}
           setOpen={setShowGameEventModal}
@@ -221,7 +213,7 @@ export default function Game() {
           subMessage={gameEventModalContent.subMessage}
         />
 
-        <View className="absolute bottom-6 right-10 z-20">
+        <View className="absolute bottom-6 right-10 z-10">
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => setImageExpanded(!imageExpanded)}
@@ -262,12 +254,10 @@ export default function Game() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity activeOpacity={0.9}>
-          <View className={'w-96 h-full overflow-hidden rounded-2xl'}>
-            <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
-          </View>
-        </TouchableOpacity>
-        <View className="absolute bottom-6 left-10 z-20 ">
+        <View className="w-full h-full overflow-hidden rounded-2xl">
+          <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
+        </View>
+        <View className="absolute bottom-6 left-10 ">
           <TouchableOpacity
             onPress={handleGuess}
             disabled={!guessMarker || gameOver}
