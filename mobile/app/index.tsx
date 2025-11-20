@@ -4,7 +4,7 @@ import { Link, Redirect } from 'expo-router'
 import { GamesLocalStore } from '../util/storage/games'
 import ScreenButton from '../components/global/ScreenButton'
 import Button from '../components/global/Button'
-import { View, TouchableOpacity, Pressable } from 'react-native'
+import { View } from 'react-native'
 
 export default function App() {
   if (!__DEV__) return <Redirect href="/home" />

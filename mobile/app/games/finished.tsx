@@ -12,8 +12,6 @@ import Text from '../../components/global/Text'
 import { fetchGame } from '../../util/api/games'
 import { Coordinate } from '../../util/space/location'
 import Button from '../../components/global/Button'
-import { blue } from 'react-native-reanimated/lib/typescript/Colors'
-
 const UserGuessSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
@@ -139,9 +137,17 @@ export default function GameFinished() {
       </View>
 
       <View className="w-full flex-row gap-4 justify-center space-x-4 mb-6">
-        <Button onPress={handleShareScore} title="Play More" size="lg" />
+        <Button
+          onPress={() => router.replace('/')}
+          title="Play More"
+          size="lg"
+        />
 
-        <Button onPress={handleShareScore} title="View Stats" size="lg" />
+        <Button
+          onPress={() => router.push('/stats')}
+          title="View Stats"
+          size="lg"
+        />
       </View>
     </ScreenView>
   )

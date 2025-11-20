@@ -9,8 +9,6 @@ import { getGameDates } from '../../util/api/games'
 import { GamesLocalStore } from '../../util/storage/games'
 import Button from '../../components/global/Button'
 import { Day } from '../../util/time/day'
-//import { Button } from 'react-native/types_generated/index'
-
 export default function GameSelect() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
