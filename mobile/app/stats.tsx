@@ -7,6 +7,7 @@ import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
 import { StatsData, StatsLocalStore } from '../util/storage/stats'
+import PageTitle from '../components/global/PageTitle'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -71,9 +72,9 @@ export default function Stats() {
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <BackLink to="/home" label="Home" />
         <View className="mb-5 mt-14">
-          <Text className="text-4xl font-bold text-[#000000] text-center">
-            Statistics
-          </Text>
+          <PageTitle
+            text= "Statistics"
+            />
         </View>
 
         <View className="flex flex-row flex-wrap justify-between w-full">
