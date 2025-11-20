@@ -7,9 +7,7 @@ import MapView, {
   PROVIDER_GOOGLE,
   Polygon,
 } from 'react-native-maps'
-import Text from '../../components/global/Text'
 import { Coordinate } from '../../util/space/location'
-//import { event } from 'react-native/types_generated/Libraries/Animated/AnimatedExports'
 
 const styles = StyleSheet.create({
   fullMap: {
@@ -117,28 +115,6 @@ const GameMap = ({
             />
           )}
         </MapView>
-      </View>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 40,
-          left: 0,
-          right: 0,
-          alignItems: 'center',
-          zIndex: 1,
-        }}
-      >
-        <TouchableOpacity
-          onPress={moveMapToCenter}
-          style={{
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 30,
-          }}
-        >
-          <Text className="text-white text-base font-bold">Center Pin</Text>
-        </TouchableOpacity>
       </View>
     </>
   )

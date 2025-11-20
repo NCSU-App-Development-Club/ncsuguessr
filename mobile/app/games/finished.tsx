@@ -11,6 +11,7 @@ import ScreenView from '../../components/global/ScreenView'
 import Text from '../../components/global/Text'
 import { fetchGame } from '../../util/api/games'
 import { Coordinate } from '../../util/space/location'
+import { useLocales } from 'expo-localization'
 
 const UserGuessSchema = z.object({
   latitude: z.number(),
@@ -29,6 +30,7 @@ export default function GameFinished() {
   const userGuess = Coordinate.ofObject(
     UserGuessSchema.parse(JSON.parse(params.userGuess))
   )
+  const { measurementSystem } = useLocales()[0]
 
   const [gameDataLoading, setGameDataLoading] = useState(true)
   const [gameDataError, setGameDataError] = useState<string | null>(null)
@@ -75,13 +77,18 @@ export default function GameFinished() {
   }, [imageData, mapReady])
 
   const handleShareScore = async () => {
-    const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distance}km ----🏁`
+    const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distanceLocalized?.toFixed(2)} ${distanceLocalizedUnits} ----🏁`
     await Share.share({
       message: shareText,
     })
   }
 
   const distance = actualLocation ? userGuess.distance(actualLocation) : null
+  const distanceLocalizedUnits = measurementSystem === 'metric' ? 'km' : 'mi'
+  const distanceLocalized =
+    distanceLocalizedUnits == 'km'
+      ? distance?.toKilometers()
+      : distance?.toMiles()
   const locationName = imageData?.location_name || ''
 
   if (gameDataLoading) {
@@ -110,7 +117,7 @@ export default function GameFinished() {
         <Text className="text-2xl text-center mb-2">
           Your closest guess was{' '}
           <Text className="text-red-600 font-bold">
-            {distance?.toKilometers().toFixed(2)} km
+            {distanceLocalized?.toFixed(2)} {distanceLocalizedUnits}
           </Text>{' '}
           from the location:{' '}
           <Text className="text-red-600 font-bold">{locationName}</Text>
