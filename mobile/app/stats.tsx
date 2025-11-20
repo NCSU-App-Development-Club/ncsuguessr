@@ -8,6 +8,7 @@ import StatBox from '../components/stats/StatBox'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
 import { StatsData, StatsLocalStore } from '../util/storage/stats'
 import { GamesLocalStore } from '../util/storage/games'
+import Button from '../components/global/Button'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -173,17 +174,13 @@ export default function Stats() {
         </View>
 
         <View className="mt-8 items-center">
-          <TouchableOpacity
+          <Button
             onPress={showResetConfirmation}
-            className="bg-red-500 px-6 py-3 rounded-lg shadow-md active:bg-red-600"
-          >
-            <View className="flex-row items-center">
-              <SimpleLineIcons name="trash" size={20} color="red" />
-              <Text className="font-bold ml-2 text-lg">
-                Reset All Statistics
-              </Text>
-            </View>
-          </TouchableOpacity>
+            title="Reset All Statistics"
+            size="lg"
+            variant="primary"
+            icon={<SimpleLineIcons name="trash" size={20} color="white" />}
+          />
         </View>
       </ScrollView>
     </ScreenView>

@@ -7,8 +7,8 @@ import BackLink from '../../components/global/BackLink'
 import ScreenView from '../../components/global/ScreenView'
 import { getGameDates } from '../../util/api/games'
 import { GamesLocalStore } from '../../util/storage/games'
+import Button from '../../components/global/Button'
 import { Day } from '../../util/time/day'
-
 export default function GameSelect() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
