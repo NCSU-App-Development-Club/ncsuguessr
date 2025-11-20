@@ -7,6 +7,7 @@ import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
 import { StatsData, StatsLocalStore } from '../util/storage/stats'
+import { GamesLocalStore } from '../util/storage/games'
 import Button from '../components/global/Button'
 
 export default function Stats() {
@@ -45,6 +46,7 @@ export default function Stats() {
 
   const handleResetStats = async () => {
     await StatsLocalStore.resetStats()
+    await GamesLocalStore.clearGames()
     setStatsState(null)
     console.log('Stats cleared')
   }
@@ -174,7 +176,7 @@ export default function Stats() {
         <View className="mt-8 items-center">
           <Button
             onPress={showResetConfirmation}
-            title="Reset All Statistic"
+            title="Reset All Statistics"
             size="lg"
             variant="primary"
             icon={<SimpleLineIcons name="trash" size={20} color="white" />}

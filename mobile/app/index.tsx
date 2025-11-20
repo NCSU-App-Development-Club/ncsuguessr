@@ -14,7 +14,7 @@ export default function App() {
       <Text className="font-bold text-5xl m-4 mb-8">NCSUGuessr</Text>
       <ScreenLink link="/home">Home</ScreenLink>
       <ScreenLink link="/games/select">Game Select</ScreenLink>
-      <ScreenLink link="/games/play/2025-05-01">Game 2025-05-01</ScreenLink>
+      <ScreenLink link="/games/play/2025-10-30">Game 2025-10-30</ScreenLink>
       <ScreenLink link="/games/finished">Game Finished</ScreenLink>
       <ScreenLink link="/archive">Archive</ScreenLink>
       <ScreenLink link="/contribute">Contribute</ScreenLink>

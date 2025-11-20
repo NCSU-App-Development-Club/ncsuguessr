@@ -99,11 +99,11 @@ export class StatsLocalStore {
     const yesterday = gameDay.minusDays(1)
 
     let newPlayStreak = existingStats.playStreak
-    if (lastPlayedDate !== undefined && lastPlayedDate.isEqual(gameDay)) {
+    if (lastPlayedDate !== undefined && lastPlayedDate.equals(gameDay)) {
       // already played today, no change in streak
     } else if (
       lastPlayedDate !== undefined &&
-      lastPlayedDate.isEqual(yesterday)
+      lastPlayedDate.equals(yesterday)
     ) {
       // last time played was yesterday, streak continued with this game
       newPlayStreak = {

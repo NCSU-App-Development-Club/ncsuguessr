@@ -16,8 +16,19 @@ const GameEventModal = ({
   subMessage?: string
 }) => {
   return (
-    <Modal visible={open} transparent={true} animationType="fade">
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)' }}>
+    <Modal
+      visible={open}
+      transparent={true}
+      animationType="fade"
+      statusBarTranslucent={true}
+      navigationBarTranslucent={true}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.8)',
+        }}
+      >
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >

@@ -21,7 +21,7 @@ module.exports = {
         ncsuindigo: '#4156A1',
         ncsuwhite: '#FFFFFF',
         ncsublack: '#000000',
-        gray: '#333333',
+        'custom-gray': '#333333',
       },
       boxShadow: {
         button: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',

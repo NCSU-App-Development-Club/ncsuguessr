@@ -1,5 +1,12 @@
 import { GestureResponderEvent, Pressable, Text, View } from 'react-native'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  FadeIn,
+  FadeOut,
+} from 'react-native-reanimated'
 
 type ButtonSize = 'sm' | 'md' | 'lg' | 'xl'
 type ButtonVariant = 'primary' | 'secondary'
@@ -22,46 +29,84 @@ const VARIANT_CLASSES: Record<
   },
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+
 export default function Button({
   onPress,
   title,
-  className,
+  buttonClassName,
+  textClassName,
   size = 'md',
   variant = 'primary',
   fullWidth = false,
   icon,
+  baseOpacity = 1,
 }: {
-  onPress: (event: GestureResponderEvent) => void
+  onPress?: (event: GestureResponderEvent) => void
   title: string
-  className?: string
+  buttonClassName?: string
+  textClassName?: string
   size?: ButtonSize
   variant?: ButtonVariant
   fullWidth?: boolean
   icon?: ReactNode
+  baseOpacity?: number
 }) {
+  const disabled = !onPress
   const sizeClasses = SIZE_CLASSES[size]
   const variantClasses = VARIANT_CLASSES[variant]
+  const opacity = useSharedValue(baseOpacity)
+
+  useEffect(() => {
+    opacity.value = disabled ? 0.5 : baseOpacity
+  }, [disabled, baseOpacity, opacity])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    }
+  })
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
+      onPressIn={() => {
+        opacity.value = withTiming(0.6, { duration: 75 })
+      }}
+      onPressOut={() => {
+        opacity.value = withTiming(baseOpacity, { duration: 75 })
+      }}
+      disabled={disabled}
+      // only use this prop for animated styles; keep everything else in tailwind
+      style={animatedStyle}
       className={`
         items-center justify-center shadow-button
-        active:opacity-60 transition-opacity duration-75
         ${sizeClasses.container}
         ${variantClasses.container}
         ${fullWidth ? 'w-full' : ''}
-        ${className ?? ''}
+        ${buttonClassName ?? ''}
       `}
     >
-      <View className="flex-row items-center gap-2">
+      {disabled && (
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+          className="absolute inset-0 bg-gray-600/50 rounded-3xl"
+        />
+      )}
+      <Animated.View
+        key={`${title}-${disabled}`}
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(200)}
+        className="flex-row items-center gap-2"
+      >
         {icon}
         <Text
-          className={`font-bold text-center ${sizeClasses.text} ${variantClasses.text}`}
+          className={`text-center ${sizeClasses.text} ${variantClasses.text} ${textClassName ?? ''}`}
         >
           {title}
         </Text>
-      </View>
-    </Pressable>
+      </Animated.View>
+    </AnimatedPressable>
   )
 }
