@@ -9,6 +9,7 @@ import { TabBar } from '../components/home/TabBar'
 import { getGameDates } from '../util/api/games'
 import { GamesLocalStore } from '../util/storage/games'
 import { Day } from '../util/time/day'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Home() {
   const router = useRouter()
@@ -85,7 +86,7 @@ export default function Home() {
   const { height } = useWindowDimensions()
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
       <View className="flex-1 justify-center">
         <View className="w-full h-full self-center">
           <GameSelectCalendar
@@ -133,6 +134,6 @@ export default function Home() {
       </View>
 
       <TabBar router={router} />
-    </View>
+    </SafeAreaView>
   )
 }

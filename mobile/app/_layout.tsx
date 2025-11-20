@@ -4,12 +4,18 @@ import '../global.css'
 
 export default function Layout() {
   return (
-    <SafeAreaView className="bg-ncsuwhite flex-1">
+    <SafeAreaView
+      className="bg-ncsuwhite flex-1"
+      edges={['top', 'left', 'right']}
+    >
       <Stack
         screenOptions={{
           headerShown: false,
           animation: 'fade',
           animationDuration: 200,
+          contentStyle: {
+            backgroundColor: 'white',
+          },
         }}
       />
     </SafeAreaView>
