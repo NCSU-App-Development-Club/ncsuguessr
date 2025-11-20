@@ -47,6 +47,44 @@ export default function Game() {
   const closestGuess = useRef<Coordinate | null>(null)
   const closestDistance = useRef<Distance>(Distance.infinity())
 
+  // generate a circle polygon (returns [{latitude, longitude}, ...])
+  function circlePolygon(
+    center: { latitude: number; longitude: number },
+    radiusMeters: number,
+    points = 64
+  ) {
+    const coords: { latitude: number; longitude: number }[] = []
+    const R = 6378137 // Earth radius in meters
+    const latRad = (center.latitude * Math.PI) / 180
+    const lonRad = (center.longitude * Math.PI) / 180
+    const dDivR = radiusMeters / R
+
+    for (let i = 0; i < points; i++) {
+      const theta = (i / points) * 2 * Math.PI
+      const lat =
+        Math.asin(
+          Math.sin(latRad) * Math.cos(dDivR) +
+            Math.cos(latRad) * Math.sin(dDivR) * Math.cos(theta)
+        ) *
+        (180 / Math.PI)
+      const lon =
+        (lonRad +
+          Math.atan2(
+            Math.sin(theta) * Math.sin(dDivR) * Math.cos(latRad),
+            Math.cos(dDivR) - Math.sin(latRad) * Math.sin((lat * Math.PI) / 180)
+          )) *
+        (180 / Math.PI)
+      coords.push({ latitude: lat, longitude: lon })
+    }
+
+    return coords
+  }
+  // allowed area where player can drop a pin
+  const allowedPolygon = circlePolygon(
+    { latitude: 35.78, longitude: -78.675 }, // long and lat for center of the circle
+    5250, // radius in meters of the circle on the map
+    64 // number of points for the circle
+  )
   // Update timer every second
   useEffect(() => {
     if (gameOver) return
@@ -255,7 +293,11 @@ export default function Game() {
         </View>
 
         <View className="w-full h-full overflow-hidden rounded-2xl">
-          <GameMap guessMarker={guessMarker} onPress={handleMapPress} />
+          <GameMap
+            guessMarker={guessMarker}
+            onPress={handleMapPress}
+            allowedPolygon={allowedPolygon}
+          />
         </View>
         <View className="absolute bottom-6 left-10 ">
           <TouchableOpacity
@@ -280,7 +322,7 @@ export default function Game() {
                 setGuessMarker(null)
                 setGameOver(false)
               }}
-            ></TouchableOpacity>
+            />
           )}
         </View>
       </View>
