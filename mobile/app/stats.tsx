@@ -7,6 +7,7 @@ import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
 import { formatSecondsToMMSS, lastNDays } from '../util/time'
 import { StatsData, StatsLocalStore } from '../util/storage/stats'
+import { GamesLocalStore } from '../util/storage/games'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -44,6 +45,7 @@ export default function Stats() {
 
   const handleResetStats = async () => {
     await StatsLocalStore.resetStats()
+    await GamesLocalStore.clearGames()
     setStatsState(null)
     console.log('Stats cleared')
   }
