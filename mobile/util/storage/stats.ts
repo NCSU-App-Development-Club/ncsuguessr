@@ -40,7 +40,7 @@ export const StatsDataSchema = z.object({
 export type StatsData = z.infer<typeof StatsDataSchema>
 
 export class StatsLocalStore {
-  private static readonly STATS_KEY: string = '@myapp:stats'
+  private static readonly STATS_KEY: string = '@ncsuguessr:stats'
   private static readonly store: LocalStore<typeof StatsDataSchema> =
     new LocalStore(StatsDataSchema, this.STATS_KEY)
 
@@ -116,8 +116,10 @@ export class StatsLocalStore {
     }
 
     const dayStringKey = gameDay.toString()
-    const newDailyGames = existingStats.dailyGames
-    newDailyGames[dayStringKey] = (newDailyGames[dayStringKey] ?? 0) + 1
+    const newDailyGames = {
+      ...existingStats.dailyGames,
+      [dayStringKey]: (existingStats.dailyGames[dayStringKey] ?? 0) + 1,
+    }
 
     const newStats: StatsData = {
       gamesPlayed: newGamesPlayed,

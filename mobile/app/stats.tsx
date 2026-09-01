@@ -5,7 +5,7 @@ import BackLink from '../components/global/BackLink'
 import ScreenView from '../components/global/ScreenView'
 import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
-import { formatSecondsToMMSS, lastNDays } from '../util/time'
+import { formatDateOnly, formatSecondsToMMSS, lastNDays } from '../util/time'
 import { StatsData, StatsLocalStore } from '../util/storage/stats'
 import { GamesLocalStore } from '../util/storage/games'
 import Button from '../components/global/Button'
@@ -20,7 +20,7 @@ export default function Stats() {
   useEffect(() => {
     const buildDailyGraphData = (stats: StatsData): number[] =>
       lastNDays(7).map((day) => {
-        const dateKey = day.toISOString().split('T')[0]
+        const dateKey = formatDateOnly(day)
         return stats.dailyGames ? stats.dailyGames[dateKey] || 0 : 0
       })
 
@@ -33,9 +33,13 @@ export default function Stats() {
       const stats = await StatsLocalStore.getStats()
 
       const labels = buildDailyGraphLabels()
-      const data = stats
-        ? (setStatsState(stats), buildDailyGraphData(stats))
-        : Array(7).fill(0)
+      let data: number[]
+      if (stats) {
+        setStatsState(stats)
+        data = buildDailyGraphData(stats)
+      } else {
+        data = Array(7).fill(0)
+      }
 
       setGraphData(data)
       setGraphLabels(labels)
@@ -168,7 +172,6 @@ export default function Stats() {
             data={graphData}
             width={350}
             height={200}
-            unit="games"
             labels={graphLabels}
           />
         </View>
