@@ -27,8 +27,6 @@ const UnverifiedImage = ({
       if (!isValidGameDate(gameDateInput)) {
         throw new Error('date is not valid')
       }
-
-      console.log(image.id)
       const game = await createGame(
         {
           date: gameDateInput,

@@ -132,15 +132,4 @@ export class GameTableClient {
 
     return result ? GameRowSchema.parse(result) : null
   }
-
-  // TODO: paginate and allow for selection of date range
-  async getGames(): Promise<GameRows> {
-    const results = await this.d1.prepare('SELECT * FROM games').all()
-    if (!results.success) {
-      throw new Error(
-        results.error ? results.error : 'failed to fetch games from database'
-      )
-    }
-    return GameRowsSchema.parse(results.results)
-  }
 }

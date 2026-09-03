@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import ProtectedPageWrapper from '../ProtectedPageWrapper'
 
 const Home = () => {
@@ -8,26 +9,26 @@ const Home = () => {
           <h1 className="text-4xl font-bold text-red-800">Home</h1>
 
           <div className="flex flex-col gap-4">
-            <a
-              href="/images"
+            <Link
+              to="/images"
               className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
             >
               View Unverified Images
-            </a>
+            </Link>
 
-            <a
-              href="/games"
+            <Link
+              to="/games"
               className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
             >
               View Games
-            </a>
+            </Link>
 
-            <a
-              href="/logout"
+            <Link
+              to="/logout"
               className="mt-2 text-gray-600 hover:text-red-700 font-medium py-2 transition-colors duration-200"
             >
               Logout
-            </a>
+            </Link>
           </div>
         </div>
       </div>

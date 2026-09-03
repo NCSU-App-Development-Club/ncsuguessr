@@ -77,10 +77,10 @@ const Games = () => {
           <div className="text-center">no games found</div>
         ) : (
           <div className="flex flex-col items-center gap-5">
-            {games.map((game, idx) => (
+            {games.map((game) => (
               <div
                 className="flex flex-col gap-2 border-[1px] p-2 w-[90%] max-w-[950px] rounded-lg"
-                key={idx}
+                key={game.date}
               >
                 <div className="flex justify-between">
                   <h1 className="text-xl">{game.date}</h1>

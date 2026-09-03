@@ -1,50 +1,64 @@
 import ScreenView from '../../components/global/ScreenView'
 import BackLink from '../../components/global/BackLink'
 import { router, useLocalSearchParams } from 'expo-router'
-import { Image, View } from 'react-native'
-import React from 'react'
+import { Alert, Image, View } from 'react-native'
+import React, { useState } from 'react'
 import Text from '../../components/global/Text'
 import Button from '../../components/global/Button'
+import { API_URL } from '../../util/api'
 
 export default function ContributeFinalize() {
   const { imageData, latitude, longitude, locationName } =
     useLocalSearchParams()
 
-  if (typeof imageData === 'object') {
-    console.log('why is this object')
-    return
-  }
+  const [submitting, setSubmitting] = useState(false)
 
-  console.log(imageData)
+  const imageUri = typeof imageData === 'string' ? imageData : null
 
   async function submitImage() {
-    console.log('Submitting')
-    const formData = new FormData()
-    formData.append('latitude', latitude.toString())
-    formData.append('longitude', longitude.toString())
-    // TODO: note this date is currently being represented in UTC
-    formData.append('takenAt', new Date().toISOString().split('T')[0])
-    formData.append('locationName', locationName.toString())
-    console.log(formData)
+    if (!imageUri) return
 
-    const blob = await (await fetch(imageData.toString())).blob()
-    formData.append('image', blob)
-    console.log('sending')
+    setSubmitting(true)
+    try {
+      const formData = new FormData()
 
-    // TODO: won't work, need to provide full URL
-    const response = await fetch('/api/v1/images', {
-      method: 'POST',
-      headers: { 'Content-Type': 'multipart/form-data' },
-      body: formData,
-    })
-    router.navigate('/')
+      // @ts-expect-error React Native FormData expects { uri, name, type } objects
+      formData.append('image', {
+        uri: imageUri,
+        name: 'photo.jpg',
+        type: 'image/jpeg',
+      })
+      formData.append('latitude', latitude.toString())
+      formData.append('longitude', longitude.toString())
+      // TODO: note this date is currently being represented in UTC
+      formData.append('taken_at', new Date().toISOString().split('T')[0])
+      formData.append('location_name', locationName.toString())
+      formData.append('description', '')
+
+      const response = await fetch(`${API_URL}/images`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`Upload failed: ${response.status} - ${errorText}`)
+      }
+
+      router.navigate('/')
+    } catch (e) {
+      console.error('Failed to submit image:', e)
+      Alert.alert('Upload Failed', `${e}`)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
     <ScreenView className="flex-1">
-      {imageData ? (
+      {imageUri ? (
         <Image
-          source={{ uri: imageData }}
+          source={{ uri: imageUri }}
           className="flex-1"
           resizeMode="cover"
         />

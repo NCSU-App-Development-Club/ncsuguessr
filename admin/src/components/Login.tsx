@@ -20,14 +20,7 @@ const Login = () => {
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError(null)
-
-    try {
-      // TODO: perform auth request (no backend route for token verification)
-      setAuth(tokenInput)
-    } catch (e) {
-      console.error(e)
-      setLoginError(`${e}`)
-    }
+    setAuth(tokenInput)
   }
 
   return (
@@ -50,7 +43,7 @@ const Login = () => {
             >
               Log in
             </button>
-            <div className="text-red">{loginError}</div>
+            <div className="text-red-500">{loginError ? loginError : ''}</div>
           </div>
         </form>
       </div>

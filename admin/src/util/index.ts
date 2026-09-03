@@ -58,8 +58,6 @@ export const createGame = async (newGame: NewGame, token: string) => {
 
   const data = await res.json()
 
-  console.log(data)
-
   return CreateGameResponseSchema.parse(data)
 }
 
@@ -73,8 +71,6 @@ export const getGames = async (token: string) => {
   })
 
   const data = await res.json()
-
-  console.log(data)
 
   return GetGamesResponseSchema.parse(data)
 }
