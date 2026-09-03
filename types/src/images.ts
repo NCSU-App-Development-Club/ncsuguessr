@@ -86,3 +86,17 @@ export const GetImageUrlResponseSchema = z.discriminatedUnion('success', [
   ErrorJSONResponseSchema,
   GetImageUrlSuccessResponseSchema,
 ])
+
+export const DeleteImageSuccessResponseSchema =
+  generateSuccessJSONResponseSchema({})
+
+export type DeleteImageSuccessResponse = z.infer<
+  typeof DeleteImageSuccessResponseSchema
+>
+
+export const DeleteImageResponseSchema = z.discriminatedUnion('success', [
+  ErrorJSONResponseSchema,
+  DeleteImageSuccessResponseSchema,
+])
+
+export type DeleteImageResponse = z.infer<typeof DeleteImageResponseSchema>

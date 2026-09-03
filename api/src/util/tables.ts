@@ -64,6 +64,15 @@ export class ImageTableClient {
       .run()
   }
 
+  async deleteImage(
+    imageId: number
+  ): Promise<D1Result<Record<string, unknown>>> {
+    return await this.d1
+      .prepare('DELETE FROM images WHERE id = ?')
+      .bind(imageId)
+      .run()
+  }
+
   async getImages(used: boolean): Promise<ImageRows> {
     const results = await this.d1
       .prepare('SELECT * FROM images WHERE used = ?')
