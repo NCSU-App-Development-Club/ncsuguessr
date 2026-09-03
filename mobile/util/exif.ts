@@ -37,38 +37,7 @@ function dmsToDecimal(d: number, m: number, s: number, ref: string): number {
   return decimal
 }
 
-function parseExifBuffer(buffer: ArrayBuffer): GpsCoordinates | null {
-  const view = new DataView(buffer)
-
-  // Check JPEG SOI marker
-  if (view.getUint16(0) !== 0xffd8) return null
-
-  // Find EXIF APP1 marker
-  let offset = 2
-  while (offset < view.byteLength - 1) {
-    if (view.getUint8(offset) !== 0xff) return null
-    const marker = view.getUint8(offset + 1)
-    if (marker === 0xe1) break // APP1
-    if (marker === 0xda) return null // SOS - no EXIF found
-    const segLen = readUint16(view, offset + 2, false)
-    offset += 2 + segLen
-  }
-
-  if (offset >= view.byteLength - 1) return null
-
-  const segLen = readUint16(view, offset + 2, false)
-  const exifStart = offset + 4
-
-  // Verify "Exif\0\0"
-  const exifHeader = String.fromCharCode(
-    view.getUint8(exifStart),
-    view.getUint8(exifStart + 1),
-    view.getUint8(exifStart + 2),
-    view.getUint8(exifStart + 3)
-  )
-  if (exifHeader !== 'Exif\0\0') return null
-
-  const tiffStart = exifStart + 6
+function parseTiff(view: DataView, tiffStart: number): GpsCoordinates | null {
   const byteOrder = view.getUint16(tiffStart, false)
   const littleEndian = byteOrder === 0x4949 // 'II'
 
@@ -139,6 +108,69 @@ function parseExifBuffer(buffer: ArrayBuffer): GpsCoordinates | null {
   }
 
   return null
+}
+
+function parseJpegExif(view: DataView): GpsCoordinates | null {
+  // Check JPEG SOI marker
+  if (view.getUint16(0) !== 0xffd8) return null
+
+  // Find EXIF APP1 marker
+  let offset = 2
+  while (offset < view.byteLength - 1) {
+    if (view.getUint8(offset) !== 0xff) return null
+    const marker = view.getUint8(offset + 1)
+    if (marker === 0xe1) break // APP1
+    if (marker === 0xda) return null // SOS - no EXIF found
+    const segLen = readUint16(view, offset + 2, false)
+    offset += 2 + segLen
+  }
+
+  if (offset >= view.byteLength - 1) return null
+
+  const exifStart = offset + 4
+
+  // Verify "Exif\0\0"
+  const exifHeader = String.fromCharCode(
+    view.getUint8(exifStart),
+    view.getUint8(exifStart + 1),
+    view.getUint8(exifStart + 2),
+    view.getUint8(exifStart + 3)
+  )
+  if (exifHeader !== 'Exif\0\0') return null
+
+  return parseTiff(view, exifStart + 6)
+}
+
+function parsePngExif(view: DataView): GpsCoordinates | null {
+  // Check PNG signature
+  const signature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+  for (let i = 0; i < signature.length; i++) {
+    if (view.getUint8(i) !== signature[i]) return null
+  }
+
+  // Scan chunks for eXIf (length, type, data, CRC)
+  let offset = 8
+  while (offset + 8 <= view.byteLength) {
+    const length = readUint32(view, offset, false) // big endian per PNG spec
+    const type = String.fromCharCode(
+      view.getUint8(offset + 4),
+      view.getUint8(offset + 5),
+      view.getUint8(offset + 6),
+      view.getUint8(offset + 7)
+    )
+    if (type === 'eXIf') {
+      // eXIf contains raw TIFF data (no "Exif\0\0" prefix)
+      return parseTiff(view, offset + 8)
+    }
+    offset += 12 + length
+  }
+
+  return null
+}
+
+function parseExifBuffer(buffer: ArrayBuffer): GpsCoordinates | null {
+  const view = new DataView(buffer)
+  return parsePngExif(view) ?? parseJpegExif(view)
 }
 
 export async function extractGpsFromImage(

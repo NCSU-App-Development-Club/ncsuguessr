@@ -57,6 +57,15 @@ export const ImageSubmissionForm = z.object({
   location_name: z.string(),
 })
 
+export const UpdateImageCoordinatesSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+})
+
+export type UpdateImageCoordinates = z.infer<
+  typeof UpdateImageCoordinatesSchema
+>
+
 export const CreateImageSuccessResponseSchema =
   generateSuccessJSONResponseSchema({})
 
@@ -86,6 +95,22 @@ export const GetImageUrlResponseSchema = z.discriminatedUnion('success', [
   ErrorJSONResponseSchema,
   GetImageUrlSuccessResponseSchema,
 ])
+
+export const UpdateImageCoordinatesSuccessResponseSchema =
+  generateSuccessJSONResponseSchema({})
+
+export type UpdateImageCoordinatesSuccessResponse = z.infer<
+  typeof UpdateImageCoordinatesSuccessResponseSchema
+>
+
+export const UpdateImageCoordinatesResponseSchema = z.discriminatedUnion(
+  'success',
+  [ErrorJSONResponseSchema, UpdateImageCoordinatesSuccessResponseSchema]
+)
+
+export type UpdateImageCoordinatesResponse = z.infer<
+  typeof UpdateImageCoordinatesResponseSchema
+>
 
 export const DeleteImageSuccessResponseSchema =
   generateSuccessJSONResponseSchema({})
