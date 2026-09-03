@@ -1,14 +1,28 @@
 import Text from '../../components/global/Text'
 import ScreenView from '../../components/global/ScreenView'
 import BackLink from '../../components/global/BackLink'
-import { Link } from 'expo-router'
+import Button from '../../components/global/Button'
+import { router } from 'expo-router'
 
 export default function Contribute() {
   return (
-    <ScreenView className="items-center justify-center border-4">
-      <Text>Contribute Page</Text>
+    <ScreenView className="items-center justify-center gap-4 p-16">
+      <Text className="text-2xl mb-4">Contribute a Photo</Text>
 
-      <Link href="/contribute/photo">Take photo</Link>
+      <Button
+        onPress={() => router.push('/contribute/photo')}
+        title="Take photo"
+        size="xl"
+        fullWidth
+        buttonClassName="mx-8"
+      />
+      <Button
+        onPress={() => router.push('/contribute/upload')}
+        title="Upload image"
+        size="xl"
+        fullWidth
+        buttonClassName="mx-8"
+      />
 
       <BackLink to="/" />
     </ScreenView>

@@ -69,7 +69,7 @@ export default function ContributeFinalize() {
       )}
       <View className="w-full flex-row space-x-4 mb-6 py-1 gap-4 justify-center">
         <Button
-          onPress={() => router.navigate('/contribute/photo')}
+          onPress={() => router.navigate('/contribute')}
           title="Retake"
           size="lg"
         />
