@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, TouchableOpacity, View } from 'react-native'
+import { Image, Modal, TouchableOpacity, View } from 'react-native'
 import { MapPressEvent } from '../../../components/game/types'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
@@ -251,16 +251,33 @@ export default function Game() {
           subMessage={gameEventModalContent.subMessage}
         />
 
+        <Modal
+          visible={imageExpanded}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setImageExpanded(false)}
+        >
+          <TouchableOpacity
+            className="flex-1 bg-black/90 justify-center items-center"
+            activeOpacity={1}
+            onPress={() => setImageExpanded(false)}
+          >
+            {imageUrl && (
+              <Image
+                source={{ uri: imageUrl }}
+                className="w-full h-full"
+                resizeMode="contain"
+              />
+            )}
+          </TouchableOpacity>
+        </Modal>
+
         <View className="absolute bottom-6 right-10 z-10">
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => setImageExpanded(!imageExpanded)}
           >
-            <View
-              className={`overflow-hidden rounded-2xl ${
-                imageExpanded ? 'w-60 h-96' : 'w-48 h-48'
-              } `}
-            >
+            <View className="overflow-hidden rounded-2xl w-48 h-48">
               {error ? (
                 <View className="w-full h-full justify-center items-center">
                   <Text className="text-red-500">{error}</Text>
@@ -275,9 +292,7 @@ export default function Game() {
 
                   <View className="absolute bottom-2 right-2 bg-black/40 rounded-full p-2">
                     <SimpleLineIcons
-                      name={
-                        imageExpanded ? 'magnifier-remove' : 'magnifier-add'
-                      }
+                      name="magnifier-add"
                       size={28}
                       color="#fff"
                     />
