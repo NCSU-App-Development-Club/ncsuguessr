@@ -12,8 +12,4 @@ app.use('/*', cors())
 app.route('/images', imagesRouter)
 app.route('/games', gamesRouter)
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
-
 export default app
