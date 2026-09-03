@@ -6,7 +6,6 @@ interface LineGraphProps {
   data: number[]
   width: number
   height: number
-  unit: string
   labels?: string[] // Optional labels for x-axis
 }
 
@@ -14,7 +13,6 @@ const LineGraph: React.FC<LineGraphProps> = ({
   data,
   width,
   height,
-  unit,
   labels,
 }) => {
   const padding = 40
@@ -28,7 +26,7 @@ const LineGraph: React.FC<LineGraphProps> = ({
 
   // Handle case where all values are the same
   const scaleY = maxY === minY ? 1 : graphHeight / (maxY - minY)
-  const scaleX = graphWidth / (validData.length - 1)
+  const scaleX = validData.length > 1 ? graphWidth / (validData.length - 1) : 0
 
   const points = validData
     .map((value, index) => {

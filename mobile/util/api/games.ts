@@ -6,11 +6,10 @@ import { apiClient } from './client'
 
 export const fetchGame = async (gameDate: string) => {
   try {
-    const data = await apiClient(`/games/${gameDate}`, GetGameResponseSchema, {
+    return await apiClient(`/games/${gameDate}`, GetGameResponseSchema, {
       method: 'GET',
     })
-    return GetGameResponseSchema.parse(data)
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching game:', error)
     throw error
   }
@@ -21,7 +20,7 @@ export const getGameDates = async () => {
     return await apiClient(`/games?select=date`, GetGameDatesResponseSchema, {
       method: 'GET',
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching game dates:', error)
     throw error
   }

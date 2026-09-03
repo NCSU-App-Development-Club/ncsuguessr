@@ -1,14 +1,14 @@
 // Unified API client for all network requests
-import z, { ZodType } from 'zod'
+import z, { ZodType, type ZodTypeAny } from 'zod'
 import { API_URL } from '.'
 
 export type ApiClientOptions = {
   method: 'GET' | 'POST'
   headers?: Record<string, string>
-  body?: any
+  body?: unknown
 }
 
-export async function apiClient<T extends ZodType<any, any, any>>(
+export async function apiClient<T extends ZodTypeAny>(
   endpoint: string,
   responseSchema: T,
   options: ApiClientOptions
@@ -29,8 +29,6 @@ export async function apiClient<T extends ZodType<any, any, any>>(
   }
 
   const responseJson = await response.json()
-
-  console.log(responseJson)
 
   return responseSchema.parse(responseJson)
 }

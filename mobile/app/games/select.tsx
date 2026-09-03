@@ -22,20 +22,31 @@ export default function GameSelect() {
 
   const [today] = useState(Day.ofDate(new Date()))
 
+  const selectedDateKey = selectedDate.toString()
+  const todayKey = today.toString()
+
   const todayGameExists = useMemo(
-    () => gameDates.includes(today),
-    [today, gameDates]
+    () => gameDates.map((d) => d.toString()).includes(todayKey),
+    [todayKey, gameDates]
   )
 
-  const buttonText = !selectedDate
-    ? 'Select a date'
-    : playedAlready.includes(selectedDate)
-      ? 'Game Already Played'
-      : selectedDate === today && gameDates.includes(selectedDate)
-        ? "Play Today's Game"
-        : gameDates.includes(selectedDate)
-          ? 'Play Selected Game'
-          : 'No game for this date yet'
+  const selectedGameExists = useMemo(
+    () => gameDates.map((d) => d.toString()).includes(selectedDateKey),
+    [selectedDateKey, gameDates]
+  )
+
+  const selectedGamePlayed = useMemo(
+    () => playedAlready.map((d) => d.toString()).includes(selectedDateKey),
+    [selectedDateKey, playedAlready]
+  )
+
+  const buttonText = selectedGamePlayed
+    ? 'Game Already Played'
+    : selectedDate.equals(today) && selectedGameExists
+      ? "Play Today's Game"
+      : selectedGameExists
+        ? 'Play Selected Game'
+        : 'No game for this date yet'
 
   useEffect(() => {
     const fetchGameDates = async () => {
@@ -125,12 +136,9 @@ export default function GameSelect() {
           />
 
           <GameButton
-            disabled={
-              !gameDates.includes(selectedDate) ||
-              playedAlready.includes(selectedDate)
-            }
+            disabled={!selectedGameExists || selectedGamePlayed}
             onPress={() => {
-              router.navigate(`/games/${selectedDate}`)
+              router.navigate(`/games/play/${selectedDateKey}`)
             }}
           >
             {buttonText}

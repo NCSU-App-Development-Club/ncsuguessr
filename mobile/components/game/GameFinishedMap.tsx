@@ -23,11 +23,12 @@ export default function GameFinishedMap({
       style={{ width: '100%', height: '100%' }}
       onMapReady={() => setMapReady(true)}
       initialRegion={{
-        latitude:
-          (userGuess.getLatitude() + (actualLocation?.getLatitude() ?? 0)) / 2,
-        longitude:
-          (userGuess.getLongitude() + (actualLocation?.getLongitude() ?? 0)) /
-          2,
+        latitude: actualLocation
+          ? (userGuess.getLatitude() + actualLocation.getLatitude()) / 2
+          : userGuess.getLatitude(),
+        longitude: actualLocation
+          ? (userGuess.getLongitude() + actualLocation.getLongitude()) / 2
+          : userGuess.getLongitude(),
         latitudeDelta: 0.02,
         longitudeDelta: 0.02,
       }}
@@ -40,19 +41,13 @@ export default function GameFinishedMap({
       </Marker>
 
       {/* Actual location marker with flag */}
-      <Marker
-        coordinate={
-          actualLocation?.toJSON() ?? {
-            latitude: 0,
-            longitude: 0,
-          }
-        }
-        pinColor="red"
-      >
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <MaterialIcons name="flag" size={30} color="#EA4335" />
-        </View>
-      </Marker>
+      {actualLocation && (
+        <Marker coordinate={actualLocation.toJSON()} pinColor="red">
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <MaterialIcons name="flag" size={30} color="#EA4335" />
+          </View>
+        </Marker>
+      )}
 
       {/* Line connecting the points */}
       {actualLocation && (

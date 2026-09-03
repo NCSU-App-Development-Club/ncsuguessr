@@ -30,7 +30,9 @@ export default function GameFinished() {
   const userGuess = Coordinate.ofObject(
     UserGuessSchema.parse(JSON.parse(params.userGuess))
   )
-  const { measurementSystem } = useLocales()[0]
+  const { measurementSystem } = useLocales()[0] ?? {
+    measurementSystem: 'metric',
+  }
 
   const [gameDataLoading, setGameDataLoading] = useState(true)
   const [gameDataError, setGameDataError] = useState<string | null>(null)
@@ -62,7 +64,7 @@ export default function GameFinished() {
     }
 
     fetchGameData()
-  }, [])
+  }, [params.gameDate])
 
   useEffect(() => {
     if (mapRef.current && imageData && actualLocation) {
@@ -74,10 +76,10 @@ export default function GameFinished() {
         }
       )
     }
-  }, [imageData, mapReady])
+  }, [imageData, mapReady, userGuess, actualLocation])
 
   const handleShareScore = async () => {
-    const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distanceLocalized?.toFixed(2)} ${distanceLocalizedUnits} ----🏁`
+    const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distanceLocalized ? `${distanceLocalized.toFixed(2)} ${distanceLocalizedUnits}` : 'N/A'} ----🏁`
     await Share.share({
       message: shareText,
     })
@@ -117,7 +119,9 @@ export default function GameFinished() {
         <Text className="text-2xl text-center mb-2">
           Your closest guess was{' '}
           <Text className="text-red-600 font-bold">
-            {distanceLocalized?.toFixed(2)} {distanceLocalizedUnits}
+            {distanceLocalized
+              ? `${distanceLocalized.toFixed(2)} ${distanceLocalizedUnits}`
+              : 'N/A'}
           </Text>{' '}
           from the location:{' '}
           <Text className="text-red-600 font-bold">{locationName}</Text>
@@ -145,7 +149,7 @@ export default function GameFinished() {
 
       <View className="w-full flex-row gap-4 justify-center space-x-4 mb-6">
         <Button
-          onPress={() => router.replace('/')}
+          onPress={() => router.replace('/home')}
           title="Play More"
           size="lg"
         />

@@ -91,7 +91,7 @@ export default function Button({
         <Animated.View
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(200)}
-          className="absolute inset-0 bg-gray-600/50 rounded-3xl"
+          className={`absolute inset-0 bg-gray-600/50 rounded-[inherit]`}
         />
       )}
       <Animated.View
