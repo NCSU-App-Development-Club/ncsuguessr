@@ -2,11 +2,12 @@
   "name": "@ncsuguessr/api",
   "scripts": {
     "typecheck": "npx tsc --build --noEmit",
+    "build:web": "npm --prefix ../mobile run build-web",
     "dev:staging": "wrangler dev --env staging",
     "migrate:dev:staging": "wrangler d1 migrations apply ncsuguessr-staging --env staging",
-    "deploy:staging": "wrangler deploy --minify --env staging",
+    "deploy:staging": "npm run build:web && wrangler deploy --minify --env staging",
     "migrate:staging": "wrangler d1 migrations apply ncsuguessr-staging --env staging --remote",
-    "deploy:prod": "wrangler deploy --minify --env production",
+    "deploy:prod": "npm run build:web && wrangler deploy --minify --env production",
     "migrate:prod": "wrangler d1 migrations apply ncsuguessr-prod --env production --remote",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
