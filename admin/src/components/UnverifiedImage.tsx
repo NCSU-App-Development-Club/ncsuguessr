@@ -1,5 +1,10 @@
 import { useState } from 'react'
-import { createGame, deleteImage, isValidGameDate } from '../util'
+import {
+  createGame,
+  deleteImage,
+  isValidGameDate,
+  updateImageCoordinates,
+} from '../util'
 import { ImageDto } from '@ncsuguessr/types/images'
 
 const UnverifiedImage = ({
@@ -20,6 +25,11 @@ const UnverifiedImage = ({
   const [rejected, setRejected] = useState(false)
   const [rejectedLoading, setRejectedLoading] = useState(false)
   const [rejectedError, setRejectedError] = useState<string | null>(null)
+  const [latitudeInput, setLatitudeInput] = useState(String(image.latitude))
+  const [longitudeInput, setLongitudeInput] = useState(String(image.longitude))
+  const [coordinatesLoading, setCoordinatesLoading] = useState(false)
+  const [coordinatesError, setCoordinatesError] = useState<string | null>(null)
+  const [coordinatesSaved, setCoordinatesSaved] = useState(false)
 
   const handleCreateGame = async () => {
     try {
@@ -77,6 +87,41 @@ const UnverifiedImage = ({
     }
   }
 
+  const handleUpdateCoordinates = async () => {
+    try {
+      setCoordinatesError(null)
+      setCoordinatesSaved(false)
+      setCoordinatesLoading(true)
+      if (!token) {
+        throw new Error('missing auth token')
+      }
+
+      const latitude = Number(latitudeInput)
+      const longitude = Number(longitudeInput)
+
+      if (isNaN(latitude) || isNaN(longitude)) {
+        throw new Error('latitude and longitude must be numbers')
+      }
+
+      const result = await updateImageCoordinates(
+        image.id,
+        { latitude, longitude },
+        token
+      )
+
+      if (!result.success) {
+        throw new Error(result.error)
+      }
+
+      setCoordinatesSaved(true)
+    } catch (e) {
+      console.error(e)
+      setCoordinatesError(`${e}`)
+    } finally {
+      setCoordinatesLoading(false)
+    }
+  }
+
   if (rejected) {
     return null
   }
@@ -92,8 +137,33 @@ const UnverifiedImage = ({
             {new Date(image.taken_at).toLocaleString()}
           </h3>
         </div>
-        <div>
-          ({image.latitude}, {image.longitude})
+        <div className="flex items-center gap-2">
+          <label>
+            Lat:{' '}
+            <input
+              className="rounded-lg px-2 py-1 border-[1px] border-black/50 w-28"
+              value={latitudeInput}
+              onChange={(e) => setLatitudeInput(e.target.value)}
+            />
+          </label>
+          <label>
+            Long:{' '}
+            <input
+              className="rounded-lg px-2 py-1 border-[1px] border-black/50 w-28"
+              value={longitudeInput}
+              onChange={(e) => setLongitudeInput(e.target.value)}
+            />
+          </label>
+          <button
+            className="border-[1px] bg-gray-50 w-fit px-2 py-1 rounded-lg hover:cursor-pointer"
+            onClick={handleUpdateCoordinates}
+            disabled={coordinatesLoading}
+          >
+            Save coordinates
+          </button>
+          {coordinatesSaved ? (
+            <span className="text-green-600">saved</span>
+          ) : null}
         </div>
       </div>
       <div className="flex justify-center">
@@ -109,6 +179,9 @@ const UnverifiedImage = ({
       ) : null}
       {rejectedError ? (
         <div className="text-center text-red-500">{rejectedError}</div>
+      ) : null}
+      {coordinatesError ? (
+        <div className="text-center text-red-500">{coordinatesError}</div>
       ) : null}
 
       <div className={gameCreated ? '' : `flex justify-center`}>

@@ -7,10 +7,13 @@ import {
   ImagesDto,
   ImageSubmissionForm,
   NewImage,
+  UpdateImageCoordinatesSchema,
+  UpdateImageCoordinatesSuccessResponse,
 } from '@ncsuguessr/types/images'
 import { generateHttpExceptionMessage, getImageExtension } from '../util'
 import { ImageBucketClient } from '../util/buckets'
 import { validator } from 'hono/validator'
+import { zValidator } from '@hono/zod-validator'
 import { adminTokenAuth } from '../middleware/auth'
 import { GameTableClient, ImageTableClient } from '../util/tables'
 
@@ -181,6 +184,61 @@ imagesRouter.get('/', adminTokenAuth(), async (ctx) => {
 
   return ctx.json({ success: true, images } satisfies GetImagesSuccessResponse)
 })
+
+imagesRouter.patch(
+  '/:imageId',
+  adminTokenAuth(),
+  zValidator('json', UpdateImageCoordinatesSchema),
+  async (ctx) => {
+    const imageId = Number(ctx.req.param('imageId'))
+
+    if (isNaN(imageId)) {
+      throw new HTTPException(400, {
+        message: generateHttpExceptionMessage(
+          'invalid imageId: must be a number'
+        ),
+      })
+    }
+
+    const { latitude, longitude } = ctx.req.valid('json')
+
+    const imageTableClient = new ImageTableClient(ctx.env)
+
+    const image = await imageTableClient.getImage(imageId)
+
+    if (!image) {
+      throw new HTTPException(404, {
+        message: generateHttpExceptionMessage('image not found'),
+      })
+    }
+
+    try {
+      const result = await imageTableClient.updateImageCoordinates(
+        imageId,
+        latitude,
+        longitude
+      )
+      if (!result.success) {
+        throw new Error(
+          result.error
+            ? result.error
+            : 'failed to update image coordinates in database'
+        )
+      }
+    } catch (e) {
+      console.error('failed to update image coordinates', e)
+      throw new HTTPException(500, {
+        message: generateHttpExceptionMessage(
+          'failed to update image coordinates'
+        ),
+      })
+    }
+
+    return ctx.json({
+      success: true,
+    } satisfies UpdateImageCoordinatesSuccessResponse)
+  }
+)
 
 imagesRouter.delete('/:imageId', adminTokenAuth(), async (ctx) => {
   const imageId = Number(ctx.req.param('imageId'))

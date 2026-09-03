@@ -64,6 +64,17 @@ export class ImageTableClient {
       .run()
   }
 
+  async updateImageCoordinates(
+    imageId: number,
+    latitude: number,
+    longitude: number
+  ): Promise<D1Result<Record<string, unknown>>> {
+    return await this.d1
+      .prepare('UPDATE images SET latitude = ?, longitude = ? WHERE id = ?')
+      .bind(latitude, longitude, imageId)
+      .run()
+  }
+
   async deleteImage(
     imageId: number
   ): Promise<D1Result<Record<string, unknown>>> {

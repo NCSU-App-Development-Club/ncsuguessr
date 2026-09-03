@@ -7,6 +7,8 @@ import {
   DeleteImageResponseSchema,
   GetImagesResponseSchema,
   GetImageUrlResponseSchema,
+  UpdateImageCoordinates,
+  UpdateImageCoordinatesResponseSchema,
 } from '@ncsuguessr/types/images'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -88,4 +90,23 @@ export const deleteImage = async (imageId: number, token: string) => {
   const data = await res.json()
 
   return DeleteImageResponseSchema.parse(data)
+}
+
+export const updateImageCoordinates = async (
+  imageId: number,
+  coordinates: UpdateImageCoordinates,
+  token: string
+) => {
+  const res = await fetch(`${API_URL}/images/${imageId}`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(coordinates satisfies UpdateImageCoordinates),
+  })
+
+  const data = await res.json()
+
+  return UpdateImageCoordinatesResponseSchema.parse(data)
 }
