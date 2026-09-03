@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { Image, TouchableOpacity, View } from 'react-native'
-import { MapPressEvent } from 'react-native-maps'
+import { MapPressEvent } from '../../../components/game/types'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
 import Text from '../../../components/global/Text'

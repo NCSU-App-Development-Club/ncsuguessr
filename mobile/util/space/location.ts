@@ -1,4 +1,3 @@
-import { LatLng } from 'react-native-maps'
 import { Distance } from './distance'
 
 export class Coordinate {

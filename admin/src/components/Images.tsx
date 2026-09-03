@@ -84,7 +84,9 @@ const Images = () => {
                 image={image}
                 url={imageUrls[image.id]}
                 token={auth}
-                onReject={(id) => setImages((prev) => prev?.filter((img) => img.id !== id))}
+                onReject={(id) =>
+                  setImages((prev) => prev?.filter((img) => img.id !== id))
+                }
               />
             ))}
           </div>

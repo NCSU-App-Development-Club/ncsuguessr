@@ -1,9 +1,8 @@
 import { FontAwesome } from '@expo/vector-icons'
 import { ImageDto } from '@ncsuguessr/types/images'
 import { router, useLocalSearchParams } from 'expo-router'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Share, TouchableOpacity, View } from 'react-native'
-import MapView from 'react-native-maps'
 import z from 'zod'
 import GameFinishedMap from '../../components/game/GameFinishedMap'
 import BackLink from '../../components/global/BackLink'
@@ -41,9 +40,6 @@ export default function GameFinished() {
     ? new Coordinate(imageData.latitude, imageData.longitude)
     : null
 
-  const mapRef = useRef<MapView>(null)
-  const [mapReady, setMapReady] = useState(false)
-
   useEffect(() => {
     const fetchGameData = async () => {
       try {
@@ -65,18 +61,6 @@ export default function GameFinished() {
 
     fetchGameData()
   }, [params.gameDate])
-
-  useEffect(() => {
-    if (mapRef.current && imageData && actualLocation) {
-      mapRef.current.fitToCoordinates(
-        [actualLocation.toJSON(), userGuess.toJSON()],
-        {
-          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-          animated: true,
-        }
-      )
-    }
-  }, [imageData, mapReady, userGuess, actualLocation])
 
   const handleShareScore = async () => {
     const shareText = `NCSUGuessr ${params.gameDate}:\n📍---- ${distanceLocalized ? `${distanceLocalized.toFixed(2)} ${distanceLocalizedUnits}` : 'N/A'} ----🏁`
@@ -140,8 +124,6 @@ export default function GameFinished() {
 
       <View className="w-full aspect-square rounded-3xl overflow-hidden border-2 border-gray-300 mb-6">
         <GameFinishedMap
-          mapRef={mapRef}
-          setMapReady={setMapReady}
           userGuess={userGuess}
           actualLocation={actualLocation}
         />

@@ -18,8 +18,11 @@ export const TabBar = ({ router }: { router: Router }) => {
         >
           <Image
             source={require('../../assets/stats.png')}
-            className="w-8 h-8"
-            style={{ opacity: activeTab === 'stats' ? 1 : 0.4 }}
+            style={{
+              width: 32,
+              height: 32,
+              opacity: activeTab === 'stats' ? 1 : 0.4,
+            }}
           />
           <Text
             className="text-xs mt-1"
@@ -38,8 +41,11 @@ export const TabBar = ({ router }: { router: Router }) => {
         >
           <Image
             source={require('../../assets/play-red.png')}
-            className="w-8 h-8"
-            style={{ opacity: activeTab === 'play' ? 1 : 0.4 }}
+            style={{
+              width: 32,
+              height: 32,
+              opacity: activeTab === 'play' ? 1 : 0.4,
+            }}
           />
           <Text
             className="text-xs mt-1"
@@ -58,8 +64,11 @@ export const TabBar = ({ router }: { router: Router }) => {
         >
           <Image
             source={require('../../assets/camera.png')}
-            className="w-8 h-8"
-            style={{ opacity: activeTab === 'contribute' ? 1 : 0.4 }}
+            style={{
+              width: 32,
+              height: 32,
+              opacity: activeTab === 'contribute' ? 1 : 0.4,
+            }}
           />
           <Text
             className="text-xs mt-1"

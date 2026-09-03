@@ -1,22 +1,28 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import MapView, { Marker, Polyline } from 'react-native-maps'
 import { MaterialIcons } from '@expo/vector-icons'
-import { Coordinate } from '../../util/space/location'
-
-interface GameFinishedMapProps {
-  mapRef: React.RefObject<MapView | null>
-  setMapReady: (ready: boolean) => void
-  userGuess: Coordinate
-  actualLocation: Coordinate | null
-}
+import { GameFinishedMapProps } from './types'
 
 export default function GameFinishedMap({
-  mapRef,
-  setMapReady,
   userGuess,
   actualLocation,
 }: GameFinishedMapProps) {
+  const mapRef = useRef<MapView>(null)
+  const [mapReady, setMapReady] = useState(false)
+
+  useEffect(() => {
+    if (mapRef.current && mapReady && actualLocation) {
+      mapRef.current.fitToCoordinates(
+        [actualLocation.toJSON(), userGuess.toJSON()],
+        {
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+          animated: true,
+        }
+      )
+    }
+  }, [mapReady, userGuess, actualLocation])
+
   return (
     <MapView
       ref={mapRef}
@@ -33,14 +39,12 @@ export default function GameFinishedMap({
         longitudeDelta: 0.02,
       }}
     >
-      {/* User's guess marker */}
       <Marker coordinate={userGuess.toJSON()} pinColor="blue">
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <MaterialIcons name="person-pin" size={30} color="#4285F4" />
         </View>
       </Marker>
 
-      {/* Actual location marker with flag */}
       {actualLocation && (
         <Marker coordinate={actualLocation.toJSON()} pinColor="red">
           <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -49,7 +53,6 @@ export default function GameFinishedMap({
         </Marker>
       )}
 
-      {/* Line connecting the points */}
       {actualLocation && (
         <Polyline
           coordinates={[userGuess.toJSON(), actualLocation.toJSON()]}

@@ -48,7 +48,7 @@ export const PlayButton = ({
                 : require('../../assets/play.png')
               : require('../../assets/clock.png')
           }
-          className="w-9 h-9"
+          style={{ width: 36, height: 36 }}
         />
       }
       baseOpacity={0.9}
