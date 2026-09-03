@@ -1,48 +1,59 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { View, Text, TouchableOpacity, Image } from 'react-native'
-import ScreenView from '../components/global/ScreenView'
-import BackLink from '../components/global/BackLink'
 import { useRouter } from 'expo-router'
-import { formatOffsetDate } from '../util/time'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Calendar, DateData } from 'react-native-calendars'
 import { MarkedDates } from 'react-native-calendars/src/types'
-import { getLocalPlayedGames } from '../util/storage/gamesStorage'
-import { getGameDates } from '../util/api/games'
-
+import BackLink from '../../components/global/BackLink'
+import ScreenView from '../../components/global/ScreenView'
+import { getGameDates } from '../../util/api/games'
+import { GamesLocalStore } from '../../util/storage/games'
+import Button from '../../components/global/Button'
+import { Day } from '../../util/time/day'
 export default function GameSelect() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const [gameDatesLoading, setGameDatesLoading] = useState(false)
-  const [gameDates, setGameDates] = useState<string[]>([])
+  const [gameDates, setGameDates] = useState<Day[]>([])
 
-  const [selectedDate, setSelectedDate] = useState(formatOffsetDate(0))
-  const [playedAlready, setPlayedAlready] = useState<string[]>([])
+  const [selectedDate, setSelectedDate] = useState(Day.ofDate(new Date()))
+  const [playedAlready, setPlayedAlready] = useState<Day[]>([])
   const [markedDates, setMarkedDates] = useState<MarkedDates>({})
 
-  const today = useMemo(() => formatOffsetDate(0), [])
+  const [today] = useState(Day.ofDate(new Date()))
+
+  const selectedDateKey = selectedDate.toString()
+  const todayKey = today.toString()
 
   const todayGameExists = useMemo(
-    () => gameDates.includes(today),
-    [today, gameDates]
+    () => gameDates.map((d) => d.toString()).includes(todayKey),
+    [todayKey, gameDates]
   )
 
-  const buttonText = !selectedDate
-    ? 'Select a date'
-    : playedAlready.includes(selectedDate)
-      ? 'Game Already Played'
-      : selectedDate === today && gameDates.includes(selectedDate)
-        ? "Play Today's Game"
-        : gameDates.includes(selectedDate)
-          ? 'Play Selected Game'
-          : 'No game for this date yet'
+  const selectedGameExists = useMemo(
+    () => gameDates.map((d) => d.toString()).includes(selectedDateKey),
+    [selectedDateKey, gameDates]
+  )
+
+  const selectedGamePlayed = useMemo(
+    () => playedAlready.map((d) => d.toString()).includes(selectedDateKey),
+    [selectedDateKey, playedAlready]
+  )
+
+  const buttonText = selectedGamePlayed
+    ? 'Game Already Played'
+    : selectedDate.equals(today) && selectedGameExists
+      ? "Play Today's Game"
+      : selectedGameExists
+        ? 'Play Selected Game'
+        : 'No game for this date yet'
 
   useEffect(() => {
     const fetchGameDates = async () => {
       try {
         setGameDatesLoading(true)
         const gameDatesResponse = await getGameDates()
-        const playedGames = await getLocalPlayedGames()
+        const playedGames = await GamesLocalStore.getPlayedGamesOrDefault()
 
         setPlayedAlready(playedGames)
 
@@ -50,19 +61,23 @@ export default function GameSelect() {
           throw new Error(gameDatesResponse.error)
         }
 
-        setGameDates(gameDatesResponse.games.map((game) => game.date))
-        const toMark: MarkedDates = {}
+        setGameDates(
+          gameDatesResponse.games.map((game) => Day.ofString(game.date))
+        )
 
-        gameDatesResponse.games.forEach((game) => {
-          toMark[game.date] = { marked: true }
-        })
+        const playedGamesSet = new Set(
+          [...playedGames].map((gameDay) => gameDay.toString())
+        )
 
-        playedGames.forEach((date) => {
-          toMark[date] = {
-            marked: true,
-            dotColor: 'green',
-          }
-        })
+        const toMark: MarkedDates = Object.fromEntries(
+          gameDatesResponse.games.map((game) => [
+            game.date,
+            {
+              marked: true,
+              dotColor: playedGamesSet.has(game.date) ? 'gray' : '#CC0000',
+            },
+          ])
+        )
 
         setMarkedDates(toMark)
       } catch (e) {
@@ -83,7 +98,7 @@ export default function GameSelect() {
         Game Select
       </Text>
       <Image
-        source={require('../assets/mrwuf.png')}
+        source={require('../../assets/mrwuf.png')}
         className="w-[100px] h-[100px] mt-6 mb-2 self-center rounded-full border-solid border-2 border-[#CC0000]"
       />
       {gameDatesLoading ? (
@@ -98,7 +113,7 @@ export default function GameSelect() {
         <View>
           <Text className="font-bold text-lg">Daily Games:</Text>
           <Calendar
-            initialDate={today}
+            initialDate={today.toString()}
             disableAllTouchEventsForDisabledDays={true}
             theme={{
               selectedDayBackgroundColor: '#CC0000',
@@ -106,27 +121,24 @@ export default function GameSelect() {
               arrowColor: '#CC0000',
             }}
             onDayPress={(day: DateData) => {
-              setSelectedDate(day.dateString)
+              setSelectedDate(new Day(day.year, day.month, day.day))
             }}
             markedDates={{
               ...markedDates,
-              [selectedDate]: {
-                ...markedDates[selectedDate],
+              [selectedDate.toString()]: {
+                ...markedDates[selectedDate.toString()],
                 selected: true,
                 disableTouchEvent: true,
               },
             }}
-            maxDate={today}
+            maxDate={today.toString()}
             minDate="2025-05-01"
           />
 
           <GameButton
-            disabled={
-              !gameDates.includes(selectedDate) ||
-              playedAlready.includes(selectedDate)
-            }
+            disabled={!selectedGameExists || selectedGamePlayed}
             onPress={() => {
-              router.navigate(`/games/${selectedDate}`)
+              router.navigate(`/games/play/${selectedDateKey}`)
             }}
           >
             {buttonText}

@@ -64,6 +64,15 @@ export class ImageTableClient {
       .run()
   }
 
+  async deleteImage(
+    imageId: number
+  ): Promise<D1Result<Record<string, unknown>>> {
+    return await this.d1
+      .prepare('DELETE FROM images WHERE id = ?')
+      .bind(imageId)
+      .run()
+  }
+
   async getImages(used: boolean): Promise<ImageRows> {
     const results = await this.d1
       .prepare('SELECT * FROM images WHERE used = ?')
@@ -131,16 +140,5 @@ export class GameTableClient {
       .first()
 
     return result ? GameRowSchema.parse(result) : null
-  }
-
-  // TODO: paginate and allow for selection of date range
-  async getGames(): Promise<GameRows> {
-    const results = await this.d1.prepare('SELECT * FROM games').all()
-    if (!results.success) {
-      throw new Error(
-        results.error ? results.error : 'failed to fetch games from database'
-      )
-    }
-    return GameRowsSchema.parse(results.results)
   }
 }

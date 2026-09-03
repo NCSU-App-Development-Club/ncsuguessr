@@ -77,10 +77,12 @@ gamesRouter.get('/:gameDate', async (ctx) => {
     })
   }
 
+  const { image_id, ...gameWithoutImageId } = game
+
   return ctx.json({
     success: true,
     game: {
-      ...game,
+      ...gameWithoutImageId,
       image: { ...image, taken_at: image.taken_at.getTime(), url: signedUrl },
     },
   } satisfies GetGameSuccessResponse)

@@ -78,12 +78,15 @@ const Images = () => {
           <div className="text-center">no unverified images found</div>
         ) : (
           <div className="flex flex-col items-center gap-5">
-            {images.map((image, idx) => (
+            {images.map((image) => (
               <UnverifiedImage
-                key={idx}
+                key={image.id}
                 image={image}
                 url={imageUrls[image.id]}
                 token={auth}
+                onReject={(id) =>
+                  setImages((prev) => prev?.filter((img) => img.id !== id))
+                }
               />
             ))}
           </div>

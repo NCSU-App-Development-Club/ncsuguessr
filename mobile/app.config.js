@@ -2,6 +2,9 @@ import 'dotenv/config'
 
 export default () => ({
   expo: {
+    experiments: {
+      reactCanary: true,
+    },
     owner: 'appdevncsu',
     scheme: 'ncsuguessr',
     name: 'NCSUGuessr',
@@ -40,7 +43,7 @@ export default () => ({
       favicon: './assets/favicon.png',
       bundler: 'metro',
     },
-    plugins: ['expo-router'],
+    plugins: ['expo-router', 'expo-localization'],
     extra: {
       router: {
         origin: false,

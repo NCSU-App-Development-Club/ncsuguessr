@@ -20,16 +20,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   useEffect(() => {
-    if (authLoaded) {
-      setAuthLoaded(false)
-      if (auth) {
-        localStorage.setItem('ncsuguessr-auth', JSON.stringify(auth))
-      } else {
-        localStorage.removeItem('ncsuguessr-auth')
-      }
-      setAuthLoaded(true)
+    if (auth) {
+      localStorage.setItem('ncsuguessr-auth', JSON.stringify(auth))
+    } else {
+      localStorage.removeItem('ncsuguessr-auth')
     }
-  }, [auth, authLoaded])
+  }, [auth])
 
   return (
     <AuthContext.Provider value={{ auth, setAuth, authLoaded }}>

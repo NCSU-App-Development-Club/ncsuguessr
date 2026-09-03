@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { Bindings } from '../config'
 import {
+  DeleteImageSuccessResponse,
   GetImagesSuccessResponse,
   ImagesDto,
   ImageSubmissionForm,
@@ -179,4 +180,64 @@ imagesRouter.get('/', adminTokenAuth(), async (ctx) => {
   }
 
   return ctx.json({ success: true, images } satisfies GetImagesSuccessResponse)
+})
+
+imagesRouter.delete('/:imageId', adminTokenAuth(), async (ctx) => {
+  const imageId = Number(ctx.req.param('imageId'))
+
+  if (isNaN(imageId)) {
+    throw new HTTPException(400, {
+      message: generateHttpExceptionMessage(
+        'invalid imageId: must be a number'
+      ),
+    })
+  }
+
+  const imageTableClient = new ImageTableClient(ctx.env)
+  const imageBucketClient = new ImageBucketClient(ctx.env)
+
+  const image = await imageTableClient.getImage(imageId)
+
+  if (!image) {
+    throw new HTTPException(404, {
+      message: generateHttpExceptionMessage('image not found'),
+    })
+  }
+
+  if (image.used) {
+    throw new HTTPException(400, {
+      message: generateHttpExceptionMessage(
+        'cannot delete an image that is already used in a game'
+      ),
+    })
+  }
+
+  try {
+    await imageBucketClient.deleteImage(image.file_location)
+  } catch (e) {
+    console.error('failed to delete image from r2', e)
+    throw new HTTPException(500, {
+      message: generateHttpExceptionMessage('failed to delete image file'),
+    })
+  }
+
+  try {
+    const result = await imageTableClient.deleteImage(imageId)
+    if (!result.success) {
+      throw new Error(
+        result.error
+          ? result.error
+          : 'failed to delete image record from database'
+      )
+    }
+  } catch (e) {
+    console.error('failed to delete image record', e)
+    throw new HTTPException(500, {
+      message: generateHttpExceptionMessage(
+        'failed to delete image record from database'
+      ),
+    })
+  }
+
+  return ctx.json({ success: true } satisfies DeleteImageSuccessResponse)
 })

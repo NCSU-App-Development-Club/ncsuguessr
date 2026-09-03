@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Web-specific fixes */
+@media (platform: web) {
+  /* Fix @expo/vector-icons rendering on web - icon fonts often render at browser default size */
+  img {
+    object-fit: contain;
+  }
+}

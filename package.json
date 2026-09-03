@@ -4,6 +4,9 @@
   "scripts": {
     "typecheck": "npx tsc --build --noEmit",
     "build:mobile:web": "npm run build-web --workspace=mobile",
+    "deploy:staging": "npm run deploy:staging --workspace=api",
+    "deploy:prod": "npm run deploy:prod --workspace=api",
+    "dev:api": "npm run build:mobile:web && npm run dev:staging --workspace=api",
     "dev:mobile": "npm run start --workspace=mobile",
     "check": "npx prettier . --check",
     "format": "npx prettier . --write",
@@ -22,5 +25,11 @@
   "private": true,
   "devDependencies": {
     "prettier": "^3.5.3"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-native-web": "^0.21.1",
+    "zod": "^4.1.8"
   }
 }

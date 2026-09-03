@@ -5,8 +5,10 @@ import BackLink from '../components/global/BackLink'
 import ScreenView from '../components/global/ScreenView'
 import LineGraph from '../components/stats/LineGraph'
 import StatBox from '../components/stats/StatBox'
-import { getStats, resetStats, StatsData } from '../util/storage/statsStorage'
-import { formatSecondsToMMSS, lastNDays } from '../util/time'
+import { formatDateOnly, formatSecondsToMMSS, lastNDays } from '../util/time'
+import { StatsData, StatsLocalStore } from '../util/storage/stats'
+import { GamesLocalStore } from '../util/storage/games'
+import Button from '../components/global/Button'
 
 export default function Stats() {
   const [graphData, setGraphData] = useState<number[]>([])
@@ -18,7 +20,7 @@ export default function Stats() {
   useEffect(() => {
     const buildDailyGraphData = (stats: StatsData): number[] =>
       lastNDays(7).map((day) => {
-        const dateKey = day.toISOString().split('T')[0]
+        const dateKey = formatDateOnly(day)
         return stats.dailyGames ? stats.dailyGames[dateKey] || 0 : 0
       })
 
@@ -28,12 +30,16 @@ export default function Stats() {
       )
 
     const fetchStats = async () => {
-      const stats = await getStats()
+      const stats = await StatsLocalStore.getStats()
 
       const labels = buildDailyGraphLabels()
-      const data = stats
-        ? (setStatsState(stats), buildDailyGraphData(stats))
-        : Array(7).fill(0)
+      let data: number[]
+      if (stats) {
+        setStatsState(stats)
+        data = buildDailyGraphData(stats)
+      } else {
+        data = Array(7).fill(0)
+      }
 
       setGraphData(data)
       setGraphLabels(labels)
@@ -43,7 +49,8 @@ export default function Stats() {
   }, [])
 
   const handleResetStats = async () => {
-    await resetStats()
+    await StatsLocalStore.resetStats()
+    await GamesLocalStore.clearGames()
     setStatsState(null)
     console.log('Stats cleared')
   }
@@ -70,14 +77,12 @@ export default function Stats() {
     <ScreenView className="flex-1">
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <BackLink to="/home" label="Home" />
-        {/* Title */}
-        <View className="mb-8 mt-14">
-          <Text className="text-5xl font-bold text-[#000000] text-center">
+        <View className="mb-5 mt-14">
+          <Text className="text-4xl font-bold text-[#000000] text-center">
             Statistics
           </Text>
         </View>
 
-        {/* Stat Boxes */}
         <View className="flex flex-row flex-wrap justify-between w-full">
           <View className="w-1/2 p-2">
             <StatBox
@@ -101,8 +106,8 @@ export default function Stats() {
               }
               title="Average Distance"
               text={
-                statsState && statsState.averageGuessDistance !== null
-                  ? `${statsState.averageGuessDistance.toFixed(2)} km`
+                statsState?.totalGuessDistance && statsState?.gamesPlayed
+                  ? `${statsState.totalGuessDistance.divide(statsState.gamesPlayed).toKilometers().toFixed(2)} km`
                   : '0 km'
               }
             />
@@ -113,12 +118,13 @@ export default function Stats() {
               title="Best Overall Guess"
               text={
                 statsState && statsState.bestOverallGuess
-                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toFixed(2)} km`
+                  ? `${statsState.bestOverallGuess.location}: ${statsState.bestOverallGuess.distance.toKilometers().toFixed(2)} km`
                   : 'None yet'
               }
             />
           </View>
-          <View className="w-1/2 p-2">
+          {/* TODO: replace this with something, perhaps best of last 10 days */}
+          {/* <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="target" size={28} color="#CC0000" />}
               title="Best Weekly Guess"
@@ -128,7 +134,7 @@ export default function Stats() {
                   : 'None this week'
               }
             />
-          </View>
+          </View> */}
           <View className="w-1/2 p-2">
             <StatBox
               icon={<SimpleLineIcons name="fire" size={28} color="#CC0000" />}
@@ -145,15 +151,19 @@ export default function Stats() {
               icon={<SimpleLineIcons name="clock" size={28} color="#CC0000" />}
               title="Average Time"
               text={
-                statsState && statsState.averageGuessTime !== null
-                  ? formatSecondsToMMSS(statsState.averageGuessTime)
+                statsState?.totalGuessTime && statsState?.gamesPlayed
+                  ? formatSecondsToMMSS(
+                      statsState.totalGuessTime
+                        .divide(statsState.gamesPlayed)
+                        .toSeconds()
+                    )
                   : '0:00'
               }
             />
           </View>
         </View>
 
-        {/* Line Graph for Daily Games Played */}
+        {/* TODO: is this graph really relevant? maybe cumulative games played instead */}
         <View className="items-center mt-8 w-full">
           <Text className="text-2xl font-bold mb-4 text-center">
             Daily Games Played
@@ -162,24 +172,18 @@ export default function Stats() {
             data={graphData}
             width={350}
             height={200}
-            unit="games"
             labels={graphLabels}
           />
         </View>
 
-        {/* Styled Reset Stats Button */}
         <View className="mt-8 items-center">
-          <TouchableOpacity
+          <Button
             onPress={showResetConfirmation}
-            className="bg-red-500 px-6 py-3 rounded-lg shadow-md active:bg-red-600"
-          >
-            <View className="flex-row items-center">
-              <SimpleLineIcons name="trash" size={20} color="red" />
-              <Text className="font-bold ml-2 text-lg">
-                Reset All Statistics
-              </Text>
-            </View>
-          </TouchableOpacity>
+            title="Reset All Statistics"
+            size="lg"
+            variant="primary"
+            icon={<SimpleLineIcons name="trash" size={20} color="white" />}
+          />
         </View>
       </ScrollView>
     </ScreenView>

@@ -56,10 +56,16 @@ Optional VSCode Extensions:
    npm install
    ```
 
-4. Start the application:
+4. Start the mobile application:
 
    ```
-   npm run start
+   npm run dev:mobile
+   ```
+
+   or
+
+   ```
+   cd mobile && npm run start
    ```
 
 5. Scan the QR code in the terminal with your phone.

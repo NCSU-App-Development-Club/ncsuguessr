@@ -4,6 +4,7 @@ import {
   NewGame,
 } from '@ncsuguessr/types/games'
 import {
+  DeleteImageResponseSchema,
   GetImagesResponseSchema,
   GetImageUrlResponseSchema,
 } from '@ncsuguessr/types/images'
@@ -58,8 +59,6 @@ export const createGame = async (newGame: NewGame, token: string) => {
 
   const data = await res.json()
 
-  console.log(data)
-
   return CreateGameResponseSchema.parse(data)
 }
 
@@ -74,7 +73,19 @@ export const getGames = async (token: string) => {
 
   const data = await res.json()
 
-  console.log(data)
-
   return GetGamesResponseSchema.parse(data)
+}
+
+export const deleteImage = async (imageId: number, token: string) => {
+  const res = await fetch(`${API_URL}/images/${imageId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
+  })
+
+  const data = await res.json()
+
+  return DeleteImageResponseSchema.parse(data)
 }
