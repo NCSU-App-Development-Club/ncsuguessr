@@ -95,7 +95,7 @@ export default function Button({
         />
       )}
       <Animated.View
-        key={`${title}-${disabled}`}
+        key={title}
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(200)}
         className="flex-row items-center gap-2"
