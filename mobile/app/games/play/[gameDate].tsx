@@ -1,10 +1,20 @@
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, Modal, TouchableOpacity, View } from 'react-native'
-import { MapPressEvent } from '../../../components/game/types'
+import {
+  Image,
+  Platform,
+  Pressable,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import GameEventModal from '../../../components/game/GameEventModal'
 import GameMap from '../../../components/game/GameMap'
+import { MapPressEvent } from '../../../components/game/types'
+import BackLink from '../../../components/global/BackLink'
+import Button from '../../../components/global/Button'
 import Text from '../../../components/global/Text'
+import { fetchGame } from '../../../util/api/games'
 import { Distance } from '../../../util/space/distance'
 import { Coordinate } from '../../../util/space/location'
 import { GamesLocalStore } from '../../../util/storage/games'
@@ -12,9 +22,11 @@ import { StatsLocalStore } from '../../../util/storage/stats'
 import { formatTime } from '../../../util/time'
 import { Day } from '../../../util/time/day'
 import { Duration } from '../../../util/time/duration'
-import { fetchGame } from '../../../util/api/games'
-import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons'
-import BackLink from '../../../components/global/BackLink'
+
+const IMAGE_WIDTH_COLLAPSED = 192
+const IMAGE_WIDTH_EXPANDED_WEB = 384
+// Gap kept between the expanded image preview and each screen edge on mobile
+const SCREEN_EDGE_INSET = 40
 
 export default function Game() {
   const router = useRouter()
@@ -38,6 +50,9 @@ export default function Game() {
   const [startTime] = useState(new Date())
   const [elapsedTime, setElapsedTime] = useState(Duration.zero())
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  // aspect ratio (width / height) of the loaded image, so the preview box can
+  // match non-square images instead of cropping them into a fixed square
+  const [imageAspectRatio, setImageAspectRatio] = useState(1)
   const [error, setError] = useState<string | null>(null)
 
   const correctLocation = useRef<{
@@ -219,8 +234,18 @@ export default function Game() {
     }
   }
 
-  const [imageExpanded, setImageExpanded] = useState(false)
-  const [mapExpanded, setMapExpanded] = useState(false)
+  const isWeb = Platform.OS === 'web'
+  // web: preview grows while hovered. native: tap toggles it (no hover there).
+  const [imageHovered, setImageHovered] = useState(false)
+  const [imageTapped, setImageTapped] = useState(false)
+  const imageBig = isWeb ? imageHovered : imageTapped
+
+  const { width: screenWidth } = useWindowDimensions()
+  const maxImageWidth = Math.max(0, screenWidth - SCREEN_EDGE_INSET * 2)
+  const previewWidth = Math.min(IMAGE_WIDTH_COLLAPSED, maxImageWidth)
+  const imageWidth = imageBig
+    ? Math.min(isWeb ? IMAGE_WIDTH_EXPANDED_WEB : Infinity, maxImageWidth)
+    : previewWidth
 
   return (
     <>
@@ -251,60 +276,65 @@ export default function Game() {
           subMessage={gameEventModalContent.subMessage}
         />
 
-        <Modal
-          visible={imageExpanded}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setImageExpanded(false)}
+        <View
+          className="absolute bottom-6 right-10 z-10 items-end gap-2"
+          style={{ width: previewWidth }}
         >
-          <TouchableOpacity
-            className="flex-1 bg-black/90 justify-center items-center"
-            activeOpacity={1}
-            onPress={() => setImageExpanded(false)}
+          <Pressable
+            onHoverIn={() => setImageHovered(true)}
+            onHoverOut={() => setImageHovered(false)}
+            onPress={isWeb ? undefined : () => setImageTapped((v) => !v)}
           >
-            {imageUrl && (
-              <Image
-                source={{ uri: imageUrl }}
-                className="w-full h-full"
-                resizeMode="contain"
-              />
-            )}
-          </TouchableOpacity>
-        </Modal>
-
-        <View className="absolute bottom-6 right-10 z-10">
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={() => setImageExpanded(!imageExpanded)}
-          >
-            <View className="overflow-hidden rounded-2xl w-48 h-48">
+            <View
+              className="overflow-hidden rounded-2xl"
+              style={
+                {
+                  width: imageWidth,
+                  aspectRatio: imageAspectRatio,
+                  // web (react-native-web): smoothly animate the size change
+                  transitionProperty: 'width',
+                  transitionDuration: '150ms',
+                  transitionTimingFunction: 'ease-out',
+                } as object
+              }
+            >
               {error ? (
                 <View className="w-full h-full justify-center items-center">
                   <Text className="text-red-500">{error}</Text>
                 </View>
               ) : imageUrl ? (
-                <>
-                  <Image
-                    source={{ uri: imageUrl }}
-                    className="w-full h-full"
-                    resizeMode="cover"
-                  />
-
-                  <View className="absolute bottom-2 right-2 bg-black/40 rounded-full p-2">
-                    <SimpleLineIcons
-                      name="magnifier-add"
-                      size={28}
-                      color="#fff"
-                    />
-                  </View>
-                </>
+                <Image
+                  source={{ uri: imageUrl }}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                  onLoad={(e) => {
+                    // native gives nativeEvent.source.{width,height};
+                    // react-native-web gives the DOM <img> on nativeEvent.target
+                    const source = e.nativeEvent?.source
+                    const target = (
+                      e.nativeEvent as { target?: HTMLImageElement }
+                    )?.target
+                    const width = source?.width ?? target?.naturalWidth
+                    const height = source?.height ?? target?.naturalHeight
+                    if (width && height) {
+                      setImageAspectRatio(width / height)
+                    }
+                  }}
+                />
               ) : (
                 <View className="w-full h-full justify-center items-center">
                   <Text>Loading image...</Text>
                 </View>
               )}
             </View>
-          </TouchableOpacity>
+          </Pressable>
+
+          <Button
+            onPress={!guessMarker || gameOver ? undefined : handleGuess}
+            title="Guess"
+            fullWidth
+            icon={<SimpleLineIcons name="check" size={22} color="#fff" />}
+          />
         </View>
 
         <View className="w-full h-full overflow-hidden rounded-2xl">
@@ -313,32 +343,6 @@ export default function Game() {
             onPress={handleMapPress}
             allowedPolygon={allowedPolygon}
           />
-        </View>
-        <View className="absolute bottom-6 left-10 ">
-          <TouchableOpacity
-            onPress={handleGuess}
-            disabled={!guessMarker || gameOver}
-          >
-            <View
-              className={`bg-black/40 rounded-full p-2 m-1.5 text-center font-bold flex flex-row justify-center items-center ${!guessMarker || gameOver ? 'bg-gray-400' : 'bg-ncsured'}`}
-            >
-              <SimpleLineIcons
-                onPress={handleGuess}
-                name="check"
-                size={28}
-                color="#fff"
-              />
-            </View>
-          </TouchableOpacity>
-          {gameOver && (
-            <TouchableOpacity
-              onPress={() => {
-                setGuessCount(0)
-                setGuessMarker(null)
-                setGameOver(false)
-              }}
-            />
-          )}
         </View>
       </View>
     </>
