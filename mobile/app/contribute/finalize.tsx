@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import Text from '../../components/global/Text'
 import Button from '../../components/global/Button'
 import { API_URL } from '../../util/api'
+import { compressImage } from '../../util/image'
 
 export default function ContributeFinalize() {
   const { imageData, latitude, longitude, locationName } =
@@ -20,11 +21,13 @@ export default function ContributeFinalize() {
 
     setSubmitting(true)
     try {
+      const compressedUri = await compressImage(imageUri)
+
       const formData = new FormData()
 
       // @ts-expect-error React Native FormData expects { uri, name, type } objects
       formData.append('image', {
-        uri: imageUri,
+        uri: compressedUri,
         name: 'photo.jpg',
         type: 'image/jpeg',
       })
